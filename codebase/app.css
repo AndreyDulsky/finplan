@@ -54,3 +54,117 @@
 .sold {
     color: #1CA1C1;
 }
+
+.myhover {
+    background: #F4F5F9;
+    cursor: pointer;
+}
+
+.highlight-green {
+    background-color:#e6ffcc;
+    cursor: pointer;
+}
+
+.highlight-blue {
+    background-color:#C4F5F9;
+    cursor: pointer;
+}
+.highlight {
+    background-color:#fff5e6;
+    cursor: pointer;
+}
+
+.webix_column div[aria-level="2"] {
+    background: #F4F5F9;
+}
+
+div[column="2"] div[aria-level="2"] .subrowimage {
+    margin-left: 25px;
+    height: 100%;
+    border-left: 1px solid #bbb !important;
+}
+div[column="2"] div[aria-level="2"] .subrowimage div {
+    height: 50%;
+    width: 50%;
+    border-bottom: 1px solid #bbb !important;
+}
+
+.mdi[value="1"] {
+    color: green;
+    font-size: 18px;
+}
+
+.mdi[value="2"] {
+    color: #ddd;
+    font-size: 18px;
+}
+
+.webix_icon:hover{
+    color: #1CA1C1;
+    cursor: pointer;
+}
+
+.webix_form .webix_layout_line {
+    margin-top: 0px;
+}
+
+.webix_toolbar .webix_el_label .webix_el_box {
+    font-family: Roboto, sans-serif;
+    /*font-size: 22px;*/
+    font-weight: bold;
+    color: #475466;
+    padding-left: 5px;
+    letter-spacing: 0px;
+}
+
+.webix_icon_btn, .webix_input_icon {
+    font-size: 17px;
+    width: 20px;
+}
+
+.webix_snippet_tag {
+    border-radius: 100px;
+    background-color: #EBEDF0;
+    padding: 4px 12px;
+    font-size: 11px;
+}
+
+.webix_el_search.custom input{
+    padding-right:52px;
+}
+.webix_el_search.custom .wxi-close{
+    font-size:16px;
+    margin-top:2px
+}
+.webix_el_search.custom.no-delete .wxi-close{
+    display:none;
+}
+
+.startsell_report .webix_column > div, .webix_table_cell {
+    /* border-right: 1px solid #EDEFF0; */
+    /* padding: 0 12px; */
+    border-bottom: 0px solid #EDEFF0;
+}
+
+
+.webix_item_tab{
+    border:none !important;
+}
+.webix_item_tab div{
+    height:40px;
+    line-height:2em;
+    margin-top:-5px;
+}
+.webix_after_all_tabs{
+    background-color:#A4B4BF;
+}
+.webix_item_tab.webix_selected .listView{
+    background-color:lightgreen;
+}
+.webix_item_tab.webix_selected .formView{
+    background-color:red;
+}
+.webix_item_tab.webix_selected .aboutView{
+    background-color:orange;
+}
+
