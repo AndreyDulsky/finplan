@@ -2,7 +2,11 @@ export class ApiRest {
 
   constructor(){
     let $scope = this;
-    this.urlBase = "http://admin.startsellshop.local/api";
+    if (location.host == 'localhost:8082') {
+      this.urlBase = "http://admin.startsellshop.local/api";
+    } else {
+      this.urlBase = "http://admin.startsell.biz/api";
+    }
     this.authKeyName = 'auth_token';
     this.authKey = '7110eda4d09e062aa5e4a390b0a572ac0d2c02206';
     this.dataCollection = {};
