@@ -18,7 +18,7 @@ var db = firebase.firestore();
 db.settings({ timestampsInSnapshots:true });
 
 webix.firestore = db;
-
+let restObj = new ApiRest();
 
 export default class App extends JetApp {
 
@@ -28,7 +28,7 @@ export default class App extends JetApp {
 			version: VERSION,
 			debug: !PRODUCTION,
 			start: "/top/start",
-      apiRest: new ApiRest(),
+      apiRest: restObj,
 			views: function(name) {
 				return localViews[name] || name;
 			}
@@ -38,22 +38,22 @@ export default class App extends JetApp {
 
 		super({ ...defaults, ...config });
 
-
+    //webix.proxy("api", "server/datatable_rest.php");
     webix.proxy.api = {
       $proxy:true,
       params: {"expand":"data,contragent,category,project,account", "per-page":"-1"},
-      rest: this.config.apiRest,
+      //rest: this.config.apiRest,
       load: function(view, params) {
-        return webix.ajax().get(this.rest.getUrl('get',this.source), this.params);
+        return webix.ajax().get(restObj.getUrl('get',this.source), this.params);
       },
       save:function(view, update, dp) {
         let id = update.data.id;
       	if (update.operation === "update")
-          return webix.ajax().put(this.rest.getUrl('put', this.source, this.params, id), update.data);
+          return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), update.data);
         if (update.operation === "insert")
-          return webix.ajax().post(this.rest.getUrl('create',this.source,this.params), update.data);
+          return webix.ajax().post(restObj.getUrl('create',this.source,this.params), update.data);
         if (update.operation === "delete")
-          return webix.ajax().del(this.rest.getUrl('delete',this.source,this.params, id), update.data);
+          return webix.ajax().del(restObj.getUrl('delete',this.source,this.params, id), update.data);
       }
     };
 

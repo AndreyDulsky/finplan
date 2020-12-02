@@ -22,7 +22,9 @@ window.procent = function(row, id){
 export default class UpdateJetView extends JetView {
   constructor(app, name){
     super(app,name);
-    this.state = new CoreEditClass(this);
+    if (!this.state) {
+      this.state = new CoreEditClass(this);
+    }
   }
   config() {
       this.apiRest = this.app.config.apiRest;
@@ -31,10 +33,10 @@ export default class UpdateJetView extends JetView {
           localId: "winEdit",
           view: "window",
           position: function (state) {
-              state.left = 52;
-              state.top = 41;
+              state.left = 44;
+              state.top = 42;
               state.width = state.maxWidth / 3;
-              state.height = state.maxHeight - 41;
+              state.height = state.maxHeight - 42;
           },
           head: "Редактирование операции",
           close: true,
@@ -58,7 +60,7 @@ export default class UpdateJetView extends JetView {
     let api = this.apiRest;
     let record = table.getSelectedItem();
     let isUpdate = (record);
-    state.tableId = table.config.id;
+    state.tableId = table.config.urlEdit;
     state.table = table;
     state.tableRecord = record;
     state.isUpdate = isUpdate;

@@ -126,16 +126,16 @@ export default class CashesView extends JetView {
             {
 
               rows: [
-                { "view": "template", height:50, template:"<h2>Операции</h2>", borderless: false},
                 {
                   "view": "toolbar",
                   "height": 40,
                   "paddingY":2,
                   "cols": [
+                    { "view": "label", height:50, css: { 'font-size':'22px', 'padding': '5px 0px 10px 15px', 'font-weight': 700}, template:"<div>Операции</div>", borderless: true, width:130},
                     {
                       "label": "Добавить",
-                      "type":"icon",
-                      "icon":"mdi wxi-plus",
+                      //"type":"icon",
+                      //"icon":"mdi wxi-plus",
                       "view": "button",
                       "height": 50,
                       "css": "webix_primary",
@@ -149,8 +149,9 @@ export default class CashesView extends JetView {
                 },
                 {
                   "view": "treetable",
-                  "id": "transaction",
+                  //"id": "transaction",
                   "localId": "transaction",
+                  urlEdit: 'transaction',
                   //"autoHeight": false,
                   select: true,
                   scrollX: false,
@@ -317,7 +318,7 @@ export default class CashesView extends JetView {
 
                         }
                       },
-                      {"id": "id", "hidden": false},
+                      {"id": "id", "hidden": true},
                       {
                         "id": "action-delete",
                         "header": "",
@@ -493,11 +494,11 @@ export default class CashesView extends JetView {
             }
             webix.extend(table, webix.ProgressBar);
             var obj = { filter: filterNew };
-            table.clearAll(true);
-            table.showProgress({
-                delay:2000,
-                hide:false
-            });
+            //table.clearAll(true);
+            // table.showProgress({
+            //     delay:2000,
+            //     hide:false
+            // });
             webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/transactions',{"expand":"contragent,category,project,account,data", "per-page":"-1"}), obj).then(function(data) {
                 table.parse(data);
             });

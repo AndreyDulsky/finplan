@@ -8,7 +8,7 @@ import "components/searchClose";
 export default class ReportCashFlowView extends JetView{
   config(){
     return {
-      id: "layout",
+      localId: "layout",
       type:"wide",
       cols:[
         {
@@ -33,7 +33,7 @@ export default class ReportCashFlowView extends JetView{
                   value:"fs",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("category");
+                    webix.fullscreen.set("category-table");
                   }
                 },
               ]
@@ -65,7 +65,7 @@ export default class ReportCashFlowView extends JetView{
             },
             {
               view: "treetable",
-              id: "category",
+              localId: "category-table",
               autoConfig: true,
               css:"webix_header_border webix_data_border",
               hover: "myhover",
@@ -98,7 +98,7 @@ export default class ReportCashFlowView extends JetView{
   }
 
   init(view){
-    let table = this.$$("category");
+    let table = this.$$("category-table");
     let format = webix.Date.dateToStr("%Y-%m-%d");
     let dateFrom = this.$$("dateFrom");
     let dateTo = this.$$("dateTo");
@@ -133,19 +133,19 @@ export default class ReportCashFlowView extends JetView{
   }
 
   addColumn(id, header) {
-    var columns = this.$$("category").config.columns;
+    var columns = this.$$("category-table").config.columns;
     columns.splice(1,0,{ id:id, header:header,	width:100 , css: {"text-align": "right"}, format: webix.Number.format});
-    this.$$("category").refreshColumns();
+    this.$$("category-table").refreshColumns();
   };
 
   resetColumns(){
-    this.$$("category").config.columns = [
+    this.$$("category-table").config.columns = [
       { id:"name", header:"Наиименование", width: 380, sort: "string", "open":true, template:"{common.treetable()} #name#" },
       { id:"value", header:"Итого",	width:100, css: {"text-align": "right", "font-weight": "500", "color":"#222"}, format: webix.Number.format,
         footer: {content: "summColumn", css: {"text-align": "right"}},
       },
     ];
-    this.$$("category").refreshColumns();
+    this.$$("category-table").refreshColumns();
   };
 
   changeColumns(dateFrom, dateTo) {

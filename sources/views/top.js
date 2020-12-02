@@ -15,19 +15,26 @@ export default class TopView extends JetView{
 		const header = {
 			view:"toolbar",
 			css:"webix_dark",
+			localId: 'toolbar',
 			elements:[
         {
           view: "icon", icon:"mdi mdi-menu",
           click: function() {
+
             $$("top:menu").toggle();
-          }
+            // if( $$("menu").config.hidden){
+            //   $$("menu").show();
+            // }
+            // else
+            //   $$("menu").hide();
+          	}
         },
-				{ view:"label", label:"Finance"}, // label:this.app.config.name }
+				{ view:"label", label:"ФинПлан"}, // label:this.app.config.name }
 				{
           width: 380,
 					cols: [
             { view:"label",
-              id: "totalAccountsLabel",
+              localId: "totalAccountsLabel",
               label: "",
 
               template: "<div class='webix_el_box' ><a href='javascript: void(0);' style='line-height:32px; color: #color#; font-size: 12px; font-weight: normal; text-decoration: none; padding-right:0px;'>На счетах:  #label#</a><span class='webix_icon wxi-menu-down'></span> </div>",
@@ -36,7 +43,7 @@ export default class TopView extends JetView{
             {
               view:"icon", icon: 'mdi mdi-arrow-down',
               width: 150,
-              id: "totalAccounts",
+              localId: "totalAccounts",
               color: 'white',
               hover: "myhover",
               //template: "<button>#label#</button>",
@@ -71,40 +78,44 @@ export default class TopView extends JetView{
 
 		const menu = {
 			view:"sidebar",
-			id:"top:menu",
+			localId:"top:menu",
 			css:"webix_sidebar webix_dark",
 			//layout:"y",
-      width: 200,
-			select:true,
-      collapsed: true,
-      //collapsedWidth:43,
-      activeTitle: true,
-      //position:"right",
-      multipleOpen:true,
 
-      //template:"<span  class='mdi #icon#' style='font-size:24px;'></span>#value#",
+
+      select:true,
+      collapsed: true,
+      //collapsedWidth:76,
+			//activeTitle: false,
+      //position:"right",
+      multipleOpen: true,
+        //template:"<span  class='mdi #icon#' style='font-size:30px;'></span><br>#value#",
 			//template: "<i class='material-icons md-36 md-light'>#icon#</i>",
+      //template: '<i class="webix_icon mdi-24px #icon#" style="color:#ccc;padding:10px 10px 5px 15px;"></i>',
 			data:[
 				{ value:"Главная", id:"start", icon:"mdi mdi-view-dashboard" },
 				{ value:"Операции", id:"transaction",  icon:"mdi mdi-table" },
-        { value:"Проводки", id:"register",  icon:"mdi mdi-calendar" },
+        { value:"Проводки", id:"register",  icon:"mdi mdi-account" },
 
-				{ value:"Справочники",  icon:"mdi mdi-puzzle",
-					data: [{ value:"Контрагенты", id:"contragents-directory",  icon:"mdi  mdi-puzzle" }]
+				{ value:"Справочники",  icon:"mdi mdi-cube",
+					data: [{ value:"Контрагенты", id:"contragents-directory",  icon:"mdi mdi-circle-outline" }]
 				},
-        { value:"Отчеты",  icon:"mdi mdi-puzzle",
+        { value:"Отчеты",  icon:"mdi mdi-chart-bar",
           data: [
-          	{ value:"Движение денег", id:"report-cash-flow",  icon:"mdi  mdi-puzzle" },
-            { value:"Движение денег (График)", id:"report-cash-flow-chart",  icon:"mdi  mdi-puzzle" },
-            { value:"ОСВ", id:"report",  icon:"mdi mdi-puzzle" },
+          	{ value:"Движение денег", id:"report-cash-flow",  icon:"mdi mdi-circle-outline" },
+            { value:"Движение денег (График)", id:"report-cash-flow-chart",  icon:"mdi mdi-circle-outline" },
+            { value:"ОСВ", id:"report",  icon:"mdi mdi-circle-outline" },
           	]
         },
         //{ value:"Firebase", id:"firebase",  icon:"mdi  mdi-puzzle" },
         { value:"Настройки", id:"settings",  icon:"mdi mdi-settings" },
-        { value:"Открытые отчеты", id:"info", icon:"wxi-pencil", data:[] },
-			]
+        { value:"Открытые отчеты", id:"info", icon:"mdi mdi-database", data:[] },
+			],
+      
+
 
 		};
+
 
 		const ui = {
 
@@ -113,7 +124,7 @@ export default class TopView extends JetView{
 				{
 					//type:"wide",
 					cols:[
-					  menu,
+            menu,
             { $subview:true }
 
 					]
@@ -125,22 +136,24 @@ export default class TopView extends JetView{
 	}
 
 	init(){
-		this.use(plugins.Menu, "top:menu");
+    this.use(plugins.Menu, "top:menu");
 		let scope = this;
     let urlSummaryAccount = this.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount');
     webix.ajax().get( urlSummaryAccount).then(function(data) {
       scope.setTotalAccounts(data.json());
     });
 
-    $$('totalAccountsLabel').attachEvent("onItemClick", function(id, e){
+    this.$$('totalAccountsLabel').attachEvent("onItemClick", function(id, e){
       scope.doClickBalance();
       // code
     });
+
+
 	}
 
   setTotalAccounts(data) {
 
-    let totalAccountsLabel = $$('totalAccountsLabel');
+    let totalAccountsLabel = this.$$('totalAccountsLabel');
 
     totalAccountsLabel.setValue(data.total);
 
@@ -176,7 +189,7 @@ export default class TopView extends JetView{
             }}
           ]
         },
-        localId: "win1",
+        localId: "win2",
         height: 550,
         width: 500,
         position:"center",

@@ -63,6 +63,7 @@ export default class ReportCashFlowChartView extends JetView{
               ]
             },
 
+
             {
               view:"chart",
               localId: 'cashflow-chart',

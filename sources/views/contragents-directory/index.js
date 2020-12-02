@@ -8,7 +8,7 @@ import "components/searchClose";
 export default class ContragentsDirectoryView extends JetView{
   config(){
     return {
-      id: "layout",
+      localId: "layout",
       type:"wide",
       cols:[
         {
@@ -33,7 +33,7 @@ export default class ContragentsDirectoryView extends JetView{
                   value:"fs",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("table-register");
+                    webix.fullscreen.set("contragent-table");
                   }
                 },
               ]
@@ -59,8 +59,9 @@ export default class ContragentsDirectoryView extends JetView{
             },
             {
               view: "datatable",
-              id: "contragent",
-              autoConfig: true,
+              localId: "contragent-table",
+              urlEdit: 'contragent',
+              //autoConfig: true,
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
               //rightSplit:2,
@@ -83,7 +84,7 @@ export default class ContragentsDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: "api->accounting/contragents",//this.app.config.apiRest.getUrl('get',"accounting/contragents", {"per-page": "-1"}),
+              url: this.app.config.apiRest.getUrl('get',"accounting/contragents", {"per-page": "-1"}),//"api->accounting/contragents",
               save: "api->accounting/contragents",
               scheme: {
                 $sort:{ by:"name", dir:"asc" },
@@ -121,8 +122,9 @@ export default class ContragentsDirectoryView extends JetView{
   }
 
   init(view){
+
     let form = this.$$("form-search");
-    let table = this.$$("contragent");
+    let table = this.$$("contragent-table");
     table.markSorting("name", "asc");
     let scope = this;
 
@@ -153,8 +155,8 @@ export default class ContragentsDirectoryView extends JetView{
   }
 
   doAddClick() {
-    $$('contragent').unselect();
-    this.cashEdit.showForm($$('contragent'));
+    this.$$('contragent-table').unselect();
+    this.cashEdit.showForm(this.$$('contragent-table'));
   }
 
 }

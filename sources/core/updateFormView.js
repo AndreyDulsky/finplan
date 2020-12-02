@@ -24,6 +24,7 @@ export default class UpdateFormView extends JetView {
     super(app,name);
     this.state = new CoreEditClass(this);
   }
+
   config() {
       this.apiRest = this.app.config.apiRest;
       this.win = {};
@@ -31,10 +32,10 @@ export default class UpdateFormView extends JetView {
           localId: "winEdit",
           view: "window",
           position: function (state) {
-              state.left = 52;
-              state.top = 41;
+              state.left = 44;
+              state.top = 42;
               state.width = state.maxWidth / 3;
-              state.height = state.maxHeight - 41;
+              state.height = state.maxHeight - 42;
           },
           head: "Редактирование",
           close: true,
@@ -58,7 +59,7 @@ export default class UpdateFormView extends JetView {
     let api = this.apiRest;
     let record = table.getSelectedItem();
     let isUpdate = (record);
-    state.tableId = table.config.id;
+    state.tableId = table.config.urlEdit;
     state.table = table;
     state.tableRecord = record;
     state.isUpdate = isUpdate;
@@ -199,7 +200,7 @@ export default class UpdateFormView extends JetView {
 
     let record = state.formEdit.getValues();
 
-
+    //debugger;
     webix.dp(state.table).save(
       (state.isUpdate) ? record.id : webix.uid(),
       (state.isUpdate) ? "update" : "insert",
