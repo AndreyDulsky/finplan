@@ -8,7 +8,7 @@ export default class TopView extends JetView{
 			view:"button", label:"Выход", width: 120,
 			click: () => this.show("/logout")
 		};
-
+    let scope = this;
 
 
 
@@ -19,9 +19,9 @@ export default class TopView extends JetView{
 			elements:[
         {
           view: "icon", icon:"mdi mdi-menu",
-          click: function() {
+          click: function(id,obj,owner) {
 
-            $$("top:menu").toggle();
+            scope.$$("top:menu").toggle();
             // if( $$("menu").config.hidden){
             //   $$("menu").show();
             // }

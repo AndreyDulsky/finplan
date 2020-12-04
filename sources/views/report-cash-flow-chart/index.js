@@ -47,7 +47,7 @@ export default class ReportCashFlowChartView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.weekStart(new Date())
+                  value: webix.Date.monthStart(new Date())
                 },
                 {
                   view:"datepicker",

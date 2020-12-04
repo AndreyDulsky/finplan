@@ -156,6 +156,7 @@ export default class CashesView extends JetView {
                   select: true,
                   scrollX: false,
                   hover: "myhover",
+
                   scheme: {
                     $sort:{ by:"date_operation", dir:"desc" },
 
@@ -327,8 +328,11 @@ export default class CashesView extends JetView {
                       },
                       {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
                     ],
-                  url: "api->accounting/transactions",
+                  url: this.app.config.apiRest.getUrl('get','accounting/transactions',{"expand":"contragent,category,project,account,data", "per-page":"-1"}),//"api->accounting/transactions",
                   save: "api->accounting/transactions",
+                  //datafetch:50, // 200 records
+                  //loadahead:50,
+                  scroll:"y",
                   on:{
                     // "data->onParse":function(){
                     //     debugger;

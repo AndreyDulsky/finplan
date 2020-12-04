@@ -67,6 +67,7 @@ export default class ContragentsDirectoryView extends JetView{
               //rightSplit:2,
               select: true,
               resizeColumn: { headerOnly:true },
+
               columns:[
                 { id:"id", header:"#",	width:50 },
                 { id:"name", header:"Наиименование", width: 380, sort: "string" },
@@ -84,12 +85,13 @@ export default class ContragentsDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/contragents", {"per-page": "-1"}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/contragents", {"per-page": "100", "page":1}),//"api->accounting/contragents",
               save: "api->accounting/contragents",
-              scheme: {
-                $sort:{ by:"name", dir:"asc" },
+              // scheme: {
+              //   $sort:{ by:"name", dir:"asc" },
+              //
+              // },
 
-              },
               on:{
                 onItemClick:function(id, e, trg) {
 
@@ -125,8 +127,24 @@ export default class ContragentsDirectoryView extends JetView{
 
     let form = this.$$("form-search");
     let table = this.$$("contragent-table");
-    table.markSorting("name", "asc");
+    //table.markSorting("name", "asc");
     let scope = this;
+    // table.attachEvent("onDataRequest", function (start, count) {
+    //   webix.ajax().get(scope.app.config.apiRest.getUrl('get', 'accounting/contragents', {
+    //     "expand": "contragent,category,project,account,data",
+    //     "per-page": count, "start" : start
+    //   })).then(function (data) {
+    //     //table.parse(data);
+    //     // table.parse({
+    //     //   pos: your_pos_value,
+    //     //   total_count: your_total_count,
+    //     //   data: data
+    //     // });
+    //   });
+    //
+    //   return false;
+    // });
+
 
     form.attachEvent("onChange", function(obj){
 
@@ -140,9 +158,11 @@ export default class ContragentsDirectoryView extends JetView{
         delay:2000,
         hide:false
       });
+
       webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/contragents', {"expand":"contragent,category,project,account,data", "per-page":"-1"}), objFilter).then(function(data) {
         table.parse(data);
       });
+
 
       // table.loadNext(0, 0, 0, 0, 1).then(function (data) {
       //     table.clearAll(true);
