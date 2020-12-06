@@ -168,3 +168,12 @@ div[column="2"] div[aria-level="2"] .subrowimage div {
     background-color:orange;
 }
 
+.webix_column > div.webix_cell_select,
+.webix_column > div.webix_column_select,
+.webix_column > div.webix_row_select {
+    background-color:#ddd  !important;
+
+}
+.webix_dtable .webix_column > .webix_drag_over.webix_cell {
+    background-color: #999 !important;
+}
