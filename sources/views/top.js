@@ -93,7 +93,12 @@ export default class TopView extends JetView{
 			//template: "<i class='material-icons md-36 md-light'>#icon#</i>",
       //template: '<i class="webix_icon mdi-24px #icon#" style="color:#ccc;padding:10px 10px 5px 15px;"></i>',
 			data:[
-				{ value:"Главная", id:"start", icon:"mdi mdi-view-dashboard" },
+				{ value:"Производство", icon:"mdi mdi-view-dashboard",
+          data: [
+            { value:"План производства", id:"start", icon:"mdi mdi-circle-outline" },
+            { value:"Заказы", id:"order", icon:"mdi mdi-circle-outline" }
+          ]
+        },
 				{ value:"Операции", id:"transaction",  icon:"mdi mdi-table" },
         { value:"Проводки", id:"register",  icon:"mdi mdi-account" },
 
@@ -105,7 +110,7 @@ export default class TopView extends JetView{
           	{ value:"Движение денег", id:"report-cash-flow",  icon:"mdi mdi-circle-outline" },
             { value:"Движение денег (График)", id:"report-cash-flow-chart",  icon:"mdi mdi-circle-outline" },
             { value:"ОСВ", id:"report",  icon:"mdi mdi-circle-outline" },
-          	]
+          ]
         },
         //{ value:"Firebase", id:"firebase",  icon:"mdi  mdi-puzzle" },
         { value:"Настройки", id:"settings",  icon:"mdi mdi-settings" },

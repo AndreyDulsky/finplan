@@ -22,6 +22,8 @@ function logout(){
 }
 
 */
+import {getRestUrl} from "models/rest";
+import {ApiRest} from "./restModel";
 
 function status(){
 	return new webix.promise((resolve) => {
@@ -30,8 +32,11 @@ function status(){
 }
 
 function login(user, pass){
+	let rest = new ApiRest();
+  let url = rest.getUrl('get','users/login');
 	return new webix.promise((resolve, reject) => {
-        webix.ajax().post("http://admin.startsellshop.local/api/users/login", {'username': user, 'password': pass}, function(text, data, xhr){
+
+        webix.ajax().post(url, {'username': user, 'password': pass}, function(text, data, xhr){
 			var result = data.json();
 			if (result.success) {
                 webix.storage.local.put("wjet_user", { user:"admin" });

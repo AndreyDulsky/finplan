@@ -1,86 +1,291 @@
 import {JetView} from "webix-jet";
 
-var small_film_set = [
-  { id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rating:9.2, rank:1, category:"Thriller"},
-  { id:2, title:"The Godfather", year:1972, votes:511495, rating:9.2, rank:2, category:"Crime"},
-  { id:3, title:"The Godfather: Part II", year:1974, votes:319352, rating:9.0, rank:3, category:"Crime"},
-  { id:4, title:"The Good, the Bad and the Ugly", year:1966, votes:213030, rating:8.9, rank:4, category:"Western"},
-  { id:5, title:"Pulp fiction", year:1994, votes:533848, rating:8.9, rank:5, category:"Crime"},
-  { id:6, title:"12 Angry Men", year:1957, votes:164558, rating:8.9, rank:6, category:"Western"}
-];
+webix.GroupMethods.median = function(prop, data){
+  if (!data.length) return 0;
+  var summ = 0;
+  for (var i = data.length - 1; i >= 0; i--) {
+
+    if (data[i].$level == 1 ) {
+      if (!isNaN(prop(data[i]))) summ += prop(data[i]) * 1;
+    }
+  }
+  return webix.i18n.numberFormat(summ,{
+    groupDelimiter:",",
+    groupSize:3,
+    decimalDelimiter:".",
+    decimalSize:2
+  });
+};
+
+webix.ui.datafilter.totalColumn = webix.extend({
+  refresh: function (master, node, value) {
+    var result = 0, _val;
+    master.data.each(function (obj) {
+      if (obj.$group) return;
+      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
+      if (!isNaN(_val)) result = result+_val;
+    });
+    result = webix.i18n.numberFormat(result,{
+      groupDelimiter:",",
+      groupSize:3,
+      decimalDelimiter:".",
+      decimalSize:2
+    })
+    if (value.format)
+      result = value.format(result);
+    if (value.template)
+      result = value.template({ value: result });
+    node.firstChild.style.textAlign = "right";
+    node.firstChild.innerHTML = result;
+  }
+}, webix.ui.datafilter.summColumn);
+
+webix.editors.$popup.text = {
+  view:"popup",
+  body:{
+    view:"textarea",
+    width:250,
+    height:100
+  }
+};
+
+webix.Date.monthEnd = function(obj){
+  obj = webix.Date.monthStart(obj);
+  obj = webix.Date.add(obj, 1, "month");
+  obj = webix.Date.monthStart(obj);
+  obj = webix.Date.add(obj, -1, "minute");
+  return obj;
+}
 
 export default class StartView extends JetView{
 
 
+
 	config(){
-    let url = this.app.config.apiRest.getUrl('get',"accounting/orders", {"per-page": "10", sort: '[{"property":"A","direction":"DESC"}]'});
+    let scope = this;
+    let url = this.app.config.apiRest.getUrl('get',"accounting/orders",
+      {
+        "per-page": "500",
+        sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"AE":{">=":"01.12.20"}}'
+        //filter: '{"AE":{">=":"01.02.20"}}'
+
+      });
 
 		return {
 			rows:[
-				{ type:"header", template:"Dashboard"},
+        {
+          cols:[
+            {"view": "label", width: 200, height:30, template: "План производства", css: { 'font-size':'17px', 'padding': '10px 0px 10px 15px', 'font-weight': 600}},
+            {
+
+              cols: [
+                {width :5},
+                {
+                  view:"datepicker",
+                  localId: 'dateFrom',
+                  inputWidth:150,
+                  label: 'с',
+                  labelWidth:30,
+                  width:160,
+                  value: webix.Date.monthStart(new Date())
+                },
+                {
+                  view:"datepicker",
+                  localId: 'dateTo',
+                  inputWidth:150,
+                  label: 'по',
+                  labelWidth:30,
+                  width:160,
+                  value: webix.Date.monthEnd(new Date())
+                },
+                {}
+
+              ]
+            },
+            {
+              view:"toggle",
+              type:"icon",
+              icon: 'mdi mdi-file-tree',
+              autowidth:true,
+              value :true,
+              click: function() { scope.doClickOpenAll() }
+
+            },
+            { view:"select",  value:1, labelWidth:100, options:[
+              { id:1, value:"Производство" },
+              { id:2, value:"Продажи" },
+              { id:3, value:"Выработка" }
+            ],
+              width: 200,
+              on:{
+                onChange:function(newv){
+                  scope.showBatch(newv);
+                }
+              }
+            },
+          ]
+        },
 				/*wjet::Settings*/
         {
-          view:"datatable",
+          view:"treetable",
           css:"webix_header_border webix_data_border",
-          //leftSplit:1,
+          leftSplit:1,
           //rightSplit:2,
-          select: true,
+          select: "row",
           resizeColumn: { headerOnly:true },
           localId: 'start-table',
+          //subrow:"#N#",
+          multiselect:true,
+          drag:true,
+          fixedRowHeight:false, //rowLineHeight:25, rowHeight:25,
+          editable:true,
+          visibleBatch:1,
           columns:[
-             {
-              id:"A", header:"#",	width:50
-              // template:function(obj, common, value, config){
-              //   if (obj.$level == 1) return common.treetable(obj, common) + obj.A ;
-              //   return obj.I;
-              // }
-            },
-            // {
-            //   id:"created", header:"Date"
-            // },
-            { id:"B", header:"B", width:100 },
-            { id:"C", header:"C", width:100 },
-            { id:"D", header:"D", width:100 },
 
-            { id:"I", header:"I", width:300 },
-            { id:"J", header:"J", width:100 },
-            { id:"K", header:"K", width:50 },
-            { id:"L", header:"L", width:50 },
-            { id:"M", header:"M", width:100 },
-            { id:"N", header:"N", width:100 },
-            { id:"O", header:"O", width:100 },
-            { id:"P", header:"P", width:100 },
-            { id:"Q", header:"Q", width:100 },
-            { id:"R", header:"R", width:100 },
-            { id:"S", header:"S", width:100 },
+            // {
+            //   id:"id", header:"#", hidden: true
+            // },
+            // {
+            //   id:"AE", header:"Дата", width:120,
+            //   template:function(obj, common){
+            //     if (obj.$group) return common.treetable(obj, common) + obj.AE;
+            //     return "";
+            //   }
+            //
+            // },
+            {
+              id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
+              template:function(obj, common){
+
+                if (obj.$level == 1) return common.treetable(obj, common) + obj.AE;
+                return obj.A;
+              },
+              "css": {"color": "black", "text-align": "right", "font-weight": 500}
+            },
+
+            { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:70, batch:2 },
+            { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2 },
+            { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2},
+            { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80 },
+            { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:200, batch:2 },
+            { id:"G",
+              width:90,
+              header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
+              "css": {"color": "black", "text-align": "right",  "font-weight": 500},
+              //footer: {content: "summColumn", css: {"text-align": "right"}}
+
+            },
+
+            { id:"AA", header:[ "Коэф. вр. план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200 },
+            { id:"J", header:[ "Размер", { content:"selectFilter" }, "" ], width:70, batch:2 },
+            { id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2 },
+            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150 },
+            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2 },
+            { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
+              editor:"popup",
+              template:function(obj, common){
+                if (obj.$group) return "";
+                return obj.N+" "+obj.O+" "+obj.P+" "+obj.Q+" "+obj.R+" "+obj.T;
+              }
+            },
+            //{ id:"O", header:"O", width:100 },
+            //{ id:"P", header:"P", width:100 },
+            //{ id:"Q", header:"Q", width:100 },
+            //{ id:"R", header:"R", width:100 },
+            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:70, batch:2 },
             //{ id:"T", header:"T", width:100 },
-            { id:"U", header:"U", width:100 },
-            { id:"V", header:"V", width:100 },
-            { id:"W", header:"W", width:100 },
-            { id:"X", header:"X", width:100 },
-            { id:"Y", header:"Y", width:100 },
-            { id:"Z", header:"Z", width:100 }
+            // { id:"U", header:"U", width:100 },
+            { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:50, batch:1 },
+            { id:"BP", header:[ "Шв.", { content:"selectFilter" }, "" ], width:50, batch:1 },
+            { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1 },
+            { id:"V", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
+              "css": {"color": "green", "text-align": "right",  "font-weight": 500}
+            },
+            { id:"AO", header:[ "Коэф. ден.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
+              "css": {"color": "green", "text-align": "right",  "font-weight": 500}, batch:1,
+
+            },
+            { id:"AB", header:[ "Коэф. вр.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100 },
+            { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"AJ", header:[ "Коэф. шв.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            //{ id:"Z", header:"Обивка изг.", width:100, batch:3 },
+            //{ id:"W", header:"Статус", width:100, batch:3 },
+            //{ id:"AH", header:"Дата", width:100, batch:3 },
+            { id:"AK", header:"Обивка царги", width:110, batch:3 },
+            { id:"AL", header:"Статус", width:60, batch:3 },
+            { id:"AM", header:"Дата", width:90, batch:3 },
+            { id:"AP", header:"Паралон изг.", width:110, batch:3 },
+            { id:"AQ", header:"Статус", width:60, batch:3 },
+            { id:"AR", header:"Дата", width:90, batch:3 },
+            { id:"AU", header:"Паралон царги", width:115 , batch:3},
+            { id:"AV", header:"Статус", width:60, batch:3 },
+            { id:"AW", header:"Дата", width:90, batch:3 },
+            { id:"AZ", header:"Столярка", width:115 , batch:3},
+            //{ id:"BA", header:"Статус", width:60, batch:3 },
+            { id:"BB", header:"Дата", width:90, batch:3 },
+            { id:"BO", header:"Пошив", width:115 , batch:3},
+            //{ id:"BP", header:"Статус", width:60, batch:3 },
+            { id:"BQ", header:"Дата", width:90, batch:3 },
+            { id:"BV", header:"Крой", width:115 , batch:3},
+            { id:"BW", header:"Статус", width:60, batch:3 },
+            { id:"BX", header:"Дата", width:90, batch:3 },
+            { id:"CD", header:"Упаковка", width:80, batch:3 },
+            { id:"CE", header:"Дата", width:90, batch:3 },
+
+
+
           ],
           scheme:{
+            $group:{
+              by:"AE", // 'company' is the name of a data property
+              map:{
+                G:["G","median"],
+                V:["V","median"],
+                AO:["AO","median"],
+                AA:["AA","median"],
+                AB:["AB","median"],
+                AG:["AG","median"],
+                AJ:["AJ","median"],
+                //state:["grouped","string"],
+                missing:false
+              },
+               // footer:{
+               //   W:["W", "sum"],
+               //   //V:["V"],
+               //   row:function(obj ){ return "<span style='float:right;'>Всего: "+webix.i18n.numberFormat(obj.V)+"</span>"; }
+               // },
+
+              //row:"A"
+            },
             // $group:{
-            //   by:"A", // 'company' is the name of data property
-            //   // row:function(obj){
-            //   //   return "#"+obj.A+", Клиент: "+obj.F+", Тип:"+obj.E+" Сумма:"+obj.G;
-            //   // },
-            //   missing:false,
+            //   by:"A", // 'company' is the name of a data property
             //   map:{
-            //     B:["B"],
-            //     C:["C"],
-            //     D:["D"],
+            //     A:["A","sum"],
+            //     V:["V","sum"],
             //     F:["F"],
-            //     E:["E"],
-            //     G:["G"],
-            //     H:["H"],
-            //
-            //
+            //     state:["grouped","string"]
             //   }
+            //   //row:"A"
             // },
-            //$sort:{ by:"value", dir:"desc" },
+            $sort:{ by:"AE", dir:"asc", as: "date" },
+
 
             $init:function(item) {
               if (item.B == 4)
@@ -92,29 +297,43 @@ export default class StartView extends JetView{
             }
           },
           ready:function(){
-            var state = webix.storage.local.get("treetable_state");
-            if (state)
-              this.setState(state);
+            // var state = webix.storage.local.get("treetable_state");
+            // if (state)
+            //   this.setState(state);
+            this.openAll();
           },
           scroll: true,
-          url: function(){
-
-            return webix.ajax(url).then(function(data) {
-              return  data.json().items;
-            });
-
-
-          },
+          // url: function(){
+          //
+          //   return webix.ajax(url).then(function(data) {
+          //     return  data.json().items;
+          //   });
+          //
+          //
+          // },
 
           on: {
             "onColumnResize" : function() {
-              webix.storage.local.put("treetable_state", this.getState());
+              //webix.storage.local.put("treetable_state", this.getState());
             },
+            "onresize":webix.once(function(){
+              this.adjustRowHeight("T", true);
+            }),
             onBeforeLoad:function(){
               this.showOverlay("Loading...");
             },
             onAfterLoad:function(){
               this.hideOverlay();
+            },
+            onBeforeDrop:function(context, e){
+              //debugger;
+              //this.getItem(context.start).$css = ' highlight-blue';
+              // for(let i=0;i< context.source.length; i++) {
+              //   this.select(context.source[i]);
+              // }
+              //this.select(context.source.join(","));
+              //this.refresh(context.start);
+              //return false; //block the default behavior of event (cancels dropping)
             }
           }
 
@@ -137,5 +356,74 @@ export default class StartView extends JetView{
     //scope.changeColumns(dateFrom, dateTo);
     //table.clearAll();
     //table.load(tableUrl);
+    let table = this.$$("start-table");
+    let format = webix.Date.dateToStr("%d.%m.%y");
+    let dateFrom = this.$$("dateFrom");
+    let dateTo = this.$$("dateTo");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+
+    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
+      "per-page": "500",
+      sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+    });
+    let scope =this;
+    webix.ajax().get(tableUrl).then(function(data){
+      table.clearAll();
+      table.parse(data.json().items);
+    });
+    // table.load(tableUrl,function(text, data, http_request){
+    //   return  data.json().items;
+    // });
+
+    dateFrom.attachEvent("onChange", function(id) {
+      dateFromValue = format(dateFrom.getValue());
+      dateToValue = format(dateTo.getValue());
+
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
+        "per-page": "500",
+        sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        //filter: '{"AE":{">=":"01.02.20"}}'
+      });
+      webix.ajax().get(tableUrl).then(function(data){
+        table.clearAll();
+        table.parse(data.json().items);
+      });
+
+    });
+
+    dateTo.attachEvent("onChange", function(id) {
+
+      dateFromValue = format(dateFrom.getValue());
+      dateToValue = format(dateTo.getValue());
+
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
+        "per-page": "500",
+        sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        //filter: '{"AE":{">=":"01.02.20"}}'
+      });
+
+      webix.ajax().get(tableUrl).then(function(data){
+        table.clearAll();
+        table.parse(data.json().items);
+      });
+    });
+  }
+
+  doClickOpenAll() {
+    let table = this.$$("start-table");
+    if (table.getOpenItems().length >0 ) {
+      table.closeAll();
+    } else {
+      table.openAll();
+    }
+  }
+
+  showBatch(newv){
+    this.$$("start-table").showColumnBatch(newv);
   }
 }

@@ -66,6 +66,9 @@ export default class ContragentsDirectoryView extends JetView{
               //leftSplit:1,
               //rightSplit:2,
               select: true,
+              //datafetch:100,
+              //datathrottle: 500,
+              //loadahead:100,
               resizeColumn: { headerOnly:true },
 
               columns:[
@@ -85,7 +88,7 @@ export default class ContragentsDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/contragents", {"per-page": "100", "page":1}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/contragents"),//"api->accounting/contragents",
               save: "api->accounting/contragents",
               // scheme: {
               //   $sort:{ by:"name", dir:"asc" },
@@ -113,6 +116,15 @@ export default class ContragentsDirectoryView extends JetView{
                   } else {
                     this.$scope.cashEdit.showForm(this);
                   }
+                },
+                onBeforeLoad:function(){
+                  this.showOverlay("Loading...");
+                },
+                onAfterLoad:function(){
+                  if (!this.count())
+                    this.showOverlay("Sorry, there is no data");
+                  else
+                    this.hideOverlay();
                 },
               }
             }
@@ -159,7 +171,7 @@ export default class ContragentsDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/contragents', {"expand":"contragent,category,project,account,data", "per-page":"-1"}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/contragents', {"expand":"contragent,category,project,account,data"}), objFilter).then(function(data) {
         table.parse(data);
       });
 

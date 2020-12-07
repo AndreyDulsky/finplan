@@ -157,10 +157,10 @@ export default class CashesView extends JetView {
                   scrollX: false,
                   hover: "myhover",
 
-                  scheme: {
-                    $sort:{ by:"date_operation", dir:"desc" },
-
-                  },
+                  // scheme: {
+                  //   $sort:{ by:"date_operation", dir:"desc" },//not dynamic loading
+                  //
+                  // },
                   //fixedRowHeight:false,
                   //rowLineHeight: 25,
                   rowHeight:43,
@@ -328,7 +328,12 @@ export default class CashesView extends JetView {
                       },
                       {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
                     ],
-                  url: this.app.config.apiRest.getUrl('get','accounting/transactions',{"expand":"contragent,category,project,account,data", "per-page":"-1"}),//"api->accounting/transactions",
+                  url: this.app.config.apiRest.getUrl('get','accounting/transactions',{
+                    "expand":"contragent,category,project,account,data",
+                    sort: '-date_operation',
+                    //"count": -1
+                  }),
+                  //"api->accounting/transactions",
                   save: "api->accounting/transactions",
                   //datafetch:50, // 200 records
                   //loadahead:50,
@@ -340,7 +345,7 @@ export default class CashesView extends JetView {
                     //     //this.data.url = "https://docs.webix.com/samples/server/packages_part";
                     // },
                     "onResize":webix.once(function(){
-                      this.adjustRowHeight("contragent", true);
+                      //this.adjustRowHeight("contragent", true);
                     }),
                     onBeforeLoad:function(){
                       this.showOverlay("Loading...");
@@ -503,7 +508,7 @@ export default class CashesView extends JetView {
             //     delay:2000,
             //     hide:false
             // });
-            webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/transactions',{"expand":"contragent,category,project,account,data", "per-page":"-1"}), obj).then(function(data) {
+            webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/transactions',{"expand":"contragent,category,project,account,data"}), obj).then(function(data) {
                 table.parse(data);
             });
             let urlSummary = scope.app.config.apiRest.getUrl('get','accounting/transaction/summary')
