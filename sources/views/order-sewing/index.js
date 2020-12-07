@@ -97,7 +97,7 @@ export default class OrderSewingView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.yearStart(new Date())
+                  value: webix.Date.monthStart(new Date())
                 },
                 {
                   view:"datepicker",
