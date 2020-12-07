@@ -96,6 +96,7 @@ export default class TopView extends JetView{
 				{ value:"Производство", icon:"mdi mdi-view-dashboard",
           data: [
             { value:"План производства", id:"start", icon:"mdi mdi-circle-outline" },
+            { value:"План швейка", id:"order-sewing", icon:"mdi mdi-circle-outline" },
             { value:"Заказы", id:"order", icon:"mdi mdi-circle-outline" }
           ]
         },
