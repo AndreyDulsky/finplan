@@ -220,7 +220,7 @@ export default class OrderSewingView extends JetView{
             { id:"J", header:[ "Размер", { content:"selectFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
-            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2, editor:"text" },
+            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, editor:"text" },
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
               editor:"popup",
               template:function(obj, common){
