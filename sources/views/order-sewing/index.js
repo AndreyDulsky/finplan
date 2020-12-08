@@ -6,8 +6,20 @@ webix.GroupMethods.median = function(prop, data){
   for (var i = data.length - 1; i >= 0; i--) {
 
     if (data[i].$level == 1 ) {
-      let per = parseFloat(prop(data[i]));
-      if (!isNaN(per)) summ += per * 1;
+      let per =prop(data[i]);
+      if (per!="") {
+        //debugger;
+
+        //per = parseFloat(per);
+        per = webix.Number.parse(per, {
+          decimalSize: 2, groupSize: 3,
+          decimalDelimiter: ",", groupDelimiter: ""
+        });
+        if (!isNaN(per)) {
+          summ += per * 1;
+        }
+      }
+
     }
   }
   return webix.i18n.numberFormat(summ,{

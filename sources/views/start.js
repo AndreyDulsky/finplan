@@ -6,8 +6,20 @@ webix.GroupMethods.median = function(prop, data){
   for (var i = data.length - 1; i >= 0; i--) {
 
     if (data[i].$level == 1 ) {
-      let per = parseFloat(prop(data[i]));
-      if (!isNaN(per)) summ += per * 1;
+      let per =prop(data[i]);
+      if (per!="") {
+        //debugger;
+
+        //per = parseFloat(per);
+        per = webix.Number.parse(per, {
+          decimalSize: 2, groupSize: 3,
+          decimalDelimiter: ",", groupDelimiter: ""
+        });
+        if (!isNaN(per)) {
+          summ += per * 1;
+        }
+      }
+
     }
   }
   return webix.i18n.numberFormat(summ,{
@@ -105,7 +117,7 @@ export default class StartView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.yearStart(new Date())
+                  value: webix.Date.monthStart(new Date())
                 },
                 {
                   view:"datepicker",
@@ -212,7 +224,7 @@ export default class StartView extends JetView{
             { id:"J", header:[ "Размер", { content:"selectFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
-            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2, editor:"text" },
+            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, editor:"text" },
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
               editor:"popup",
               template:function(obj, common){
