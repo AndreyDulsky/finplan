@@ -11,6 +11,7 @@ webix.GroupMethods.median = function(prop, data){
         //debugger;
 
         //per = parseFloat(per);
+        if (per !== null) per = per.replace(".",",");
         per = webix.Number.parse(per, {
           decimalSize: 2, groupSize: 3,
           decimalDelimiter: ",", groupDelimiter: ""
@@ -49,13 +50,27 @@ webix.ui.datafilter.totalColumn = webix.extend({
     master.data.each(function (obj) {
       if (obj.$group) return;
 
-      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
+
+      _val = obj[value.columnId];
+      if (value.columnId == 'coefMoney') {
+        _val = obj.G/7860;
+      }
+      if (_val !== null) {
+        if (_val!= 0) {
+          _val = _val.toString().replace(".",",");
+        }
+        _val = webix.Number.parse(_val, {
+          decimalSize: 2, groupSize: 3,
+          decimalDelimiter: ",", groupDelimiter: ""
+        });
+      }
+      _val =  parseFloat(_val);
       if (!isNaN(_val)) result = result+_val;
     });
     result = webix.i18n.numberFormat(result,{
-      groupDelimiter:",",
+      groupDelimiter:"`",
       groupSize:3,
-      decimalDelimiter:".",
+      decimalDelimiter:",",
       decimalSize:2
     })
     if (value.format)
@@ -155,7 +170,7 @@ export default class StartView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.monthStart(new Date())
+                  value: webix.Date.yearStart(new Date())
                 },
                 {
                   view:"datepicker",
@@ -249,7 +264,10 @@ export default class StartView extends JetView{
                   decimalDelimiter:".",
                   decimalSize:2
                 });
-                return webix.Number.format(parseFloat(obj.G/7860));
+                return webix.Number.format(parseFloat(per/7860), {
+                  decimalDelimiter:",",
+                  decimalSize:2
+                });
               }
             },
 
@@ -338,6 +356,7 @@ export default class StartView extends JetView{
               width:100,
               "css": {"color": "green", "text-align": "right",  "font-weight": 500}, batch:1,
 
+
             },
             { id:"AB", header:[ "Коэф. вр.", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
@@ -367,14 +386,14 @@ export default class StartView extends JetView{
             { id:"AZ", header:"Столярка", width:115 , batch:3, editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
             { id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
-            { id:"BO", header:"Пошив", width:115 , batch:3, editor:"text"},
+            { id:"BO", header:"Пошив", width:115 , batch:1, editor:"text"},
             //{ id:"BP", header:"Статус", width:60, batch:3 },
-            { id:"BQ", header:"Дата", width:90, batch:3, editor:"text" },
+            { id:"BQ", header:[ "Дата", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },
             { id:"BV", header:"Крой", width:115 , batch:3, editor:"text"},
             { id:"BW", header:"Статус", width:60, batch:3, editor:"text" },
             { id:"BX", header:"Дата", width:90, batch:3, editor:"text" },
-            { id:"CD", header:"Упаковка", width:80, batch:3, editor:"text" },
-            { id:"CE", header:"Дата", width:90, batch:3, editor:"text" },
+            { id:"CD", header:"Упаковка", width:80, editor:"text" },
+            { id:"CE", header:"Дата", width:90,  editor:"text" },
 
 
 
@@ -431,7 +450,7 @@ export default class StartView extends JetView{
             // var state = webix.storage.local.get("treetable_state");
             // if (state)
             //   this.setState(state);
-            this.openAll();
+            //this.openAll();
           },
           scroll: true,
           // url: function(){

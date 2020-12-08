@@ -264,9 +264,12 @@ export default class OrderSewingView extends JetView{
               header:[ "Дата Шв.", { content:"selectFilter" }, "" ],
               width:80,
               editor:"date",
-              format:webix.Date.dateToStr("%d.%m.%y"),
+              //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1,
-              hidden: false
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_sewing));
+              }
             },
             { id:"BP", header:[ "Шв.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
@@ -369,7 +372,7 @@ export default class OrderSewingView extends JetView{
             //   }
             //   //row:"A"
             // },
-            $sort:{ by:"AE", dir:"asc", as: "date" },
+            $sort:{ by:"date_sewing", dir:"asc", as: "date" },
 
 
             $init:function(item) {
@@ -385,7 +388,7 @@ export default class OrderSewingView extends JetView{
             // var state = webix.storage.local.get("treetable_state");
             // if (state)
             //   this.setState(state);
-            this.openAll();
+            //this.openAll();
           },
           scroll: true,
           // url: function(){
@@ -500,7 +503,7 @@ export default class OrderSewingView extends JetView{
   }
 
   doClickOpenAll() {
-    let table = this.$$("d-table");
+    let table = this.$$("sewing-table");
     if (table.getOpenItems().length >0 ) {
       table.closeAll();
     } else {
