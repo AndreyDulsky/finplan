@@ -254,20 +254,20 @@ export default class OrderSewingView extends JetView{
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
-                if (obj.W == 1) {
+                if (obj.BP == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return obj.W;
+                return obj.BP;
               }
             },
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "black", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
-                if (obj.W == 1) {
+                if (obj.BA == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return obj.W;
+                return obj.BA;
               }
             },
             { id:"V", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ],

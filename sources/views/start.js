@@ -72,6 +72,7 @@ webix.Date.monthEnd = function(obj){
 }
 
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
+var parserDate = webix.Date.strToDate("%Y-%m-%d")
 
 export default class StartView extends JetView{
 
@@ -104,7 +105,7 @@ export default class StartView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.monthStart(new Date())
+                  value: webix.Date.yearStart(new Date())
                 },
                 {
                   view:"datepicker",
@@ -168,7 +169,7 @@ export default class StartView extends JetView{
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
               template:function(obj, common){
 
-                if (obj.$level == 1) return common.treetable(obj, common) + formatDate(obj.AE);
+                if (obj.$level == 1) return common.treetable(obj, common) + formatDate(obj.date_obivka);
                 return obj.A;
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
@@ -227,12 +228,16 @@ export default class StartView extends JetView{
             //{ id:"T", header:"T", width:100 },
             // { id:"U", header:"U", width:100 },
             {
-              id:"AE",
+              id:"date_obivka",
               header:[ "Дата Об.", { content:"selectFilter" }, "" ],
               width:80,
               editor:"date",
-              format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:1
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_obivka));
+              }
+
             },
             { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
@@ -256,20 +261,20 @@ export default class StartView extends JetView{
               "css": {"color": "black", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
-                if (obj.W == 1) {
+                if (obj.BP == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return obj.W;
+                return obj.BP;
               }
             },
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "black", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
-                if (obj.W == 1) {
+                if (obj.BA == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return obj.W;
+                return obj.BA;
               }
             },
             { id:"V", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ],
@@ -324,7 +329,7 @@ export default class StartView extends JetView{
           save: "api->accounting/orders",
           scheme:{
             $group:{
-              by:"AE", // 'company' is the name of a data property
+              by:"date_obivka", // 'company' is the name of a data property
               map:{
                 G:["G","median"],
                 V:["V","median"],
