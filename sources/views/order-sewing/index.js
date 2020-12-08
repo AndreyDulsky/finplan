@@ -35,6 +35,7 @@ webix.ui.datafilter.totalColumn = webix.extend({
     var result = 0, _val;
     master.data.each(function (obj) {
       if (obj.$group) return;
+
       _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
       if (!isNaN(_val)) result = result+_val;
     });
@@ -84,6 +85,7 @@ webix.Date.monthEnd = function(obj){
 }
 
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
+var parserDate = webix.Date.strToDate("%Y-%m-%d");
 
 export default class OrderSewingView extends JetView{
 
@@ -236,12 +238,16 @@ export default class OrderSewingView extends JetView{
             //{ id:"T", header:"T", width:100 },
             // { id:"U", header:"U", width:100 },
             {
-              id:"AE",
+              id:"date_obivka",
               header:[ "Дата Об.", { content:"selectFilter" }, "" ],
               width:80,
               editor:"date",
-              format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:1
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_obivka));
+              }
+
             },
             { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "black", "text-align": "center",  "font-weight": 500},

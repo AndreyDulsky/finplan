@@ -30,11 +30,25 @@ webix.GroupMethods.median = function(prop, data){
   });
 };
 
+webix.GroupMethods.countValue = function(prop, data){
+  if (!data.length) return 0;
+  var count = 0;
+  for (var i = data.length - 1; i >= 0; i--) {
+
+    if (data[i].$level == 1 ) {
+      let per =parseInt(prop(data[i]));
+      if (!isNaN(per)) count = count+1;
+    }
+  }
+  return count;
+};
+
 webix.ui.datafilter.totalColumn = webix.extend({
   refresh: function (master, node, value) {
     var result = 0, _val;
     master.data.each(function (obj) {
       if (obj.$group) return;
+
       _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
       if (!isNaN(_val)) result = result+_val;
     });
@@ -43,6 +57,30 @@ webix.ui.datafilter.totalColumn = webix.extend({
       groupSize:3,
       decimalDelimiter:".",
       decimalSize:2
+    })
+    if (value.format)
+      result = value.format(result);
+    if (value.template)
+      result = value.template({ value: result });
+    node.firstChild.style.textAlign = "right";
+    node.firstChild.innerHTML = result;
+  }
+}, webix.ui.datafilter.summColumn);
+
+webix.ui.datafilter.totalColumnCount = webix.extend({
+  refresh: function (master, node, value) {
+    var result = 0, _val;
+    master.data.each(function (obj) {
+      if (obj.$group) return;
+
+      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
+      if (!isNaN(_val)) result = result+1;
+    });
+    result = webix.i18n.numberFormat(result,{
+      groupDelimiter:",",
+      groupSize:3,
+      decimalDelimiter:".",
+      decimalSize:0
     })
     if (value.format)
       result = value.format(result);
@@ -84,7 +122,7 @@ webix.Date.monthEnd = function(obj){
 }
 
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
-var parserDate = webix.Date.strToDate("%Y-%m-%d")
+var parserDate = webix.Date.strToDate("%Y-%m-%d");
 
 export default class StartView extends JetView{
 
@@ -221,7 +259,10 @@ export default class StartView extends JetView{
 
             },
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
-            { id:"J", header:[ "Размер", { content:"selectFilter" }, "" ], width:70, batch:2, editor:"text" },
+            { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
+              width:70,
+              "css": {"text-align": "center"},
+              batch:1, editor:"text" },
             { id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
             { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, editor:"text" },
@@ -350,6 +391,7 @@ export default class StartView extends JetView{
                 AB:["AB","median"],
                 AG:["AG","median"],
                 AJ:["AJ","median"],
+                J:["J","countValue"],
 
 
                 //state:["grouped","string"],
