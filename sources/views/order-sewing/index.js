@@ -250,7 +250,7 @@ export default class OrderSewingView extends JetView{
                 if (obj.W == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return obj.W;
+                return  (obj.W === null) ? "" : obj.W;
               }
             },
             {
@@ -269,7 +269,7 @@ export default class OrderSewingView extends JetView{
                 if (obj.BP == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return obj.BP;
+                return  (obj.BP === null) ? "" : obj.BP;
               }
             },
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
@@ -279,7 +279,7 @@ export default class OrderSewingView extends JetView{
                 if (obj.BA == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return obj.BA;
+                return  (obj.BA === null) ? "" : obj.BA;
               }
             },
             { id:"V", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ],
