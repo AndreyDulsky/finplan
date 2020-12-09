@@ -227,7 +227,7 @@ export default class OrderCutView extends JetView{
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
               template:function(obj, common){
 
-                if (obj.$level == 1) return common.treetable(obj, common) + obj.BX;
+                if (obj.$level == 1) return common.treetable(obj, common) + formatDate(obj.date_cut);
                 return obj.A;
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
@@ -283,7 +283,20 @@ export default class OrderCutView extends JetView{
               width:125,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
-            { id:"BX", header:[ "Дата Крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text" },
+
+            {
+              id:"date_cut",
+              header:[ "Дата Крой", { content:"selectFilter" }, "" ],
+              width:100,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_cut));
+              }
+            },
+
             { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
@@ -413,7 +426,7 @@ export default class OrderCutView extends JetView{
           save: "api->accounting/orders",
           scheme:{
             $group:{
-              by:"BX", // 'company' is the name of a data property
+              by:"date_cut", // 'company' is the name of a data property
               map:{
                 G:["G","median"],
                 V:["V","median"],
@@ -446,7 +459,7 @@ export default class OrderCutView extends JetView{
             //   }
             //   //row:"A"
             // },
-            $sort:{ by:"BX", dir:"asc", as: "date" },
+            $sort:{ by:"date_cut", dir:"asc", as: "date" },
 
 
             $init:function(item) {
@@ -527,8 +540,8 @@ export default class OrderCutView extends JetView{
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
       "per-page": "500",
-      sort: '[{"property":"BX","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"BX":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      sort: '[{"property":"date_cut","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"date_cut":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
@@ -546,8 +559,8 @@ export default class OrderCutView extends JetView{
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
         "per-page": "500",
-        sort: '[{"property":"BX","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"BX":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        sort: '[{"property":"date_cut","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"date_cut":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
       webix.ajax().get(tableUrl).then(function(data){
@@ -564,8 +577,8 @@ export default class OrderCutView extends JetView{
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
         "per-page": "500",
-        sort: '[{"property":"BX","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"BX":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        sort: '[{"property":"date_cut","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"date_cut":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
 
