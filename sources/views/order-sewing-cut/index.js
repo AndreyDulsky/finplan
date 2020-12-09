@@ -343,7 +343,7 @@ export default class OrderSewingCutView extends JetView{
                 return  (obj.BA === null) ? "" : obj.BA;
               }
             },
-            { id:"coef_sewing", header:[ "Коэф. шв. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"coef_sewing_cut", header:[ "Коэф. шв. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
               width:110,
               "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
             },
@@ -405,7 +405,7 @@ export default class OrderSewingCutView extends JetView{
                 AB:["AB","median"],
                 AG:["AG","median"],
                 AJ:["AJ","median"],
-                coef_sewing:["coef_sewing", "median" ],
+                coef_sewing_cut:["coef_sewing_cut", "median" ],
 
 
                 //state:["grouped","string"],
