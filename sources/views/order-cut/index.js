@@ -163,7 +163,7 @@ export default class OrderCutView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.monthStart(new Date())
+                  value: webix.Date.weekStart(new Date())
                 },
                 {
                   view:"datepicker",

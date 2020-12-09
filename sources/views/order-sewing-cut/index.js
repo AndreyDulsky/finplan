@@ -151,7 +151,7 @@ export default class OrderSewingCutView extends JetView{
       rows:[
         {
           cols:[
-            {"view": "label", width: 200, height:30, template: "План Швейка", css: { 'font-size':'17px', 'padding': '10px 0px 10px 15px', 'font-weight': 600}},
+            {"view": "label", width: 200, height:30, template: "План Пошив+Крой", css: { 'font-size':'17px', 'padding': '10px 0px 10px 15px', 'font-weight': 600}},
             {
 
               cols: [
@@ -163,7 +163,7 @@ export default class OrderSewingCutView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.monthStart(new Date())
+                  value: webix.Date.weekStart(new Date())
                 },
                 {
                   view:"datepicker",
