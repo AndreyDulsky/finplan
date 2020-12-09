@@ -139,7 +139,7 @@ webix.Date.monthEnd = function(obj){
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
 var parserDate = webix.Date.strToDate("%Y-%m-%d");
 
-export default class OrderSewingView extends JetView{
+export default class OrderCutView extends JetView{
 
 
 
@@ -227,7 +227,7 @@ export default class OrderSewingView extends JetView{
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
               template:function(obj, common){
 
-                if (obj.$level == 1) return common.treetable(obj, common) + formatDate(obj.date_sewing);
+                if (obj.$level == 1) return common.treetable(obj, common) + obj.BX;
                 return obj.A;
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
@@ -279,34 +279,22 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "right",  "font-weight": 500}, batch:1
 
             },
-            { id:"CH", header:[ "Коэф. пош. план", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"CI", header:[ "Коэф. крой. план", { content:"textFilter" }, { content:"totalColumn" } ],
               width:125,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
-            {
-              id:"date_sewing",
-              header:[ "Дата Пош.", { content:"selectFilter" }, "" ],
-              width:90,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:1,
-              hidden: false,
-              template: function(obj) {
-                return formatDate(parserDate(obj.date_sewing));
-              }
-            },
-            { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+            { id:"BX", header:[ "Дата Крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text" },
+            { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
-                if (obj.BP == 1) {
+                if (obj.BW == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return  (obj.BP === null) ? "" : obj.BP;
+                return  (obj.BW === null) ? "" : obj.BW;
               }
             },
-
-            { id:"coef_sewing", header:[ "Коэф. Пош. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"coef_cut", header:[ "Коэф. Крой гот.", { content:"textFilter" }, { content:"totalColumn" } ],
               width:120,
               "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
             },
@@ -341,15 +329,26 @@ export default class OrderSewingView extends JetView{
                 return  (obj.W === null) ? "" : obj.W;
               }
             },
-            { id:"BX", header:[ "Дата Крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text" },
-            { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+            {
+              id:"date_sewing",
+              header:[ "Дата Пош.", { content:"selectFilter" }, "" ],
+              width:90,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_sewing));
+              }
+            },
+            { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
-                if (obj.BW == 1) {
+                if (obj.BP == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return  (obj.BW === null) ? "" : obj.BW;
+                return  (obj.BP === null) ? "" : obj.BP;
               }
             },
 
@@ -414,7 +413,7 @@ export default class OrderSewingView extends JetView{
           save: "api->accounting/orders",
           scheme:{
             $group:{
-              by:"date_sewing", // 'company' is the name of a data property
+              by:"BX", // 'company' is the name of a data property
               map:{
                 G:["G","median"],
                 V:["V","median"],
@@ -422,8 +421,8 @@ export default class OrderSewingView extends JetView{
                 AA:["AA","median"],
                 AB:["AB","median"],
                 AG:["AG","median"],
-                CH:["CH","median"],
-                coef_sewing:["coef_sewing", "median" ],
+                CI:["CI","median"],
+                coef_cut:["coef_cut", "median" ],
 
 
                 //state:["grouped","string"],
@@ -447,7 +446,7 @@ export default class OrderSewingView extends JetView{
             //   }
             //   //row:"A"
             // },
-            $sort:{ by:"date_sewing", dir:"asc", as: "date" },
+            $sort:{ by:"BX", dir:"asc", as: "date" },
 
 
             $init:function(item) {
@@ -528,8 +527,8 @@ export default class OrderSewingView extends JetView{
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
       "per-page": "500",
-      sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      sort: '[{"property":"BX","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"BX":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
@@ -547,8 +546,8 @@ export default class OrderSewingView extends JetView{
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
         "per-page": "500",
-        sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        sort: '[{"property":"BX","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"BX":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
       webix.ajax().get(tableUrl).then(function(data){
@@ -565,8 +564,8 @@ export default class OrderSewingView extends JetView{
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
         "per-page": "500",
-        sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        sort: '[{"property":"BX","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"BX":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
 

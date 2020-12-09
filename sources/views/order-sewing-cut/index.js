@@ -139,7 +139,7 @@ webix.Date.monthEnd = function(obj){
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
 var parserDate = webix.Date.strToDate("%Y-%m-%d");
 
-export default class OrderSewingView extends JetView{
+export default class OrderSewingCutView extends JetView{
 
 
 
@@ -151,7 +151,7 @@ export default class OrderSewingView extends JetView{
       rows:[
         {
           cols:[
-            {"view": "label", width: 200, height:30, template: "План Крой", css: { 'font-size':'17px', 'padding': '10px 0px 10px 15px', 'font-weight': 600}},
+            {"view": "label", width: 200, height:30, template: "План Швейка", css: { 'font-size':'17px', 'padding': '10px 0px 10px 15px', 'font-weight': 600}},
             {
 
               cols: [
@@ -239,18 +239,17 @@ export default class OrderSewingView extends JetView{
               ] },
             { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, editor:"text"},
-            { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text", batch:2  },
-            { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:150, editor:"text", batch:2 },
+            { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text"  },
+            { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:150, editor:"text" },
             { id:"G",
               width:90,
               header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
-              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text",  batch:2
+              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text"
               //footer: {content: "summColumn", css: {"text-align": "right"}}
 
             },
-            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
             { id:"coefMoney", header:[ "Коэф. ден. план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:120,
+              width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
               template: function(obj) {
                 let per =  parseFloat(obj.G.replace(",",""));
@@ -262,55 +261,16 @@ export default class OrderSewingView extends JetView{
               }
             },
 
-            {
-              id:"date_obivka",
-              header:[ "Дата Об.", { content:"selectFilter" }, "" ],
-              width:80,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:1,
-              template: function(obj) {
-                return formatDate(parserDate(obj.date_obivka));
-              }
-
-            },
-            { id:"AA", header:[ "Коэф. об. план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:120,
+            { id:"AA", header:[ "Коэф. вр. план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1
 
             },
-            { id:"CH", header:[ "Коэф. пош. план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:125,
+            { id:"AJ", header:[ "Коэф. шв.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
-            {
-              id:"date_sewing",
-              header:[ "Дата Пош.", { content:"selectFilter" }, "" ],
-              width:90,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:1,
-              hidden: false,
-              template: function(obj) {
-                return formatDate(parserDate(obj.date_sewing));
-              }
-            },
-            { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 500},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.BP == 1) {
-                  return '<i class="mdi mdi-check"></i>';
-                }
-                return  (obj.BP === null) ? "" : obj.BP;
-              }
-            },
-
-            { id:"coef_sewing", header:[ "Коэф. Пош. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:120,
-              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
-            },
-
+            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
             { id:"J", header:[ "Размер", { content:"selectFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
@@ -329,10 +289,20 @@ export default class OrderSewingView extends JetView{
             { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:70, batch:2, editor:"text" },
             //{ id:"T", header:"T", width:100 },
             // { id:"U", header:"U", width:100 },
+            {
+              id:"date_obivka",
+              header:[ "Дата Об.", { content:"selectFilter" }, "" ],
+              width:80,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_obivka));
+              }
 
-            { id:"W", header:[ "Статус Об.", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text",
+            },
+            { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "black", "text-align": "center",  "font-weight": 500},
-              batch:2,
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.W == 1) {
@@ -341,18 +311,28 @@ export default class OrderSewingView extends JetView{
                 return  (obj.W === null) ? "" : obj.W;
               }
             },
-            { id:"BX", header:[ "Дата Крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text" },
-            { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+            {
+              id:"date_sewing",
+              header:[ "Дата Шв.", { content:"selectFilter" }, "" ],
+              width:80,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_sewing));
+              }
+            },
+            { id:"BP", header:[ "Шв.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
-                if (obj.BW == 1) {
+                if (obj.BP == 1) {
                   return '<i class="mdi mdi-check"></i>';
                 }
-                return  (obj.BW === null) ? "" : obj.BW;
+                return  (obj.BP === null) ? "" : obj.BP;
               }
             },
-
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "black", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
@@ -363,11 +343,13 @@ export default class OrderSewingView extends JetView{
                 return  (obj.BA === null) ? "" : obj.BA;
               }
             },
-
+            { id:"coef_sewing", header:[ "Коэф. шв. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:110,
+              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
+            },
             { id:"V", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
-              "css": {"color": "green", "text-align": "right",  "font-weight": 500},
-              batch:2
+              "css": {"color": "green", "text-align": "right",  "font-weight": 500}
             },
             { id:"AO", header:[ "Коэф. ден.", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
@@ -381,7 +363,7 @@ export default class OrderSewingView extends JetView{
             { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text", batch:2 },
             { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
-              "css": {"text-align": "right",  "font-weight": 500}, batch:2,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
 
             //{ id:"Z", header:"Обивка изг.", width:100, batch:3 },
@@ -401,10 +383,10 @@ export default class OrderSewingView extends JetView{
             { id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
             { id:"BO", header:"Пошив", width:115 , batch:1, editor:"text"},
             //{ id:"BP", header:"Статус", width:60, batch:3 },
-            //{ id:"BQ", header:"Дата", width:90, batch:1, editor:"text" },
+            { id:"BQ", header:"Дата", width:90, batch:1, editor:"text" },
             { id:"BV", header:"Крой", width:115 , batch:1, editor:"text"},
-            //{ id:"BW", header:"Статус", width:60, batch:1, editor:"text" },
-            //{ id:"BX", header:"Дата", width:90, batch:1, editor:"text" },
+            { id:"BW", header:"Статус", width:60, batch:1, editor:"text" },
+            { id:"BX", header:"Дата", width:90, batch:1, editor:"text" },
             { id:"CD", header:"Упаковка", width:80, batch:3, editor:"text" },
             { id:"CE", header:"Дата", width:90, batch:3, editor:"text" },
 
@@ -422,7 +404,7 @@ export default class OrderSewingView extends JetView{
                 AA:["AA","median"],
                 AB:["AB","median"],
                 AG:["AG","median"],
-                CH:["CH","median"],
+                AJ:["AJ","median"],
                 coef_sewing:["coef_sewing", "median" ],
 
 
