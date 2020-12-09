@@ -224,6 +224,9 @@ export default class StartView extends JetView{
           editable:true,
           visibleBatch:1,
           editaction: "dblclick",
+          dragColumn:true,
+          sort:"multi",
+          headermenu:true,
           columns:[
 
             // {

@@ -11,6 +11,7 @@ webix.GroupMethods.median = function(prop, data){
         //debugger;
 
         //per = parseFloat(per);
+        if (per !== null) per = per.replace(".",",");
         per = webix.Number.parse(per, {
           decimalSize: 2, groupSize: 3,
           decimalDelimiter: ",", groupDelimiter: ""
@@ -30,20 +31,71 @@ webix.GroupMethods.median = function(prop, data){
   });
 };
 
+webix.GroupMethods.countValue = function(prop, data){
+  if (!data.length) return 0;
+  var count = 0;
+  for (var i = data.length - 1; i >= 0; i--) {
+
+    if (data[i].$level == 1 ) {
+      let per =parseInt(prop(data[i]));
+      if (!isNaN(per)) count = count+1;
+    }
+  }
+  return count;
+};
+
 webix.ui.datafilter.totalColumn = webix.extend({
   refresh: function (master, node, value) {
     var result = 0, _val;
     master.data.each(function (obj) {
       if (obj.$group) return;
 
-      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
+
+      _val = obj[value.columnId];
+      if (value.columnId == 'coefMoney') {
+        _val = obj.G/7860;
+      }
+      if (_val !== null) {
+        if (_val!= 0) {
+          _val = _val.toString().replace(".",",");
+        }
+        _val = webix.Number.parse(_val, {
+          decimalSize: 2, groupSize: 3,
+          decimalDelimiter: ",", groupDelimiter: ""
+        });
+      }
+      _val =  parseFloat(_val);
       if (!isNaN(_val)) result = result+_val;
+    });
+    result = webix.i18n.numberFormat(result,{
+      groupDelimiter:"`",
+      groupSize:3,
+      decimalDelimiter:",",
+      decimalSize:2
+    })
+    if (value.format)
+      result = value.format(result);
+    if (value.template)
+      result = value.template({ value: result });
+    node.firstChild.style.textAlign = "right";
+    node.firstChild.innerHTML = result;
+  }
+}, webix.ui.datafilter.summColumn);
+
+webix.ui.datafilter.totalColumnCount = webix.extend({
+  refresh: function (master, node, value) {
+    var result = 0, _val;
+    master.data.each(function (obj) {
+      if (obj.$group) return;
+
+      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
+      if (!isNaN(_val)) result = result+1;
     });
     result = webix.i18n.numberFormat(result,{
       groupDelimiter:",",
       groupSize:3,
       decimalDelimiter:".",
-      decimalSize:2
+      decimalSize:0
     })
     if (value.format)
       result = value.format(result);
@@ -291,6 +343,10 @@ export default class OrderSewingView extends JetView{
                 return  (obj.BA === null) ? "" : obj.BA;
               }
             },
+            { id:"coef_sewing", header:[ "Коэф. шв. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:110,
+              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
+            },
             { id:"V", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
               "css": {"color": "green", "text-align": "right",  "font-weight": 500}
@@ -349,6 +405,7 @@ export default class OrderSewingView extends JetView{
                 AB:["AB","median"],
                 AG:["AG","median"],
                 AJ:["AJ","median"],
+                coef_sewing:["coef_sewing", "median" ],
 
 
                 //state:["grouped","string"],
