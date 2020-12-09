@@ -341,6 +341,8 @@ export default class StartView extends JetView{
                 return  (obj.BP === null) ? "" : obj.BP;
               }
             },
+            { id:"date_carpenter", header:[ "Дата Ст.", { content:"selectFilter" }, "" ], width:90, batch:1 , editor:"date",
+              format:webix.Date.dateToStr("%d.%m.%y"),},
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "black", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
@@ -388,7 +390,7 @@ export default class StartView extends JetView{
             { id:"AW", header:"Дата", width:90, batch:3 , editor:"text"},
             { id:"AZ", header:"Столярка", width:115 , batch:3, editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
-            { id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
+            //{ id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
             { id:"BO", header:"Пошив", width:115 , batch:1, editor:"text"},
             //{ id:"BP", header:"Статус", width:60, batch:3 },
             { id:"BQ", header:[ "Дата", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },

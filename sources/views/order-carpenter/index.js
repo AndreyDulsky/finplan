@@ -412,7 +412,7 @@ export default class OrderCarPenterView extends JetView{
           save: "api->accounting/orders",
           scheme:{
             $group:{
-              by:"date_cut", // 'company' is the name of a data property
+              by:"date_carpenter", // 'company' is the name of a data property
               map:{
                 G:["G","median"],
                 V:["V","median"],
