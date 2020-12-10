@@ -458,14 +458,6 @@ export default class StartView extends JetView{
             //this.openAll();
           },
           scroll: true,
-          // url: function(){
-          //
-          //   return webix.ajax(url).then(function(data) {
-          //     return  data.json().items;
-          //   });
-          //
-          //
-          // },
 
           on: {
             "onColumnResize" : function() {
@@ -481,13 +473,16 @@ export default class StartView extends JetView{
               this.hideOverlay();
             },
             onBeforeDrop:function(context, e){
-              //debugger;
+              debugger;
               //this.getItem(context.start).$css = ' highlight-blue';
+              let record = this.getItem(context.start);
+              let recordSource = this.getItem(context.parent);
               // for(let i=0;i< context.source.length; i++) {
               //   this.select(context.source[i]);
               // }
-              //this.select(context.source.join(","));
-              //this.refresh(context.start);
+              // this.select(context.source.join(","));
+              // this.refresh(context.start);
+              scope.beforeDropChangeData(record, recordSource.value);
               //return false; //block the default behavior of event (cancels dropping)
             }
           }
@@ -580,5 +575,18 @@ export default class StartView extends JetView{
 
   showBatch(newv){
     this.$$("start-table").showColumnBatch(newv);
+  }
+
+  beforeDropChangeData(record, dateObivka) {
+
+    let data = {'AE':dateObivka};
+    let tableUrl = this.app.config.apiRest.getUrl('put',"accounting/orders", {}, record.id);
+    record.date_obivka = dateObivka;
+    record.AE = formatDate(dateObivka);
+
+    webix.ajax().put(tableUrl, data).then(function(data){
+      webix.message('Данные сохранены!');
+    });
+
   }
 }

@@ -1,4 +1,5 @@
 import {JetView} from "webix-jet";
+import "components/searchClose";
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -57,6 +58,8 @@ webix.Date.monthEnd = function(obj){
   return obj;
 }
 
+let formatDate = webix.Date.dateToStr("%d.%m.%y");
+
 export default class OrdersView extends JetView{
 
 
@@ -104,11 +107,12 @@ export default class OrdersView extends JetView{
               click: function() { scope.doClickOpenAll() }
 
             },
-            { view:"select",  value:2, labelWidth:100, options:[
+            { view:"select",  value:3, labelWidth:100, options:[
+
                 { id:3, value:"На складе" },
                 { id:4, value:"Отгруженные" },
                 { id:1, value:"В заказах" },
-                { id:6, value:"В обработке" },
+                { id:6, value:"В обработке" }
               ],
               width: 200,
               localId: "select-type"
@@ -125,6 +129,7 @@ export default class OrdersView extends JetView{
                 }
               }
             },
+            { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
           ]
         },
         /*wjet::Settings*/
@@ -142,6 +147,10 @@ export default class OrdersView extends JetView{
           editable:true,
           visibleBatch:2,
           scroll: true,
+          save: "api->accounting/orders",
+          editaction: "dblclick",
+          clipboard:"selection",
+          select:"cell",
           columns:[
 
             {
@@ -163,18 +172,20 @@ export default class OrdersView extends JetView{
             },
             {
               id:"date_shipment", header:[ "Дата отгр.", { content:"dateFilter" },"" ],	width:100,
-              "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "date"
+              "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "date",
+              format:webix.Date.dateToStr("%d.%m.%y")
             },
 
-            { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:80, batch:2, sort: "int" },
+            { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:80, batch:2, sort: "int", editor:"text" },
             { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2,  sort: "date" },
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, sort: "date"},
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, sort: "string" },
-            { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:200, batch:2, sort: "string" },
+            { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:200, batch:2, sort: "string", editor:"text" },
             { id:"G",
               width:90,
               header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
-              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, sort: "int"
+              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, sort: "int",
+              editor:"text"
               //footer: {content: "summColumn", css: {"text-align": "right"}}
 
             },
@@ -243,12 +254,13 @@ export default class OrdersView extends JetView{
     let dateFromValue = format(this.$$("dateFrom").getValue());
     let dateToValue = format(this.$$("dateTo").getValue());
     let selectTypeValue = selectType.getValue();
+    let form = this.$$("form-search");
 
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
       "per-page": "500",
       sort: '[{"property":"B","direction":"DESC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"B":'+selectTypeValue+'}',
+      filter: '{"B":"'+selectTypeValue+'"}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
@@ -308,6 +320,34 @@ export default class OrdersView extends JetView{
       });
       webix.ajax().get(tableUrl).then(function(data){
         table.clearAll();
+        table.parse(data.json().items);
+      });
+
+    });
+
+    form.attachEvent("onChange", function(obj){
+
+      //let filter = {'A':form.getValue()};
+
+      let filter = {'B':selectTypeValue};
+
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
+        "per-page": "500",
+        sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]'
+      });
+      if (form.getValue() != "") {
+        filter = {'A':form.getValue()};
+      }
+      let objFilter = { filter: filter };
+      webix.extend(table, webix.ProgressBar);
+
+      table.clearAll(true);
+      table.showProgress({
+        delay:2000,
+        hide:false
+      });
+
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/orders'), objFilter).then(function(data) {
         table.parse(data.json().items);
       });
 
