@@ -489,14 +489,10 @@ export default class OrderSewingView extends JetView{
               this.hideOverlay();
             },
             onBeforeDrop:function(context, e){
-              //debugger;
-              //this.getItem(context.start).$css = ' highlight-blue';
-              // for(let i=0;i< context.source.length; i++) {
-              //   this.select(context.source[i]);
-              // }
-              //this.select(context.source.join(","));
-              //this.refresh(context.start);
-              //return false; //block the default behavior of event (cancels dropping)
+              let record = this.getItem(context.start);
+              let recordSource = this.getItem(context.parent);
+              scope.beforeDropChangeData(record, recordSource.value);
+
             }
           }
 
@@ -588,5 +584,17 @@ export default class OrderSewingView extends JetView{
 
   showBatch(newv){
     this.$$("sewing-table").showColumnBatch(newv);
+  }
+
+  beforeDropChangeData(record, date) {
+
+    let data = {'date_sewing':date};
+    let tableUrl = this.app.config.apiRest.getUrl('put',"accounting/orders", {}, record.id);
+    record.date_sewing = date;
+
+    webix.ajax().put(tableUrl, data).then(function(data){
+      webix.message('Данные сохранены!');
+    });
+
   }
 }

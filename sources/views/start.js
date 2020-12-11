@@ -372,9 +372,17 @@ export default class StartView extends JetView{
               width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
-            { id:"AJ", header:[ "Коэф. шв.", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:100,
+            { id:"AJ", header:[ "Коэф. шв+крой", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:120,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"coef_sewing", header:[ "Коэф. Пош. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:120,
+              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
+            },
+            { id:"coef_cut", header:[ "Коэф. Крой гот.", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:120,
+              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
             },
             //{ id:"Z", header:"Обивка изг.", width:100, batch:3 },
             //{ id:"W", header:"Статус", width:100, batch:3 },
@@ -416,6 +424,8 @@ export default class StartView extends JetView{
                 AG:["AG","median"],
                 AJ:["AJ","median"],
                 J:["J","countValue"],
+                coef_sewing:["coef_sewing", "median" ],
+                coef_cut:["coef_cut", "median" ],
 
 
                 //state:["grouped","string"],
@@ -473,17 +483,10 @@ export default class StartView extends JetView{
               this.hideOverlay();
             },
             onBeforeDrop:function(context, e){
-              debugger;
-              //this.getItem(context.start).$css = ' highlight-blue';
               let record = this.getItem(context.start);
               let recordSource = this.getItem(context.parent);
-              // for(let i=0;i< context.source.length; i++) {
-              //   this.select(context.source[i]);
-              // }
-              // this.select(context.source.join(","));
-              // this.refresh(context.start);
               scope.beforeDropChangeData(record, recordSource.value);
-              //return false; //block the default behavior of event (cancels dropping)
+
             }
           }
 
