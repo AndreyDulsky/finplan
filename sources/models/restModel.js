@@ -8,7 +8,7 @@ export class ApiRest {
       this.urlBase = "http://admin.startsell.biz/api";
     }
     this.authKeyName = 'auth_token';
-    this.authKey = '7110eda4d09e062aa5e4a390b0a572ac0d2c02206';
+    this.authKey = '7110eda4d09e062aa5e4a390b0a572ac0d2c022066';
     this.dataCollection = {};
   }
 

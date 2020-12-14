@@ -166,7 +166,7 @@ export default class OrdersView extends JetView{
             //
             // },
             {
-              id:"AE", header:[ "Дата произ.", { content:"dateFilter" },"" ],	width:100,
+              id:"date_obivka", header:[ "Дата произ.", { content:"dateFilter" },"" ],	width:100,
               "css": {"color": "black", "text-align": "right", "font-weight": 500},
               sort: "date"
             },
@@ -204,7 +204,7 @@ export default class OrdersView extends JetView{
             { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:70, batch:2 },
           ],
           scheme:{
-            $sort:{ by:"A", dir:"asc", as: "int" },
+            $sort:{ by:"B", dir:"desc", as: "int" },
             $init:function(item) {
               if (item.B == 4)
                 item.$css = "highlight";
@@ -255,16 +255,19 @@ export default class OrdersView extends JetView{
     let dateToValue = format(this.$$("dateTo").getValue());
     let selectTypeValue = selectType.getValue();
     let form = this.$$("form-search");
-
+    let filter =  {filter:{"B": {"in":[selectTypeValue]}}};
+    if (selectTypeValue == 4) {
+      filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+    }
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
       "per-page": "500",
       sort: '[{"property":"B","direction":"DESC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"B":"'+selectTypeValue+'"}',
+      //filter: '{"B":"'+selectTypeValue+'"}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
-    webix.ajax().get(tableUrl).then(function(data){
+    webix.ajax().get(tableUrl, filter).then(function(data){
       table.clearAll();
       table.parse(data.json().items);
     });
@@ -274,14 +277,18 @@ export default class OrdersView extends JetView{
       dateFromValue = format(dateFrom.getValue());
       dateToValue = format(dateTo.getValue());
       selectTypeValue = selectType.getValue();
+      let filter =  {filter:{"B": {"in":[selectTypeValue]}}};
 
+      if (selectTypeValue == 4) {
+        filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+      }
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
         "per-page": "500",
-        sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"B":'+selectTypeValue+'}',
+        sort: '[{"property":"date_shipment","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        //filter: '{"B":'+selectTypeValue+'}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
-      webix.ajax().get(tableUrl).then(function(data){
+      webix.ajax().get(tableUrl, filter).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
       });
@@ -312,13 +319,26 @@ export default class OrdersView extends JetView{
       dateToValue = format(dateTo.getValue());
       selectTypeValue = selectType.getValue();
 
+      let filter =  {filter:{"B": {"in":[selectTypeValue]}}};
+
+      if (selectTypeValue == 4) {
+        //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+        filter = {
+          filter: {
+            "or":[
+              {"B": {"in":[3,1]}},
+              {"date_shipment":{">=":dateFromValue}, "B":4}
+            ]
+          }
+        };
+      }
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
-        "per-page": "500",
-        sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"B":'+selectTypeValue+'}',
+        "per-page": "1000",
+        sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        //filter: '{"B":'+selectTypeValue+'}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
-      webix.ajax().get(tableUrl).then(function(data){
+      webix.ajax().get(tableUrl, filter).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
       });
