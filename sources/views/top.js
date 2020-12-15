@@ -58,6 +58,7 @@ export default class TopView extends JetView{
 						badge:12,
 						popup: {
 								view: 'contextmenu',
+                scroll: true,
 								data: [
 										{ value: 'Profile', href: '#profile' },
 										{ value: 'Settings', href: '#settings' },

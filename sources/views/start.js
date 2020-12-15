@@ -145,6 +145,7 @@ export default class StartView extends JetView{
 
 	config(){
     let scope = this;
+    let configColumns = [];
     let url = this.app.config.apiRest.getUrl('get',"accounting/orders",
       {
         "per-page": "500",
@@ -185,6 +186,7 @@ export default class StartView extends JetView{
 
               ]
             },
+
             {
               view:"toggle",
               type:"icon",
@@ -205,6 +207,36 @@ export default class StartView extends JetView{
                   scope.showBatch(newv);
                 }
               }
+            },
+            {
+              view:"icon",
+              //type:"icon",
+              icon: 'mdi mdi-settings',
+              autowidth:true,
+              popup: {
+                view: 'contextmenu',
+                scroll: 'y',
+                width: 200,
+                height: 550,
+                autoheight:false,
+                localId: 'columns-setting',
+                data: [
+                  { value: 'Profile', href: '#profile' },
+                  { value: 'Settings', href: '#settings' },
+                  { value: 'Dummy' },
+                  { id: 'logout', value: 'Logout' },
+                ],
+                $init: function() {
+                  scope.loadColumnsSetting(this, null);
+                },
+                on: {
+
+                  onMenuItemClick(id) {
+                    scope.columnSettingClick(this, id);
+                  }
+                }
+              }
+
             },
           ]
         },
@@ -227,6 +259,7 @@ export default class StartView extends JetView{
           dragColumn:true,
           sort:"multi",
           headermenu:true,
+          //autoConfig:true,
           columns:[
 
             // {
@@ -462,17 +495,27 @@ export default class StartView extends JetView{
             }
           },
           ready:function(){
-            // var state = webix.storage.local.get("treetable_state");
-            // if (state)
-            //   this.setState(state);
+            scope.configColumns = JSON.parse(JSON.stringify(this.config.columns));
+            let state = webix.storage.local.get("start-table");
+            if (state)
+              this.setState(state);
             //this.openAll();
           },
           scroll: true,
 
           on: {
             "onColumnResize" : function() {
-              //webix.storage.local.put("treetable_state", this.getState());
+
+              webix.storage.local.put("start-table", this.getState());
             },
+            "onAfterColumnDrop" : function() {
+              webix.storage.local.put("start-table", this.getState());
+
+            },
+            "onAfterColumnShow" : function() {
+              //webix.storage.local.put("start-table", this.getState());
+            },
+
             "onresize":webix.once(function(){
               this.adjustRowHeight("T", true);
             }),
@@ -591,5 +634,53 @@ export default class StartView extends JetView{
       webix.message('Данные сохранены!');
     });
 
+  }
+
+  loadColumnsSetting(columnsSetting, id) {
+    //let columnsSetting = this.$$('columns-setting');
+    //debugger;
+    let menu = [];
+    let iconEyeSlash = 'wxi-eye-slash';
+    let iconEye = 'wxi-eye';
+    let icon;
+
+    this.configColumns.forEach((element, index) => {
+      icon = iconEyeSlash;
+      if(this.$$("start-table").isColumnVisible(element.id)) {
+        icon = iconEye;
+      }
+
+      if (element.id == id) {
+        debugger;
+        columnsSetting.data[index].icon = 'webix_icon webix_list_icon '+icon;
+        //this.configColumns[index].icon = 'webix_icon webix_list_icon '+icon;
+        columnsSetting.updatItem(id);
+      }
+
+      menu.push({'value' : element.header[0].text, id: element.id, 'icon':'webix_icon webix_list_icon '+icon});
+    });
+
+    columnsSetting.data = menu;
+
+    //columnsSetting.refresh();
+  }
+
+  columnSettingClick(scope, id) {
+    let iconEyeSlash = 'webix_icon webix_list_icon wxi-eye-slash';
+    let iconEye = 'webix_icon webix_list_icon wxi-eye';
+    let icon = iconEye;
+
+    let grid = this.$$("start-table");
+    if(grid.isColumnVisible(id))
+      grid.hideColumn(id, {spans:false});
+    else
+      grid.showColumn(id, {spans:false});
+
+    if(scope.getItem(id).icon == iconEye) {
+      icon = iconEyeSlash;
+    }
+    scope.getItem(id).icon = icon;
+    scope.updateItem(id);
+    webix.storage.local.put("start-table", grid.getState());
   }
 }
