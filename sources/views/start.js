@@ -433,7 +433,7 @@ export default class StartView extends JetView{
             { id:"AW", header:"Дата пор. цар.", width:90, batch:3 , editor:"text"},
             { id:"AZ", header:"Столярка ФИО", width:115 , batch:3, editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
-            //{ id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
+            { id:"BB", header:"Дата ст.", width:90, batch:3 , editor:"text"},
             { id:"BO", header:"Пошив ФИО", width:115 , batch:1, editor:"text"},
             //{ id:"BP", header:"Статус", width:60, batch:3 },
             { id:"BQ", header:[ "Дата пош.", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },
