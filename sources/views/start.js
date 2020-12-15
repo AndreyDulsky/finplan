@@ -286,7 +286,7 @@ export default class StartView extends JetView{
             { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:150, editor:"text" },
             { id:"G",
               width:90,
-              header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
+              header:[ "Сумма план", { content:"textFilter" }, { content:"totalColumn" }],
               "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text"
               //footer: {content: "summColumn", css: {"text-align": "right"}}
 
@@ -317,9 +317,11 @@ export default class StartView extends JetView{
               width:70,
               "css": {"text-align": "center"},
               batch:1, editor:"text" },
-            { id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
+            { id:"H", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
             { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, editor:"text" },
+            { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:70,  editor:"text" },
+
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
               editor:"popup",
               template:function(obj, common){
@@ -386,7 +388,7 @@ export default class StartView extends JetView{
                 return  (obj.BA === null) ? "" : obj.BA;
               }
             },
-            { id:"V", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"V", header:[ "Сумма факт", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
               "css": {"color": "green", "text-align": "right",  "font-weight": 500}
             },
@@ -398,7 +400,7 @@ export default class StartView extends JetView{
             },
             { id:"AB", header:[ "Коэф. вр.", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+              "css": {"color": "green","text-align": "right",  "font-weight": 500}, batch:1,
             },
             { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" },
             { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, { content:"totalColumn" } ],
@@ -421,25 +423,25 @@ export default class StartView extends JetView{
             //{ id:"W", header:"Статус", width:100, batch:3 },
             //{ id:"AH", header:"Дата", width:100, batch:3 },
             { id:"AK", header:"Обивка царги", width:110, batch:3, editor:"text" },
-            { id:"AL", header:"Статус", width:60, batch:3, editor:"text" },
-            { id:"AM", header:"Дата", width:90, batch:3, editor:"text" },
-            { id:"AP", header:"Паралон изг.", width:110, batch:3, editor:"text" },
-            { id:"AQ", header:"Статус", width:60, batch:3, editor:"text" },
-            { id:"AR", header:"Дата", width:90, batch:3 , editor:"text"},
-            { id:"AU", header:"Паралон царги", width:115 , batch:3, editor:"text"},
-            { id:"AV", header:"Статус", width:60, batch:3 , editor:"text"},
-            { id:"AW", header:"Дата", width:90, batch:3 , editor:"text"},
-            { id:"AZ", header:"Столярка", width:115 , batch:3, editor:"text"},
+            { id:"AL", header:"Статус царги", width:60, batch:3, editor:"text" },
+            { id:"AM", header:"Дата царги", width:90, batch:3, editor:"text" },
+            { id:"AP", header:"Поралон изг.", width:110, batch:3, editor:"text" },
+            { id:"AQ", header:"Статус пар. изг.", width:60, batch:3, editor:"text" },
+            { id:"AR", header:"Дата пор. изг.", width:90, batch:3 , editor:"text"},
+            { id:"AU", header:"Поралон царги", width:115 , batch:3, editor:"text"},
+            { id:"AV", header:"Статус пор. цар.", width:60, batch:3 , editor:"text"},
+            { id:"AW", header:"Дата пор. цар.", width:90, batch:3 , editor:"text"},
+            { id:"AZ", header:"Столярка ФИО", width:115 , batch:3, editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
             //{ id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
-            { id:"BO", header:"Пошив", width:115 , batch:1, editor:"text"},
+            { id:"BO", header:"Пошив ФИО", width:115 , batch:1, editor:"text"},
             //{ id:"BP", header:"Статус", width:60, batch:3 },
-            { id:"BQ", header:[ "Дата", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },
-            { id:"BV", header:"Крой", width:115 , batch:3, editor:"text"},
-            { id:"BW", header:"Статус", width:60, batch:3, editor:"text" },
-            { id:"BX", header:"Дата", width:90, batch:3, editor:"text" },
+            { id:"BQ", header:[ "Дата пош.", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },
+            { id:"BV", header:"Крой ФИО", width:115 , batch:3, editor:"text"},
+            { id:"BW", header:"Статус крой", width:60, batch:3, editor:"text" },
+            { id:"BX", header:"Дата крой", width:90, batch:3, editor:"text" },
             { id:"CD", header:"Упаковка", width:80, editor:"text" },
-            { id:"CE", header:"Дата", width:90,  editor:"text" },
+            { id:"CE", header:"Дата уп.", width:90,  editor:"text" },
 
 
 
