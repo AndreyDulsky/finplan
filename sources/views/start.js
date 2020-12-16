@@ -270,16 +270,15 @@ export default class StartView extends JetView{
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
               template:function(obj, common){
 
-                if (obj.$level == 1) return common.treetable(obj, common) + formatDate(obj.date_obivka);
+                if (obj.$level==1) return common.treetable(obj, common) + formatDate(obj.value);
+                //if (obj.$level == 2) return common.treetable(obj, common) + obj.A;
+                //if (obj.$group) return common.treetable(obj,common) + (obj.value || obj.item);
                 return obj.A;
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
             },
 
-            { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:70, batch:2, editor:"select",
-              options:[{"id": 1, "value": "1"}, {"id": 3, "value": "3"}, {"id": 4, "value": "4"},
-                {"id": 5, "value": "5"}, {"id": 6, "value": "6"}
-              ] },
+
             { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, editor:"text"},
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text"  },
@@ -349,11 +348,11 @@ export default class StartView extends JetView{
 
             },
             { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 500},
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.W == 1) {
-                  return '<i class="mdi mdi-check"></i>';
+                  return '<i class="mdi mdi-marker-check"></i>';
                 }
                 return  (obj.W === null) ? "" : obj.W;
               }
@@ -367,11 +366,11 @@ export default class StartView extends JetView{
               batch:1
             },
             { id:"BP", header:[ "Шв.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "black", "text-align": "center",  "font-weight": 500},
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BP == 1) {
-                  return '<i class="mdi mdi-check"></i>';
+                  return '<i class="mdi mdi-check-circle"></i>';
                 }
                 return  (obj.BP === null) ? "" : obj.BP;
               }
@@ -379,15 +378,85 @@ export default class StartView extends JetView{
             { id:"date_carpenter", header:[ "Дата Ст.", { content:"selectFilter" }, "" ], width:90, batch:1 , editor:"date",
               format:webix.Date.dateToStr("%d.%m.%y"),},
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "black", "text-align": "center",  "font-weight": 500},
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BA == 1) {
-                  return '<i class="mdi mdi-check"></i>';
+                  return '<i class="mdi mdi-check-circle"></i>';
                 }
                 return  (obj.BA === null) ? "" : obj.BA;
               }
             },
+            {
+              id:"date_cut",
+              header:[ "Дата Крой", { content:"selectFilter" }, "" ],
+              width:100,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_cut));
+              }
+            },
+
+            { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.BW == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.BW === null) ? "" : obj.BW;
+              }
+            },
+            {
+              id:"date_packaging",
+              header:[ "Дата Уп", { content:"selectFilter" }, "" ],
+              width:100,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_packaging));
+              }
+            },
+
+            { id:"CD", header:[ "Упаковка", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.CD == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.CD === null) ? "" : obj.CD;
+              }
+            },
+
+            {
+              id:"date_shipment",
+              header:[ "Дата отгр.", { content:"selectFilter" }, "" ],
+              width:100,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_shipment));
+              }
+            },
+
+            { id:"B", header:[ "Отгрузка", { content:"selectFilter" }, "" ], width:100,  editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.B == 4) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.B === null) ? "" : obj.B;
+              }
+            },
+
             { id:"V", header:[ "Сумма факт", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
               "css": {"color": "green", "text-align": "right",  "font-weight": 500}
@@ -415,7 +484,7 @@ export default class StartView extends JetView{
               width:120,
               "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
             },
-            { id:"coef_cut", header:[ "Коэф. Крой гот.", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"coef_cut", header:[ "Коэф. Крой. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
               width:120,
               "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
             },
@@ -431,17 +500,20 @@ export default class StartView extends JetView{
             { id:"AU", header:"Поралон царги", width:115 , batch:3, editor:"text"},
             { id:"AV", header:"Статус пор. цар.", width:60, batch:3 , editor:"text"},
             { id:"AW", header:"Дата пор. цар.", width:90, batch:3 , editor:"text"},
-            { id:"AZ", header:"Столярка ФИО", width:115 , editor:"text"},
+            { id:"AZ", header:[ "Столярка ФИО", { content:"selectFilter" }, "" ],  width:115 , editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
-            { id:"BB", header:"Дата ст.", width:90 , editor:"text"},
-            { id:"BO", header:"Пошив ФИО", width:115 , batch:1, editor:"text"},
+            { id:"BB", header:[ "Дата ст.", { content:"selectFilter" }, "" ], width:90 , editor:"text"},
+            { id:"BO", header:[ "Пошив ФИО", { content:"selectFilter" }, "" ],  width:115 , batch:1, editor:"text"},
             //{ id:"BP", header:"Статус", width:60, batch:3 },
+
             { id:"BQ", header:[ "Дата пош.", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },
-            { id:"BV", header:"Крой ФИО", width:115 , batch:3, editor:"text"},
-            { id:"BW", header:"Статус крой", width:60, batch:3, editor:"text" },
-            { id:"BX", header:"Дата крой", width:90, batch:3, editor:"text" },
-            { id:"CD", header:"Упаковка", width:80, editor:"text" },
-            { id:"CE", header:"Дата уп.", width:90,  editor:"text" },
+            { id:"BV", header:[ "Крой ФИО", { content:"selectFilter" }, "" ], width:115 ,  editor:"text"},
+            //{ id:"BW", header:"Статус крой", width:60,  editor:"text" },
+            { id:"BX", header:[ "Дата крой", { content:"selectFilter" }, "" ], width:90,  editor:"text" },
+            { id:"CI", header:[ "Коэф. крой. план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:125,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            }
 
 
 
@@ -449,7 +521,7 @@ export default class StartView extends JetView{
           save: "api->accounting/orders",
           scheme:{
             $group:{
-              by:"date_obivka", // 'company' is the name of a data property
+              by:function(obj){ return obj.date_obivka}, // 'company' is the name of a data property
               map:{
                 G:["G","median"],
                 V:["V","median"],
@@ -461,10 +533,12 @@ export default class StartView extends JetView{
                 J:["J","countValue"],
                 coef_sewing:["coef_sewing", "median" ],
                 coef_cut:["coef_cut", "median" ],
+                value:["date_obivka"],
+                A:["A"],
 
 
                 //state:["grouped","string"],
-                missing:false
+                //missing:false
               },
                // footer:{
                //   W:["W", "sum"],
@@ -474,16 +548,8 @@ export default class StartView extends JetView{
 
               //row:"A"
             },
-            // $group:{
-            //   by:"A", // 'company' is the name of a data property
-            //   map:{
-            //     A:["A","sum"],
-            //     V:["V","sum"],
-            //     F:["F"],
-            //     state:["grouped","string"]
-            //   }
-            //   //row:"A"
-            // },
+
+
             $sort:{ by:"AE", dir:"asc", as: "date" },
 
 
@@ -589,6 +655,46 @@ export default class StartView extends JetView{
       webix.ajax().get(tableUrl).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
+        // table.group({
+        //   by:"A",
+        //   map:{
+        //     value:["A"],
+        //     date_obivka:["date_obivka"],
+        //     G:["G","median"],
+        //     V:["V","median"],
+        //     AO:["AO","median"],
+        //     AA:["AA","median"],
+        //     AB:["AB","median"],
+        //     AG:["AG","median"],
+        //     AJ:["AJ","median"],
+        //     J:["J","countValue"],
+        //     coef_sewing:["coef_sewing", "median" ],
+        //     coef_cut:["coef_cut", "median" ],
+        //   }
+        // });
+        // table.group({
+        //   by:"date_obivka", // 'company' is the name of a data property
+        //   map:{
+        //     G:["G","median"],
+        //     V:["V","median"],
+        //     AO:["AO","median"],
+        //     AA:["AA","median"],
+        //     AB:["AB","median"],
+        //     AG:["AG","median"],
+        //     AJ:["AJ","median"],
+        //     J:["J","countValue"],
+        //     coef_sewing:["coef_sewing", "median" ],
+        //     coef_cut:["coef_cut", "median" ],
+        //     value:["date_obivka"],
+        //     A:["A"],
+        //
+        //
+        //     //state:["grouped","string"],
+        //     //missing:false
+        //   },
+        // },0);
+
+
       });
 
     });
