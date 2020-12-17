@@ -269,6 +269,7 @@ export default class StartView extends JetView{
 
             {
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
+
               tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
               template:function(obj, common){
 
@@ -402,7 +403,7 @@ export default class StartView extends JetView{
               }
             },
 
-            { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+            { id:"BW", header:[ "Крой", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
               template: function(obj) {
                 if (obj.$group) return "";
@@ -425,7 +426,7 @@ export default class StartView extends JetView{
               }
             },
 
-            { id:"CD", header:[ "Упаковка", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+            { id:"CD", header:[ "Уп.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
               template: function(obj) {
                 if (obj.$group) return "";
@@ -448,7 +449,7 @@ export default class StartView extends JetView{
               }
             },
 
-            { id:"B", header:[ "Отгрузка", { content:"selectFilter" }, "" ], width:100,  editor:"text",
+            { id:"B", header:[ "Отг.", { content:"selectFilter" }, "" ], width:50,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
               template: function(obj) {
                 if (obj.$group) return "";
