@@ -269,7 +269,7 @@ export default class StartView extends JetView{
 
             {
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
-              tooltip:"#F#<br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
+              tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
               template:function(obj, common){
 
                 if (obj.$level==1) return common.treetable(obj, common) + formatDate(obj.value);
