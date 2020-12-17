@@ -260,6 +260,7 @@ export default class StartView extends JetView{
           sort:"multi",
           headermenu:true,
           //autoConfig:true,
+          tooltip:true,
           columns:[
 
             // {
@@ -268,6 +269,7 @@ export default class StartView extends JetView{
 
             {
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
+              tooltip:"#F#<br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
               template:function(obj, common){
 
                 if (obj.$level==1) return common.treetable(obj, common) + formatDate(obj.value);
@@ -759,7 +761,6 @@ export default class StartView extends JetView{
       }
 
       if (element.id == id) {
-        debugger;
         columnsSetting.data[index].icon = 'webix_icon webix_list_icon '+icon;
         //this.configColumns[index].icon = 'webix_icon webix_list_icon '+icon;
         columnsSetting.updatItem(id);
