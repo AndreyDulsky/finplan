@@ -41,6 +41,31 @@ webix.ui.datafilter.totalColumn = webix.extend({
   }
 }, webix.ui.datafilter.summColumn);
 
+
+webix.ui.datafilter.totalColumnCount = webix.extend({
+  refresh: function (master, node, value) {
+    var result = 0, _val;
+    master.data.each(function (obj) {
+      if (obj.$group) return;
+
+      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
+      if (!isNaN(_val)) result = result+1;
+    });
+    result = webix.i18n.numberFormat(result,{
+      groupDelimiter:",",
+      groupSize:3,
+      decimalDelimiter:".",
+      decimalSize:0
+    })
+    if (value.format)
+      result = value.format(result);
+    if (value.template)
+      result = value.template({ value: result });
+    node.firstChild.style.textAlign = "right";
+    node.firstChild.innerHTML = result;
+  }
+}, webix.ui.datafilter.summColumn);
+
 webix.editors.$popup.text = {
   view:"popup",
   body:{
@@ -79,10 +104,10 @@ export default class OrdersView extends JetView{
                 {
                   view:"datepicker",
                   localId: 'dateFrom',
-                  inputWidth:150,
-                  label: 'с',
-                  labelWidth:30,
-                  width:160,
+                  inputWidth:220,
+                  label: 'Дата отгрузки',
+                  labelWidth:100,
+                  width:230,
                   value: webix.Date.monthStart(new Date())
                 },
                 {
@@ -104,17 +129,18 @@ export default class OrdersView extends JetView{
               icon: 'mdi mdi-file-tree',
               autowidth:true,
               value :true,
+              hidden: true,
               click: function() { scope.doClickOpenAll() }
 
             },
-            { view:"select",  value:3, labelWidth:100, options:[
-
-                { id:3, value:"На складе" },
+            { view:"select",  value:4, labelWidth:100, options:[
                 { id:4, value:"Отгруженные" },
+                { id:3, value:"На складе" },
                 { id:1, value:"В заказах" },
                 { id:6, value:"В обработке" }
               ],
               width: 200,
+              hidden: true,
               localId: "select-type"
             },
             { view:"select",  value:2, labelWidth:100, options:[
@@ -123,6 +149,7 @@ export default class OrdersView extends JetView{
                 { id:3, value:"Выработка" }
               ],
               width: 200,
+              hidden: true,
               on:{
                 onChange:function(newv){
                   scope.showBatch(newv);
@@ -151,11 +178,13 @@ export default class OrdersView extends JetView{
           editaction: "dblclick",
           clipboard:"selection",
           select:"cell",
+          tooltip:true,
           columns:[
 
             {
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ], hidden: false,
-              "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "int"
+              "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "int",
+              tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
             },
             // {
             //   id:"AE", header:"Дата", width:120,
@@ -167,12 +196,13 @@ export default class OrdersView extends JetView{
             // },
             {
               id:"date_obivka", header:[ "Дата произ.", { content:"dateFilter" },"" ],	width:100,
-              "css": {"color": "black", "text-align": "right", "font-weight": 500},
-              sort: "date"
+              "css": {"color": "black", "text-align": "right", "font-weight": 100},
+              sort: "date",
+              format:webix.Date.dateToStr("%d.%m.%y")
             },
             {
               id:"date_shipment", header:[ "Дата отгр.", { content:"dateFilter" },"" ],	width:100,
-              "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "date",
+              "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "date", editor:"date",
               format:webix.Date.dateToStr("%d.%m.%y")
             },
 
@@ -189,11 +219,12 @@ export default class OrdersView extends JetView{
               //footer: {content: "summColumn", css: {"text-align": "right"}}
 
             },
-            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200 },
-            { id:"J", header:[ "Размер", { content:"selectFilter" }, "" ], width:70, batch:2 },
-            { id:"K", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:90, batch:2 },
-            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150 },
-            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2 },
+            { id:"H", header:[ "Дата гот.", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
+            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,  editor:"text" },
+            { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" }  ], width:70, batch:2, editor:"text" },
+            { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
+            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150,  editor:"text" },
+            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
               editor:"popup",
               template:function(obj, common){
@@ -201,7 +232,7 @@ export default class OrdersView extends JetView{
                 return obj.N+" "+obj.O+" "+obj.P+" "+obj.Q+" "+obj.R+" "+obj.T;
               }
             },
-            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:70, batch:2 },
+            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:70, batch:2,  editor:"text" },
           ],
           scheme:{
             $sort:{ by:"B", dir:"desc", as: "int" },
@@ -257,12 +288,20 @@ export default class OrdersView extends JetView{
     let form = this.$$("form-search");
     let filter =  {filter:{"B": {"in":[selectTypeValue]}}};
     if (selectTypeValue == 4) {
-      filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+      //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+      filter = {
+        filter: {
+          "or":[
+            {"B": {"in":[3,1,2,5,6]}},
+            {"date_shipment":{">=":dateFromValue}, "B":4}
+          ]
+        }
+      };
     }
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
-      "per-page": "500",
-      sort: '[{"property":"B","direction":"DESC"}, {"property":"index","direction":"ASC"}]',
+      "per-page": "1200",
+      sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
       //filter: '{"B":"'+selectTypeValue+'"}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
@@ -280,13 +319,22 @@ export default class OrdersView extends JetView{
       let filter =  {filter:{"B": {"in":[selectTypeValue]}}};
 
       if (selectTypeValue == 4) {
-        filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+        //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+        filter = {
+          filter: {
+            "or":[
+              {"B": {"in":[3,1,2,5,6]}},
+              {"date_shipment":{">=":dateFromValue}, "B":4}
+            ]
+          }
+        };
       }
+
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
-        "per-page": "500",
-        sort: '[{"property":"date_shipment","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        //filter: '{"B":'+selectTypeValue+'}',
-        //filter: '{"AE":{">=":"01.02.20"}}'
+        "per-page": "1200",
+        sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
+        //filter: '{"B":"'+selectTypeValue+'"}',
+        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
       });
       webix.ajax().get(tableUrl, filter).then(function(data){
         table.clearAll();
@@ -301,14 +349,26 @@ export default class OrdersView extends JetView{
       dateToValue = format(dateTo.getValue());
       selectTypeValue = selectType.getValue();
 
-      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
-        "per-page": "500",
-        sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"B":'+selectTypeValue+'}',
-        //filter: '{"AE":{">=":"01.02.20"}}'
+      if (selectTypeValue == 4) {
+        //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+        filter = {
+          filter: {
+            "or":[
+              {"B": {"in":[3,1,2,5,6]}},
+              {"date_shipment":{">=":dateFromValue}, "B":4}
+            ]
+          }
+        };
+      }
+
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
+        "per-page": "1200",
+        sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
+        //filter: '{"B":"'+selectTypeValue+'"}',
+        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
       });
 
-      webix.ajax().get(tableUrl).then(function(data){
+      webix.ajax().get(tableUrl, filter).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
       });
@@ -326,14 +386,14 @@ export default class OrdersView extends JetView{
         filter = {
           filter: {
             "or":[
-              {"B": {"in":[3,1]}},
+              {"B": {"in":[3,1,2,5,6]}},
               {"date_shipment":{">=":dateFromValue}, "B":4}
             ]
           }
         };
       }
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
-        "per-page": "1000",
+        "per-page": "1200",
         sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         //filter: '{"B":'+selectTypeValue+'}',
         //filter: '{"AE":{">=":"01.02.20"}}'
@@ -349,12 +409,24 @@ export default class OrdersView extends JetView{
 
       //let filter = {'A':form.getValue()};
 
-      let filter = {'B':selectTypeValue};
+      if (selectTypeValue == 4) {
+        //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+        filter = {
+          "or":[
+            {"B": {"in":[3,1,2,5,6]}},
+            {"date_shipment":{">=":dateFromValue}, "B":4}
+          ]
+        };
+      }
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
-        "per-page": "500",
-        sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]'
+        "per-page": "1200",
+        sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
+        //filter: '{"B":"'+selectTypeValue+'"}',
+        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
       });
+
+
       if (form.getValue() != "") {
         filter = {'A':form.getValue()};
       }
@@ -367,7 +439,7 @@ export default class OrdersView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/orders'), objFilter).then(function(data) {
+      webix.ajax().get( tableUrl, objFilter).then(function(data) {
         table.parse(data.json().items);
       });
 
