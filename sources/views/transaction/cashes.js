@@ -134,8 +134,8 @@ export default class CashesView extends JetView {
                     { "view": "label", height:50, css: { 'font-size':'22px', 'padding': '5px 0px 10px 15px', 'font-weight': 700}, template:"<div>Операции</div>", borderless: true, width:130},
                     {
                       "label": "Добавить",
-                      //"type":"icon",
-                      //"icon":"mdi wxi-plus",
+                      "type":"icon",
+                      "icon":"mdi mdi-plus",
                       "view": "button",
                       "height": 50,
                       "css": "webix_primary",

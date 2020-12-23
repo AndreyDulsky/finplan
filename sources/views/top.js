@@ -97,6 +97,7 @@ export default class TopView extends JetView{
 				{ value:"Производство", icon:"mdi mdi-view-dashboard",
           data: [
             { value:"План производства", id:"start", icon:"mdi mdi-circle-outline" },
+            { value:"План результат", id:"order-result", icon:"mdi mdi-circle-outline" },
             { value:"План столярка", id:"order-carpenter", icon:"mdi mdi-circle-outline" },
             { value:"План швейка+крой", id:"order-sewing-cut", icon:"mdi mdi-circle-outline" },
             { value:"План швейка", id:"order-sewing", icon:"mdi mdi-circle-outline" },
@@ -108,7 +109,12 @@ export default class TopView extends JetView{
         { value:"Проводки", id:"register",  icon:"mdi mdi-account" },
 
 				{ value:"Справочники",  icon:"mdi mdi-cube",
-					data: [{ value:"Контрагенты", id:"contragents-directory",  icon:"mdi mdi-circle-outline" }]
+					data: [
+					  { value:"Контрагенты", id:"contragents-directory",  icon:"mdi mdi-circle-outline" },
+            { value:"Ставки по выработке", id:"product-work-salary", icon:"mdi mdi-circle-outline" },
+            { value:"Продукция", id:"products-bed", icon:"mdi mdi-circle-outline" },
+            { value:"Ткани", id:"cloth-directory", icon:"mdi mdi-circle-outline" }
+          ]
 				},
         { value:"Отчеты",  icon:"mdi mdi-chart-bar",
           data: [

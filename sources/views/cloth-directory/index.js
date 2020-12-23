@@ -5,7 +5,7 @@ import "components/comboDateClose";
 import "components/searchClose";
 
 
-export default class ContragentsDirectoryView extends JetView{
+export default class ProductsBedView extends JetView{
   config(){
     return {
       localId: "layout",
@@ -22,7 +22,7 @@ export default class ContragentsDirectoryView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Контрагенты",
+                  "label": "Ткани",
                   "width": 150
                 },
 
@@ -33,7 +33,7 @@ export default class ContragentsDirectoryView extends JetView{
                   value:"fs",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("contragent-table");
+                    webix.fullscreen.set("cloth-table");
                   }
                 },
               ]
@@ -59,8 +59,8 @@ export default class ContragentsDirectoryView extends JetView{
             },
             {
               view: "datatable",
-              localId: "contragent-table",
-              urlEdit: 'contragent',
+              localId: "cloth-table",
+              urlEdit: 'cloth',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
@@ -73,13 +73,12 @@ export default class ContragentsDirectoryView extends JetView{
 
               columns:[
                 { id:"id", header:"#",	width:50 },
-                { id:"name", header:"Наиименование", width: 380, sort: "string" },
-                { id:"account", header:"Счет",	width:100 },
-                { id:"external_id", header:"Экспорт ID" },
-                { id:"category_in_id", header:"Родитель" },
-                { id:"bank", header:"Банк" },
-                { id:"mfo", header:"МФО" },
-                { id:"okpo", header:"ОКПО" },
+                { id:"provider", header:"Поставщик", width: 120, edit: 'text' },
+                //{ id:"full_name", header:"Наиименование", width: 380,  },
+                { id:"name", header:"Название", width: 120,  edit: 'text' },
+                { id:"color", header:"Цвет", width: 120,  edit: 'text' },
+                { id:"price", header:"Цена", width: 120, edit: 'text' },
+                { id:"category", header:"Категория", width: 120,  edit: 'text' },
                 {
                   "id": "action-delete",
                   "header": "",
@@ -88,12 +87,11 @@ export default class ContragentsDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/contragents"),//"api->accounting/contragents",
-              save: "api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/cloths", {'sort':'provider,name,color'}),//"api->accounting/contragents",
+              save: "api->accounting/cloths",
               // scheme: {
-              //   $sort:{ by:"name", dir:"asc" },
-              //
-              // },
+              //    $sort:{ by:"name", dir:"asc" },
+              //  },
 
               on:{
                 onItemClick:function(id, e, trg) {
@@ -138,7 +136,7 @@ export default class ContragentsDirectoryView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("contragent-table");
+    let table = this.$$("cloth-table");
     //table.markSorting("name", "asc");
     let scope = this;
     // table.attachEvent("onDataRequest", function (start, count) {
@@ -171,7 +169,7 @@ export default class ContragentsDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/contragents', {"expand":"contragent,category,project,account,data"}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/cloths'), objFilter).then(function(data) {
         table.parse(data);
       });
 
@@ -187,8 +185,8 @@ export default class ContragentsDirectoryView extends JetView{
   }
 
   doAddClick() {
-    this.$$('contragent-table').unselect();
-    this.cashEdit.showForm(this.$$('contragent-table'));
+    this.$$('cloth-table').unselect();
+    this.cashEdit.showForm(this.$$('cloth-table'));
   }
 
 }

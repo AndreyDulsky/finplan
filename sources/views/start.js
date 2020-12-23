@@ -211,7 +211,7 @@ export default class StartView extends JetView{
             {
               view:"icon",
               //type:"icon",
-              icon: 'mdi mdi-settings',
+              icon: 'mdi mdi-tools',
               autowidth:true,
               popup: {
                 view: 'contextmenu',

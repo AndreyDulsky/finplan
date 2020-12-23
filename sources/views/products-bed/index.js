@@ -5,7 +5,7 @@ import "components/comboDateClose";
 import "components/searchClose";
 
 
-export default class ContragentsDirectoryView extends JetView{
+export default class ProductsBedView extends JetView{
   config(){
     return {
       localId: "layout",
@@ -22,7 +22,7 @@ export default class ContragentsDirectoryView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Контрагенты",
+                  "label": "Продукция",
                   "width": 150
                 },
 
@@ -33,7 +33,7 @@ export default class ContragentsDirectoryView extends JetView{
                   value:"fs",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("contragent-table");
+                    webix.fullscreen.set("product-bed-table");
                   }
                 },
               ]
@@ -59,8 +59,8 @@ export default class ContragentsDirectoryView extends JetView{
             },
             {
               view: "datatable",
-              localId: "contragent-table",
-              urlEdit: 'contragent',
+              localId: "product-bed-table",
+              urlEdit: 'product-bed',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
@@ -73,13 +73,24 @@ export default class ContragentsDirectoryView extends JetView{
 
               columns:[
                 { id:"id", header:"#",	width:50 },
-                { id:"name", header:"Наиименование", width: 380, sort: "string" },
-                { id:"account", header:"Счет",	width:100 },
-                { id:"external_id", header:"Экспорт ID" },
-                { id:"category_in_id", header:"Родитель" },
-                { id:"bank", header:"Банк" },
-                { id:"mfo", header:"МФО" },
-                { id:"okpo", header:"ОКПО" },
+                { id:"name", header:"Наиименование", width: 280, sort: "string" },
+                { id:"name_bitrix", header:"Битрикс", width: 180, sort: "string" },
+                { id:"expense_cloth_120", header:"Рас. тк. 120", width: 120, sort: "string", edit: 'text' },
+                { id:"expense_cloth_140", header:"Рас. тк. 140", width: 120, sort: "string", edit: 'text' },
+                { id:"expense_cloth_160", header:"Рас. тк. 160", width: 120, sort: "string", edit: 'text' },
+                { id:"expense_cloth_180", header:"Рас. тк. 180", width: 120, sort: "string", edit: 'text' },
+                { id:"expense_cloth_200", header:"Рас. тк. 200", width: 120, sort: "string", edit: 'text' },
+
+                { id:"price", header:"Кат. 0",	width:100 },
+                { id:"price_1", header:"Кат. 1" },
+                { id:"price_2", header:"Кат. 2." },
+                { id:"price_3", header:"Кат. 3." },
+                { id:"price_4", header:"Кат. 4",	width:100 },
+                { id:"price_5", header:"Кат. 5",	width:100 },
+                { id:"price_6", header:"Кат. 6",	width:100 },
+
+
+                { id:"price_7", header:"Кат. 7",	width:110 },
                 {
                   "id": "action-delete",
                   "header": "",
@@ -88,12 +99,11 @@ export default class ContragentsDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/contragents"),//"api->accounting/contragents",
-              save: "api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/product-beds", {'sort':'name'}),//"api->accounting/contragents",
+              save: "api->accounting/product-beds",
               // scheme: {
-              //   $sort:{ by:"name", dir:"asc" },
-              //
-              // },
+              //    $sort:{ by:"name", dir:"asc" },
+              //  },
 
               on:{
                 onItemClick:function(id, e, trg) {
@@ -138,7 +148,7 @@ export default class ContragentsDirectoryView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("contragent-table");
+    let table = this.$$("product-bed-table");
     //table.markSorting("name", "asc");
     let scope = this;
     // table.attachEvent("onDataRequest", function (start, count) {
@@ -171,7 +181,7 @@ export default class ContragentsDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/contragents', {"expand":"contragent,category,project,account,data"}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/product-beds'), objFilter).then(function(data) {
         table.parse(data);
       });
 
@@ -187,8 +197,8 @@ export default class ContragentsDirectoryView extends JetView{
   }
 
   doAddClick() {
-    this.$$('contragent-table').unselect();
-    this.cashEdit.showForm(this.$$('contragent-table'));
+    this.$$('product-bed-table').unselect();
+    this.cashEdit.showForm(this.$$('product-bed-table'));
   }
 
 }

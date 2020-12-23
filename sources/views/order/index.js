@@ -293,7 +293,7 @@ export default class OrdersView extends JetView{
         filter: {
           "or":[
             {"B": {"in":[3,1,2,5,6]}},
-            {"date_shipment":{">=":dateFromValue}, "B":4}
+            {"date_shipment":{">=":dateFromValue, '<=':dateToValue}, "B":4}
           ]
         }
       };
@@ -324,7 +324,7 @@ export default class OrdersView extends JetView{
           filter: {
             "or":[
               {"B": {"in":[3,1,2,5,6]}},
-              {"date_shipment":{">=":dateFromValue}, "B":4}
+              {"date_shipment":{">=":dateFromValue, '<=':dateToValue}, "B":4}
             ]
           }
         };
@@ -355,7 +355,7 @@ export default class OrdersView extends JetView{
           filter: {
             "or":[
               {"B": {"in":[3,1,2,5,6]}},
-              {"date_shipment":{">=":dateFromValue}, "B":4}
+              {"date_shipment":{">=":dateFromValue, '<=':dateToValue}, "B":4}
             ]
           }
         };
@@ -387,7 +387,7 @@ export default class OrdersView extends JetView{
           filter: {
             "or":[
               {"B": {"in":[3,1,2,5,6]}},
-              {"date_shipment":{">=":dateFromValue}, "B":4}
+              {"date_shipment":{">=":dateFromValue, '<=':dateToValue}, "B":4}
             ]
           }
         };
@@ -414,7 +414,7 @@ export default class OrdersView extends JetView{
         filter = {
           "or":[
             {"B": {"in":[3,1,2,5,6]}},
-            {"date_shipment":{">=":dateFromValue}, "B":4}
+            {"date_shipment":{">=":dateFromValue, '<=':dateToValue}, "B":4}
           ]
         };
       }

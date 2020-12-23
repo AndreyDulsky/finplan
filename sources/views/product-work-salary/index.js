@@ -5,7 +5,7 @@ import "components/comboDateClose";
 import "components/searchClose";
 
 
-export default class ContragentsDirectoryView extends JetView{
+export default class ProductWorkSalaryView extends JetView{
   config(){
     return {
       localId: "layout",
@@ -22,7 +22,7 @@ export default class ContragentsDirectoryView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Контрагенты",
+                  "label": "Ставки по выработке",
                   "width": 150
                 },
 
@@ -33,7 +33,7 @@ export default class ContragentsDirectoryView extends JetView{
                   value:"fs",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("contragent-table");
+                    webix.fullscreen.set("work-salary-table");
                   }
                 },
               ]
@@ -59,8 +59,8 @@ export default class ContragentsDirectoryView extends JetView{
             },
             {
               view: "datatable",
-              localId: "contragent-table",
-              urlEdit: 'contragent',
+              localId: "work-salary-table",
+              urlEdit: 'product-work-salary',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
@@ -74,12 +74,33 @@ export default class ContragentsDirectoryView extends JetView{
               columns:[
                 { id:"id", header:"#",	width:50 },
                 { id:"name", header:"Наиименование", width: 380, sort: "string" },
-                { id:"account", header:"Счет",	width:100 },
-                { id:"external_id", header:"Экспорт ID" },
-                { id:"category_in_id", header:"Родитель" },
-                { id:"bank", header:"Банк" },
-                { id:"mfo", header:"МФО" },
-                { id:"okpo", header:"ОКПО" },
+                { id:"product_id", header:"product_id", width: 180, sort: "string" },
+                { id:"size", header:"Размер", width: 80, sort: "string" },
+                { id:"expense_cloth", header:"Расход ткани", width: 120, sort: "string", edit: 'text' },
+
+                { id:"coef_time_cut", header:"Коэф. крой",	width:100 },
+                { id:"coef_time_sewing", header:"Коэф. пош." },
+                { id:"coef_time_carpenter", header:"Коэф. стол." },
+                { id:"coef_time_upholstery", header:"Коэф. обив." },
+                { id:"cost_cut", header:"Цена. крой",	width:100 },
+                { id:"cost_sewing", header:"Цена. пош.",	width:100 },
+                { id:"cost_ot", header:"Цена. отст.",	width:100 },
+
+
+                { id:"cost_carcass", header:"Цена ст. цар.",	width:110 },
+                { id:"cost_headboard", header:"Цена ст. изг.",	width:110 },
+                { id:"cost_grinding", header:"Цена ст.  шлиф.",	width:115 },
+
+                { id:"cost_rubber_carcass", header:"Цена пор. цар.",	width:111 },
+                { id:"cost_rubber_headboard", header:"Цена пор. изг.",	width:110 },
+                { id:"cost_upholstery_carcass", header:"Цена об. цар.",	width:110 },
+                { id:"cost_upholstery_headboard", header:"Цена об. изг.",	width:110 },
+                { id:"cost_buttons", header:"Цена пуг.",	width:100 },
+                { id:"cost_matras", header:"Цена мат.",	width:100 },
+
+
+
+
                 {
                   "id": "action-delete",
                   "header": "",
@@ -88,8 +109,8 @@ export default class ContragentsDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/contragents"),//"api->accounting/contragents",
-              save: "api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/product-work-salaries"),//"api->accounting/contragents",
+              save: "api->accounting/product-work-salaries",
               // scheme: {
               //   $sort:{ by:"name", dir:"asc" },
               //
@@ -138,7 +159,7 @@ export default class ContragentsDirectoryView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("contragent-table");
+    let table = this.$$("work-salary-table");
     //table.markSorting("name", "asc");
     let scope = this;
     // table.attachEvent("onDataRequest", function (start, count) {
@@ -171,7 +192,7 @@ export default class ContragentsDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/contragents', {"expand":"contragent,category,project,account,data"}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/product-work-salaries'), objFilter).then(function(data) {
         table.parse(data);
       });
 
@@ -187,8 +208,8 @@ export default class ContragentsDirectoryView extends JetView{
   }
 
   doAddClick() {
-    this.$$('contragent-table').unselect();
-    this.cashEdit.showForm(this.$$('contragent-table'));
+    this.$$('work-salary-table').unselect();
+    this.cashEdit.showForm(this.$$('work-salary-table'));
   }
 
 }
