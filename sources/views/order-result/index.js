@@ -319,20 +319,24 @@ export default class OrderResultView extends JetView{
             //
             // },
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
-            { id:"product_id", header:[ "product_id", { content:"textFilter" }, "" ], width:200, editor:"text"
+            { id:"product_id", header:[ "product_id", { content:"textFilter" }, "" ], width:50, editor:"text"
             },
-            { id:"product", header:[ "Продукт", { content:"textFilter" }, "" ], width:200, editor:"text",
-              "template" : function(data) {
-                return  (data.product && data.product.length != 0) ? data.product.name : '';
-              }
-            },
-            { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
+            // { id:"product", header:[ "Продукт", { content:"textFilter" }, "" ], width:200, editor:"text",
+            //   "template" : function(data) {
+            //     return  (data.product && data.product.length != 0) ? data.product.name : '';
+            //   }
+            // },
+            { id:"size", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
+              width:70,
+              "css": {"text-align": "center"},
+              batch:1, editor:"text" },
+            { id:"J", header:[ "Каркас", { content:"selectFilter" }, { content:"totalColumnCount" } ],
               width:70,
               "css": {"text-align": "center"},
               batch:1, editor:"text" },
             //{ id:"H", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
-            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
-            { id:"cloth_id", header:[ "cloth_id", { content:"textFilter" }, "" ], width:150, editor:"text"},
+            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:200, editor:"text"},
+            { id:"cloth_id", header:[ "cloth_id", { content:"textFilter" }, "" ], width:50, editor:"text"},
             //{ id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, editor:"text" },
             //{ id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:70,  editor:"text" },
 
@@ -465,96 +469,112 @@ export default class OrderResultView extends JetView{
                 return  (obj.B === null) ? "" : obj.B;
               }
             },
-            { id:"expense_cloth", header:[ "Расх. тк.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
-              "css": {"color": "black", "text-align": "center",  "font-weight": 600},
-              "template" : function(data) {
-                return  (data.productWorkSalary) ? data.productWorkSalary.expense_cloth : 0;
-              }
+            { id:"profit", header:[ "Profit", { content:"selectFilter" }, "" ], width:110,  editor:"text",
+              "css": {"color": "green", "text-align": "right",  "font-weight": 600},
             },
-            { id:"cloth_price", header:[ "Цена тк.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
-              "css": {"color": "black", "text-align": "center",  "font-weight": 600},
-              "template" : function(data) {
-                return  (data.cloth) ? data.cloth.price : 0;
-              }
+            { id:"expense", header:[ "Затраты", { content:"selectFilter" }, "" ], width:110,  editor:"text",
+              "css": {"color": "black", "text-align": "right",  "font-weight": 600},
             },
-            { id:"cloth_sum", header:[ "Сумма тк.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
-              "css": {"color": "black", "text-align": "center",  "font-weight": 600},
+            { id:"net_cost", header:[ "Сумма база", { content:"selectFilter" }, "" ], width:110,  editor:"text",
+              "css": {"color": "black", "text-align": "right",  "font-weight": 600},
               "template" : function(data) {
-                return  (data.cloth && data.productWorkSalary) ? webix.Number.format(data.cloth.price*data.productWorkSalary.expense_cloth,{
+                return  (data.productWorkSalary && data.productWorkSalary.net_cost != null) ? webix.Number.format(data.productWorkSalary.net_cost,{
                   decimalDelimiter:".",
                   decimalSize:0
                 }) : 0;
               }
             },
+            { id:"cloth_sum", header:[ "Сумма тк.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
+              "css": {"color": "black", "text-align": "right",  "font-weight": 600},
+              "template" : function(data) {
+                return  (data.cloth && data.productWorkSalary) ? webix.Number.format(data.cloth.price*28.5*data.productWorkSalary.expense_cloth,{
+                  decimalDelimiter:".",
+                  decimalSize:0
+                }) : 0;
+              }
+            },
+            { id:"expense_cloth", header:[ "Расх. тк.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
+              "css": {"color": "black", "text-align": "right",  "font-weight": 200},
+              "template" : function(data) {
+                return  (data.productWorkSalary) ? data.productWorkSalary.expense_cloth : 0;
+              }
+            },
+            { id:"cloth_price", header:[ "Цена тк.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
+              "css": {"color": "black", "text-align": "right",  "font-weight": 200},
+              "template" : function(data) {
+                return  (data.cloth) ? data.cloth.price : 0;
+              }
+            },
+
             { id:"cost_work", header:[ "Стоим. работ", { content:"selectFilter" }, "" ], width:110,  editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 600},
+              "css": {"color": "green", "text-align": "right",  "font-weight": 600},
               "template" : function(data) {
                 return  (data.productWorkSalary) ? data.productWorkSalary.cost_work : 0;
               }
             },
             { id:"cost_cut", header:[ "Раб. крой", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                   return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
               }
             },
             { id:"cost_sewing", header:[ "Раб. пошив", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
               }
             },
             { id:"cost_carcass", header:[ "Раб. ст. цар.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_carcass != null) ? data.productWorkSalary.cost_carcass : '';
               }
             },
             { id:"cost_headboard", header:[ "Раб. ст. изг.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_headboard != null) ? data.productWorkSalary.cost_headboard : '';
               }
             },
             { id:"cost_grinding", header:[ "Раб. ст. шлиф.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_grinding != null) ? data.productWorkSalary.cost_grinding : '';
               }
             },
 
             { id:"cost_rubber_carcass", header:[ "Раб. пор. цар.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_rubber_carcass != null) ? data.productWorkSalary.cost_rubber_carcass : '';
               }
             },
             { id:"cost_rubber_headboard", header:[ "Раб. пор. изг.", { content:"selectFilter" }, "" ], width:110,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_rubber_headboard != null) ? data.productWorkSalary.cost_rubber_headboard : '';
               }
             },
             { id:"cost_upholstery_carcass", header:[ "Раб. об. цар.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_upholstery_carcass != null) ? data.productWorkSalary.cost_upholstery_carcass : '';
               }
             },
             { id:"cost_upholstery_headboard", header:[ "Раб. об. изг.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_upholstery_headboard != null) ? data.productWorkSalary.cost_upholstery_headboard : '';
               }
             },
             { id:"cost_buttons", header:[ "Раб. об. пуг.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_buttons != null) ? data.productWorkSalary.cost_buttons :'';
               }
             },
             { id:"cost_matras", header:[ "Раб. об. мат.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center"},
+              "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
                 return  (data.productWorkSalary && data.productWorkSalary.cost_matras != null) ? data.productWorkSalary.cost_matras : '';
               }
@@ -726,7 +746,7 @@ export default class OrderResultView extends JetView{
     let dateToValue = format(this.$$("dateTo").getValue());
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
-      "expand" : 'productWorkSalary, cloth',
+      "expand" : 'productWorkSalary, cloth, product',
       "per-page": "500",
       sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
       filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
@@ -746,7 +766,7 @@ export default class OrderResultView extends JetView{
       dateToValue = format(dateTo.getValue());
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
-        "expand" : 'productWorkSalary, cloth',
+        "expand" : 'productWorkSalary, cloth, product',
         "per-page": "500",
         sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
@@ -805,7 +825,7 @@ export default class OrderResultView extends JetView{
       dateToValue = format(dateTo.getValue());
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
-        "expand" : 'productWorkSalary, cloth',
+        "expand" : 'productWorkSalary, cloth, product',
         "per-page": "500",
         sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',

@@ -52,9 +52,7 @@ export default class App extends JetApp {
       	if (update.operation === "update")
           return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), update.data);
         if (update.operation === "insert")
-          return webix.ajax().headers({
-            "Content-Type": "application/json"
-          }).post(restObj.getUrl('create',this.source,this.params), update.data);
+          return webix.ajax().post(restObj.getUrl('create',this.source,this.params), update.data);
         if (update.operation === "delete")
           return webix.ajax().del(restObj.getUrl('delete',this.source,this.params, id), update.data);
       }

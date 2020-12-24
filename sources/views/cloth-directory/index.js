@@ -5,7 +5,7 @@ import "components/comboDateClose";
 import "components/searchClose";
 
 
-export default class ProductsBedView extends JetView{
+export default class ClothDirectoryView extends JetView{
   config(){
     return {
       localId: "layout",

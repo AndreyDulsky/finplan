@@ -533,8 +533,8 @@ export default class CashesView extends JetView {
     }
 
     doAddClick() {
-        $$('transaction').unselect();
-        this.cashEdit.showForm($$('transaction'));
+        this.$$('transaction').unselect();
+        this.cashEdit.showForm(this.$$('transaction'));
     }
 
     setTotal(data) {

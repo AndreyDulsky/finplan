@@ -76,6 +76,7 @@ export default class ProductWorkSalaryView extends JetView{
                 { id:"name", header:"Наиименование", width: 380, sort: "string" },
                 { id:"product_id", header:"product_id", width: 180, sort: "string" },
                 { id:"size", header:"Размер", width: 80, sort: "string" },
+                { id:"net_cost", header:"Себ-ть база", width: 120, sort: "string", edit: 'text' },
                 { id:"expense_cloth", header:"Расход ткани", width: 120, sort: "string", edit: 'text' },
 
                 { id:"coef_time_cut", header:"Коэф. крой",	width:100 },
