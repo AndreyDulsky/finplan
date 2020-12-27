@@ -65,11 +65,16 @@ export default class ClothDirectoryView extends JetView{
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
               //rightSplit:2,
-              select: true,
+              select: 'cell',
               //datafetch:100,
               //datathrottle: 500,
               //loadahead:100,
               resizeColumn: { headerOnly:true },
+              editable:true,
+              editaction: "dblclick",
+              clipboard:"selection",
+              multiselect:true,
+              math: true,
 
               columns:[
                 { id:"id", header:"#",	width:50 },
@@ -79,6 +84,9 @@ export default class ClothDirectoryView extends JetView{
                 { id:"color", header:"Цвет", width: 120,  edit: 'text' },
                 { id:"price", header:"Цена", width: 120, edit: 'text' },
                 { id:"category", header:"Категория", width: 120,  edit: 'text' },
+                { id:"qty", header:"К-во", width: 120,  edit: 'text', editor:"text"},
+                { id:"sum", header:"Сумма", width: 120,  edit: 'text',   math:"[$r,price] * [$r,qty]"},
+
                 {
                   "id": "action-delete",
                   "header": "",
@@ -87,7 +95,7 @@ export default class ClothDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/cloths", {'sort':'provider,name,color'}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/cloths", {'sort':'provider+name+color'}),//"api->accounting/contragents",
               save: "api->accounting/cloths",
               // scheme: {
               //    $sort:{ by:"name", dir:"asc" },
@@ -111,7 +119,8 @@ export default class ClothDirectoryView extends JetView{
                       });
                     });
 
-                  } else {
+                  }
+                  if (id.column == 'action-edit') {
                     this.$scope.cashEdit.showForm(this);
                   }
                 },
@@ -159,7 +168,7 @@ export default class ClothDirectoryView extends JetView{
     form.attachEvent("onChange", function(obj){
 
       let filter = {'search':form.getValue()};
-      let objFilter = { filter: filter };
+      let objFilter = { filter: filter, 'sort':'color' };
 
       webix.extend(table, webix.ProgressBar);
 

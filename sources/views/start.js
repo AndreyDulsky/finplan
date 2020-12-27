@@ -148,7 +148,7 @@ export default class StartView extends JetView{
     let configColumns = [];
     let url = this.app.config.apiRest.getUrl('get',"accounting/orders",
       {
-        "per-page": "500",
+        "per-page": "1000",
         sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"AE":{">=":"01.12.20"}}'
         //filter: '{"AE":{">=":"01.02.20"}}'
@@ -246,7 +246,7 @@ export default class StartView extends JetView{
           css:"webix_header_border webix_data_border",
           leftSplit:1,
           //rightSplit:2,
-          select: "row",
+          select: "cell",
           resizeColumn: { headerOnly:true },
           localId: 'start-table',
           //subrow:"#N#",
@@ -261,6 +261,7 @@ export default class StartView extends JetView{
           headermenu:true,
           //autoConfig:true,
           tooltip:true,
+          clipboard:"selection",
           columns:[
 
             // {
@@ -631,7 +632,7 @@ export default class StartView extends JetView{
     let dateToValue = format(this.$$("dateTo").getValue());
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
-      "per-page": "500",
+      "per-page": "1000",
       sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
       filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
@@ -650,7 +651,7 @@ export default class StartView extends JetView{
       dateToValue = format(dateTo.getValue());
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
-        "per-page": "500",
+        "per-page": "1000",
         sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
@@ -708,7 +709,7 @@ export default class StartView extends JetView{
       dateToValue = format(dateTo.getValue());
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
-        "per-page": "500",
+        "per-page": "1000",
         sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'

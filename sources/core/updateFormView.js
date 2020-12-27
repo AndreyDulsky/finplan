@@ -169,9 +169,13 @@ export default class UpdateFormView extends JetView {
     let scope = this;
     let state = this.state;
     let btnSave = this.$$("btn_save");
+    let btnCopy = this.$$("btn_copy");
 
     btnSave.attachEvent("onItemClick", function(newValue) {
       scope.doClickSave();
+    });
+    btnCopy.attachEvent("onItemClick", function(newValue) {
+      scope.doClickSave(true);
     });
 
   }
@@ -193,13 +197,16 @@ export default class UpdateFormView extends JetView {
   }
 
 
-  doClickSave() {
+  doClickSave(copy = false) {
 
     let state = this.state;
     if (!state.formEdit.validate()) return;
 
     let record = state.formEdit.getValues();
-
+    if (copy) {
+      state.isUpdate = false;
+      record.id = '';
+    }
     //debugger;
     webix.dp(state.table).save(
       (state.isUpdate) ? record.id : webix.uid(),

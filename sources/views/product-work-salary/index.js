@@ -5,6 +5,11 @@ import "components/comboDateClose";
 import "components/searchClose";
 
 
+webix.UIManager.addHotKey("enter", function(view){
+  var pos = view.getSelectedId();
+  view.edit(pos);
+}, $$("work-salary-table"));
+
 export default class ProductWorkSalaryView extends JetView{
   config(){
     return {
@@ -65,19 +70,23 @@ export default class ProductWorkSalaryView extends JetView{
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
               //rightSplit:2,
-              select: true,
+              select: 'cell',
+              multiselect:true,
               //datafetch:100,
               //datathrottle: 500,
               //loadahead:100,
               resizeColumn: { headerOnly:true },
+              editable:true,
+              editaction: "custom",
+              clipboard:"selection",
 
               columns:[
                 { id:"id", header:"#",	width:50 },
                 { id:"name", header:"Наиименование", width: 380, sort: "string" },
-                { id:"product_id", header:"product_id", width: 180, sort: "string" },
-                { id:"size", header:"Размер", width: 80, sort: "string" },
-                { id:"net_cost", header:"Себ-ть база", width: 120, sort: "string", edit: 'text' },
-                { id:"expense_cloth", header:"Расход ткани", width: 120, sort: "string", edit: 'text' },
+                { id:"product_id", header:"product_id", width: 180, sort: "string", editor: 'text' },
+                { id:"size", header:"Размер", width: 80, sort: "string", editor: 'text' },
+                { id:"net_cost", header:"Себ-ть база", width: 120, sort: "string", editor: 'text' },
+                { id:"expense_cloth", header:"Расход ткани", width: 120, sort: "string", editor: 'text' },
 
                 { id:"coef_time_cut", header:"Коэф. крой",	width:100 },
                 { id:"coef_time_sewing", header:"Коэф. пош." },
@@ -135,7 +144,8 @@ export default class ProductWorkSalaryView extends JetView{
                       });
                     });
 
-                  } else {
+                  }
+                  if (id.column == 'action-edit') {
                     this.$scope.cashEdit.showForm(this);
                   }
                 },
@@ -202,6 +212,19 @@ export default class ProductWorkSalaryView extends JetView{
       //     table.clearAll(true);
       //     table.parse(data);
       // });
+
+    });
+
+    table.attachEvent("onPaste", function(text) {
+      // define your pasting logic here
+      let sel = this.getSelectedId(true);
+
+
+      sel.forEach(item => {
+        this.getItem(item.row)[item.column] = text;
+        this.refresh(item.row);
+        table.updateItem(item.row, this.getItem(item.row))
+      });
 
     });
 

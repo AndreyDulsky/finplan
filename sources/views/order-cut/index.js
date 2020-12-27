@@ -414,7 +414,7 @@ export default class OrderCutView extends JetView{
             { id:"BO", header:"Пошив", width:115 , batch:1, editor:"text"},
             //{ id:"BP", header:"Статус", width:60, batch:3 },
             //{ id:"BQ", header:"Дата", width:90, batch:1, editor:"text" },
-            { id:"BV", header:"Крой", width:115 , batch:1, editor:"text"},
+            { id:"BV", header:[ "ФИО крой", { content:"selectFilter" }, "" ], width:115 , batch:1, editor:"text"},
             //{ id:"BW", header:"Статус", width:60, batch:1, editor:"text" },
             //{ id:"BX", header:"Дата", width:90, batch:1, editor:"text" },
             { id:"CD", header:"Упаковка", width:80, batch:3, editor:"text" },

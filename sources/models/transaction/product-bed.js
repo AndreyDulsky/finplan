@@ -1,8 +1,8 @@
 import {ApiRest} from "models/restModel";
 let restObj = new ApiRest();
 
-let url = restObj.getUrl('get',"accounting/categories", {'sort':'name', 'per-page': -1});
-export const categories = new webix.DataCollection({
+var url = restObj.getUrl('get',"accounting/product-beds", {'sort':'color', 'per-page': -1});
+export const productBed = new webix.DataCollection({
     //url: url,
     data: webix.ajax(url).then(function(data){
         return data.json().data;

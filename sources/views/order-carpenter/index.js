@@ -394,7 +394,7 @@ export default class OrderCarPenterView extends JetView{
             { id:"AU", header:"Паралон царги", width:115 , batch:3, editor:"text"},
             { id:"AV", header:"Статус", width:60, batch:3 , editor:"text"},
             { id:"AW", header:"Дата", width:90, batch:3 , editor:"text"},
-            { id:"AZ", header:"Столярка", width:115 , batch:1, editor:"text"},
+            { id:"AZ", header:[ "Столярка", { content:"selectFilter" }, "" ], width:115 , batch:1, editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
             //{ id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
             { id:"BO", header:"Пошив", width:115 , batch:1, editor:"text"},
