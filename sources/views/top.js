@@ -120,6 +120,7 @@ export default class TopView extends JetView{
             { value:"Сотрудники", id:"employee-directory", icon:"mdi mdi-circle-outline" },
             { value:"Отделы", id:"department-directory", icon:"mdi mdi-circle-outline" },
             { value:"Типы зарплат", id:"employee-salary-type-directory", icon:"mdi mdi-circle-outline" },
+            { value:"Настройки", id:"setting-directory", icon:"mdi mdi-circle-outline" },
 
           ]
 				},
