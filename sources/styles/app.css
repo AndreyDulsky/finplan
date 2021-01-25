@@ -171,9 +171,22 @@ div[column="2"] div[aria-level="2"] .subrowimage div {
 .webix_column > div.webix_cell_select,
 .webix_column > div.webix_column_select,
 .webix_column > div.webix_row_select {
-    background-color:#ddd  !important;
+    background-color:#F4F5F9  !important;
 
 }
 .webix_dtable .webix_column > .webix_drag_over.webix_cell {
     background-color: #999 !important;
+}
+.webix_editing_cell {
+    position: relative;
+}
+.webix_editing_cell:after {
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 0px;
+    height: 1px;
+    border-top: 8px solid #ccc;
+    border-left: 8px solid transparent;
 }

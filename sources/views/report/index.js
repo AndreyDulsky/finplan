@@ -2,15 +2,59 @@ import {JetView} from "webix-jet";
 import {CoreEditClass} from "core/CoreEditClass";
 import localViews from  "helpers/localviews";
 
-function viewFactory(config, scope, state){
+function viewFactory(config, scope, tableId){
   class some123 extends JetView {
-
+    constructor(app, name){
+      super(app,name);
+      this.state = new CoreEditClass(this);
+      this.state.app = app;
+    }
     config(){
       return config;
     }
     init(view, url) {
-      state.table = this.$$("table-register");
-      scope.attachTableEvents();
+      let state = this.state;
+      state.table = this.$$("table-register"+tableId);
+      state.tableUrl = this.app.config.apiRest.getUrl('get',"accounting/register/turnover");
+
+      //state.table.load(state.tableUrl);
+      this.attachTableEvents();
+    }
+
+    attachTableEvents() {
+      let state = this.state;
+
+      state.scope = this;
+      //let scope = this;
+      //state.formUrl = state.table.data.url;
+      let selected = {};
+
+      state.table.attachEvent("onItemDblClick", function(id) {
+
+        selected = state.table.getSelectedItem();
+
+
+        webix.ajax().get( state.tableUrl, {"account" : selected.account_id, "account_type": selected.account_type}).then(function(data) {
+          let idView = "report"+selected.account_id+(selected.account_type||0);
+          state.tableId = idView;
+          if(!localViews[idView]) {
+            localViews[idView] = viewFactory(reportTable(data, state.tableId ), state.scope, idView);
+            $$("top:menu").add({ id: idView, value:"ОСВ:"+selected.account, icon:"mdi mdi-view-dashboard"},null,"info");
+            $$("top:menu").open("info");
+
+            $$("views").addView({ id:idView, rows:[localViews[idView]]});
+            //adding option to the tabbar
+            $$('tabs').addOption(idView, selected.account, true);
+          }
+
+          //state.app.show("/top/"+idView);
+          console.log(state.scope.$$("table-register"+state.tableId));
+
+
+
+        });
+      });
+
     }
   };
 
@@ -18,7 +62,7 @@ function viewFactory(config, scope, state){
 }
 
 
-function reportTable(data) {
+function reportTable(data, id='') {
   return {
     rows: [
       {
@@ -40,13 +84,13 @@ function reportTable(data) {
       view: "datatable",
       close: true,
       //id: "table-register",
-      localId: "table-register",
+      localId: "table-register"+id,
       autoConfig: true,
       css: "webix_header_border webix_data_border",
       header: true,
       title: "Оборотно-сальдовая ведомость",
       footer: true,
-      scroll: "auto",
+      //scroll: "true",
       autoheight: true,
       select: "cell",
       resizeColumn: {headerOnly: true},
@@ -122,7 +166,7 @@ export default class ReportView extends JetView{
           rows:[
 
             {view:"tabbar", id:"tabs", multiview:true, close:true, options:[
-              { id:"t1", value:"List", hidden: false}
+              { id:"t1", value:"ОСВ", hidden: false, close: false}
             ], optionWidth:180,
             },
             {view:"multiview", id:"views",cells:[
@@ -222,11 +266,18 @@ export default class ReportView extends JetView{
 
   init(view, url) {
     let state = this.state;
+    state.scope = this;
     state.table = this.$$("table-register");
     state.tabbar = this.$$("tabbar");
     state.tableUrl = this.app.config.apiRest.getUrl('get',"accounting/register/turnover");
 
     state.table.load(state.tableUrl);
+    localViews['t1'] = viewFactory(reportTable('', 't1' ), state.scope, 't1');
+    if ($$("top:menu").getItem('t1')) {
+      $$("top:menu").remove('t1');
+    }
+    $$("top:menu").add({ id: 't1', value:"ОСВ", icon:"mdi mdi-view-dashboard"},null,"info");
+    $$("top:menu").open("info");
 
 
     this.attachTableEvents();
@@ -239,21 +290,17 @@ export default class ReportView extends JetView{
     state.scope = this;
     //let scope = this;
     //state.formUrl = state.table.data.url;
-
+    let selected = {};
 
     state.table.attachEvent("onItemDblClick", function(id) {
-      webix.message('Hello world'+id);
-      let selected = state.table.getSelectedItem();
-      $$('tabs').attachEvent("onOptionRemove", function(id, value){
-        //$$("views").removeView(id);
-        //delete localViews[id];
-        $$("top:menu").remove(id);
-      });
+
+      selected = state.table.getSelectedItem();
 
       webix.ajax().get( state.tableUrl, {"account" : selected.account_id, "account_type": selected.account_type}).then(function(data) {
-         let idView = "report"+selected.account_id+(selected.account_type||0);
+        let idView = "report"+selected.account_id+(selected.account_type||0);
+        state.tableId = idView;
         if(!localViews[idView]) {
-          localViews[idView] = viewFactory(reportTable(data), state.scope, state);
+          localViews[idView] = viewFactory(reportTable(data, state.tableId ), state.scope, idView);
           $$("top:menu").add({ id: idView, value:"ОСВ:"+selected.account, icon:"mdi mdi-view-dashboard"},null,"info");
           $$("top:menu").open("info");
 
@@ -263,11 +310,17 @@ export default class ReportView extends JetView{
         }
 
         //state.app.show("/top/"+idView);
-
+        console.log(state.scope.$$("table-register"+state.tableId));
 
 
 
       });
+    });
+
+    $$('tabs').attachEvent("onOptionRemove", function(id, value){
+      $$("views").removeView(id);
+      delete localViews[id];
+      $$("top:menu").remove(id);
     });
   }
 

@@ -36,8 +36,8 @@ webix.ui.datafilter.totalColumn = webix.extend({
       result = value.format(result);
     if (value.template)
       result = value.template({ value: result });
-    node.firstChild.style.textAlign = "right";
-    node.firstChild.innerHTML = result;
+    node.style.textAlign = "right";
+    node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
 
@@ -61,8 +61,8 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
       result = value.format(result);
     if (value.template)
       result = value.template({ value: result });
-    node.firstChild.style.textAlign = "right";
-    node.firstChild.innerHTML = result;
+    node.style.textAlign = "right";
+    node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
 
@@ -182,7 +182,7 @@ export default class OrdersView extends JetView{
           columns:[
 
             {
-              id:"A", header:[ "# заказа", { content:"textFilter" },"" ], hidden: false,
+              id:"A", header:[ "# заказа", { content:"textFilter" },{ content:"totalColumnCount" } ], hidden: false,
               "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "int",
               tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
             },
@@ -195,7 +195,7 @@ export default class OrdersView extends JetView{
             //
             // },
             {
-              id:"date_obivka", header:[ "Дата произ.", { content:"dateFilter" },"" ],	width:100,
+              id:"date_obivka", header:[ "Дата произ.", { content:"selectFilter" },"" ],	width:100,
               "css": {"color": "black", "text-align": "right", "font-weight": 100},
               sort: "date",
               format:webix.Date.dateToStr("%d.%m.%y")

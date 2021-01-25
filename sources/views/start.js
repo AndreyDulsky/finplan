@@ -77,8 +77,8 @@ webix.ui.datafilter.totalColumn = webix.extend({
       result = value.format(result);
     if (value.template)
       result = value.template({ value: result });
-    node.firstChild.style.textAlign = "right";
-    node.firstChild.innerHTML = result;
+    node.style.textAlign = "right";
+    node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
 
@@ -101,8 +101,8 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
       result = value.format(result);
     if (value.template)
       result = value.template({ value: result });
-    node.firstChild.style.textAlign = "right";
-    node.firstChild.innerHTML = result;
+    node.style.textAlign = "right";
+    node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
 

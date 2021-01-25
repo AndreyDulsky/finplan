@@ -4,12 +4,8 @@ import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
 
-webix.UIManager.addHotKey("enter", function(view){
-  var pos = view.getSelectedId();
-  view.edit(pos);
-}, $$("cloth-table"));
 
-export default class ClothDirectoryView extends JetView{
+export default class ProductsBedView extends JetView{
   config(){
     return {
       localId: "layout",
@@ -26,7 +22,7 @@ export default class ClothDirectoryView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Ткани",
+                  "label": "Сотрудники",
                   "width": 150
                 },
 
@@ -37,7 +33,7 @@ export default class ClothDirectoryView extends JetView{
                   value:"fs",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("cloth-table");
+                    webix.fullscreen.set("employee-table");
                   }
                 },
               ]
@@ -63,38 +59,26 @@ export default class ClothDirectoryView extends JetView{
             },
             {
               view: "datatable",
-              localId: "cloth-table",
-              urlEdit: 'cloth',
+              localId: "employee-table",
+              urlEdit: 'employee',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
               //rightSplit:2,
-              select: 'cell',
+              select: true,
               //datafetch:100,
               //datathrottle: 500,
               //loadahead:100,
               resizeColumn: { headerOnly:true },
-              editable:true,
-              editaction: "dblclick",
-              clipboard:"selection",
-              multiselect:true,
-              math: true,
-              sort:"multi",
 
               columns:[
-                { id:"index", header:"#", sort:"int", width:50},
-                { id:"id", header:"ID",	width:50, sort: "int" },
-                { id:"provider",  header:[ "Поставщик", { content:"selectFilter" }], width: 120, edit: 'text', sort: "text" },
-                { id:"full_name", header:[ "Полн. наимен.", { content:"textFilter" }], width: 380, sort: "text" },
-                { id:"name",  header:[ "Название", { content:"textFilter" }], width: 120,  edit: 'text', sort: "text" },
-                { id:"color",  header:[ "Цвет", { content:"textFilter" }], width: 120,  edit: 'text', sort: "text" },
-                { id:"price",  header:[ "Цена", { content:"numberFilter" }], width: 120, edit: 'text', sort: "int" },
-                { id:"category",  header:[ "Категория", { content:"selectFilter" }], width: 120,  edit: 'text', sort: "int" },
-                { id:"qty",  header:[ "К-во", { content:"numberFilter", format: webix.i18n.numberFormat }], width: 120,  edit: 'text', editor:"text", sort: "int"},
-                { id:"sum", header:[ "Сумма", { content:"summColumn" ,  css: {"text-align": "right",  "font-weight": 300}}], format: webix.i18n.numberFormat,
-                  css: {"text-align": "right",  "font-weight": 300}, sort: "int",
-                  width: 120,  edit: 'text',   math:"[$r,price] * [$r,qty]"},
-
+                { id:"id", header:"#",	width:50 },
+                { id:"name", header:"Наиименование", width: 280, sort: "string" },
+                { id:"department_id", header:"Отдел", width: 180, sort: "string" },
+                { id:"rate", header:"Ставка", width: 180, sort: "string" },
+                { id:"is_piecework", header:"ЗП по выработке", width: 180, sort: "string" },
+                { id:"bitrix_id", header:"ID битрикс", width: 120, sort: "string", edit: 'text' },
+                { id:"category_id", header:"ID статьи выплат", width: 120, sort: "string", edit: 'text' },
 
                 {
                   "id": "action-delete",
@@ -104,27 +88,13 @@ export default class ClothDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/cloths", {'sort':'provider+name+color', 'per-page': '-1'}),//"api->accounting/contragents",
-              save: "api->accounting/cloths",
+              url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'name'}),//"api->accounting/contragents",
+              save: "api->accounting/employees",
               // scheme: {
               //    $sort:{ by:"name", dir:"asc" },
               //  },
 
-
-              ready:function(){
-                // apply sorting
-                this.sort([{by:"provider", dir:"asc"}, {by:"name", dir:"asc"}, {by:"color", dir:"asc"}]);
-                // mark columns
-                this.markSorting("provider", "asc");
-                this.markSorting("name", "asc", true);
-                this.markSorting("color", "asc", true);
-              },
               on:{
-                "data->onStoreUpdated":function(){
-                  this.data.each(function(obj, i){
-                    obj.index = i+1;
-                  })
-                },
                 onItemClick:function(id, e, trg) {
 
                   if (id.column == 'action-delete') {
@@ -142,8 +112,7 @@ export default class ClothDirectoryView extends JetView{
                       });
                     });
 
-                  }
-                  if (id.column == 'action-edit') {
+                  } else {
                     this.$scope.cashEdit.showForm(this);
                   }
                 },
@@ -168,7 +137,7 @@ export default class ClothDirectoryView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("cloth-table");
+    let table = this.$$("employee-table");
     //table.markSorting("name", "asc");
     let scope = this;
     // table.attachEvent("onDataRequest", function (start, count) {
@@ -191,7 +160,7 @@ export default class ClothDirectoryView extends JetView{
     form.attachEvent("onChange", function(obj){
 
       let filter = {'search':form.getValue()};
-      let objFilter = { filter: filter, 'sort':'color' };
+      let objFilter = { filter: filter };
 
       webix.extend(table, webix.ProgressBar);
 
@@ -201,7 +170,7 @@ export default class ClothDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/cloths', {'sort':'provider+name+color', 'per-page': '-1'}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employees'), objFilter).then(function(data) {
         table.parse(data);
       });
 
@@ -217,8 +186,8 @@ export default class ClothDirectoryView extends JetView{
   }
 
   doAddClick() {
-    this.$$('cloth-table').unselect();
-    this.cashEdit.showForm(this.$$('cloth-table'));
+    this.$$('employee-table').unselect();
+    this.cashEdit.showForm(this.$$('employee-table'));
   }
 
 }

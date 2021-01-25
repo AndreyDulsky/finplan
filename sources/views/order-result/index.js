@@ -115,8 +115,8 @@ webix.ui.datafilter.totalColumnCoefMat = webix.extend({
       result = value.format(result);
     if (value.template)
       result = value.template({ value: result });
-    node.firstChild.style.textAlign = "right";
-    node.firstChild.innerHTML = result;
+    //node.firstChild.style.textAlign = "right";
+    node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
 
@@ -133,13 +133,18 @@ webix.GroupMethods.countValue = function(prop, data){
   return count;
 };
 
+
+
+
+
 webix.ui.datafilter.totalColumn = webix.extend({
   refresh: function (master, node, value) {
     var result = 0, _val;
     master.data.each(function (obj) {
+
       if (obj.$group) return;
 
-
+//debugger;
       _val = obj[value.columnId];
       if (value.columnId == 'coefMoney') {
         _val = obj.G/7860;
@@ -166,8 +171,8 @@ webix.ui.datafilter.totalColumn = webix.extend({
       result = value.format(result);
     if (value.template)
       result = value.template({ value: result });
-    node.firstChild.style.textAlign = "right";
-    node.firstChild.innerHTML = result;
+    //node.firstChild.style.textAlign = "right";
+    node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
 
@@ -190,8 +195,8 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
       result = value.format(result);
     if (value.template)
       result = value.template({ value: result });
-    node.firstChild.style.textAlign = "right";
-    node.firstChild.innerHTML = result;
+    //node.firstChild.style.textAlign = "right";
+    node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
 
@@ -619,17 +624,23 @@ export default class OrderResultView extends JetView{
             { id:"cost_work", header:[ "Стоим. работ", { content:"selectFilter" }, { content:"totalColumn" } ], width:110,
               "css": {"color": "green", "text-align": "right",  "font-weight": 600},
             },
-            { id:"cost_cut", header:[ "Раб. крой", { content:"selectFilter" }, "" ], width:100,
+            { id:"cost_cut", header:[ "Раб. крой", { content:"selectFilter" }, { content:"totalColumn" } ], width:100,
               "css": {"color": "green", "text-align": "right"},
-              "template" : function(data) {
-                  return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
-              }
+              // "template" : function(data) {
+              //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
+              // }
             },
-            { id:"cost_sewing", header:[ "Раб. пошив", { content:"selectFilter" }, "" ], width:100,
+            { id:"cost_sewing", header:[ "Раб. пошив", { content:"selectFilter" }, { content:"totalColumn" } ], width:100,
               "css": {"color": "green", "text-align": "right"},
-              "template" : function(data) {
-                return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
-              }
+              // "template" : function(data) {
+              //   return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
+              // }
+            },
+            { id:"cost_ot", header:[ "Раб. отстр.", { content:"selectFilter" }, { content:"totalColumn" } ], width:100,
+              "css": {"color": "green", "text-align": "right"},
+              // "template" : function(data) {
+              //   return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
+              // }
             },
             { id:"cost_carcass", header:[ "Раб. ст. цар.", { content:"selectFilter" }, "" ], width:100,
               "css": {"color": "green", "text-align": "right"},
@@ -698,7 +709,7 @@ export default class OrderResultView extends JetView{
             //   width:100,
             //   "css": {"color": "green","text-align": "right",  "font-weight": 500}, batch:1,
             // },
-            // { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" },
+            { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" },
             // { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, { content:"totalColumn" } ],
             //   width:100,
             //   "css": {"text-align": "right",  "font-weight": 500}, batch:1,
@@ -725,14 +736,14 @@ export default class OrderResultView extends JetView{
             // { id:"AU", header:"Поралон царги", width:115 , batch:3, editor:"text"},
             // { id:"AV", header:"Статус пор. цар.", width:60, batch:3 , editor:"text"},
             // { id:"AW", header:"Дата пор. цар.", width:90, batch:3 , editor:"text"},
-            // { id:"AZ", header:[ "Столярка ФИО", { content:"selectFilter" }, "" ],  width:115 , editor:"text"},
+            { id:"AZ", header:[ "Столярка ФИО", { content:"selectFilter" }, "" ],  width:115 , editor:"text"},
             // //{ id:"BA", header:"Статус", width:60, batch:3 },
             // { id:"BB", header:[ "Дата ст.", { content:"selectFilter" }, "" ], width:90 , editor:"text"},
-            // { id:"BO", header:[ "Пошив ФИО", { content:"selectFilter" }, "" ],  width:115 , batch:1, editor:"text"},
+            { id:"BO", header:[ "Пошив ФИО", { content:"selectFilter" }, "" ],  width:115 , batch:1, editor:"text"},
             // //{ id:"BP", header:"Статус", width:60, batch:3 },
             //
             // { id:"BQ", header:[ "Дата пош.", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },
-            // { id:"BV", header:[ "Крой ФИО", { content:"selectFilter" }, "" ], width:115 ,  editor:"text"},
+            { id:"BV", header:[ "Крой ФИО", { content:"selectFilter" }, "" ], width:115 ,  editor:"text"},
             // //{ id:"BW", header:"Статус крой", width:60,  editor:"text" },
             // { id:"BX", header:[ "Дата крой", { content:"selectFilter" }, "" ], width:90,  editor:"text" },
             // { id:"CI", header:[ "Коэф. крой. план", { content:"textFilter" }, { content:"totalColumn" } ],
@@ -757,7 +768,6 @@ export default class OrderResultView extends JetView{
                 AJ:["AJ","median"],
                 J:["J","countValue"],
                 coef_sewing:["coef_sewing", "median" ],
-                cost_cut:["productWorkSalary.cost_cut", "sum" ],
                 value:["date_obivka"],
                 A:["A"],
                 profit:["profit", "sum"],
@@ -767,6 +777,8 @@ export default class OrderResultView extends JetView{
                 cloth_sum:["cloth_sum", "sum"],
                 expense_cloth:["expense_cloth", "sum"],
                 coef_mat:["coef_mat", "middleCoefMat"],
+                cost_cut:["cost_cut", "sum"],
+                cost_sewing:["cost_sewing", "sum"],
 
 
 

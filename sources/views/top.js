@@ -80,6 +80,7 @@ export default class TopView extends JetView{
 		const menu = {
 			view:"sidebar",
 			localId:"top:menu",
+      id: "top:menu",
 			css:"webix_sidebar webix_dark",
 			//layout:"y",
 
@@ -102,7 +103,9 @@ export default class TopView extends JetView{
             { value:"План швейка+крой", id:"order-sewing-cut", icon:"mdi mdi-circle-outline" },
             { value:"План швейка", id:"order-sewing", icon:"mdi mdi-circle-outline" },
             { value:"План крой", id:"order-cut", icon:"mdi mdi-circle-outline" },
-            { value:"Заказы", id:"order", icon:"mdi mdi-circle-outline" }
+            { value:"Заказы", id:"order", icon:"mdi mdi-circle-outline" },
+            { value:"Посещения", id:"time-work-by-day", icon:"mdi mdi-circle-outline" },
+
           ]
         },
 				{ value:"Операции", id:"transaction",  icon:"mdi mdi-table" },
@@ -113,7 +116,9 @@ export default class TopView extends JetView{
 					  { value:"Контрагенты", id:"contragents-directory",  icon:"mdi mdi-circle-outline" },
             { value:"Ставки по выработке", id:"product-work-salary", icon:"mdi mdi-circle-outline" },
             { value:"Продукция", id:"products-bed", icon:"mdi mdi-circle-outline" },
-            { value:"Ткани", id:"cloth-directory", icon:"mdi mdi-circle-outline" }
+            { value:"Ткани", id:"cloth-directory", icon:"mdi mdi-circle-outline" },
+            { value:"Сотрудники", id:"employee-directory", icon:"mdi mdi-circle-outline" },
+
           ]
 				},
         { value:"Отчеты",  icon:"mdi mdi-chart-bar",
@@ -121,10 +126,19 @@ export default class TopView extends JetView{
           	{ value:"Движение денег", id:"report-cash-flow",  icon:"mdi mdi-circle-outline" },
             { value:"Движение денег (График)", id:"report-cash-flow-chart",  icon:"mdi mdi-circle-outline" },
             { value:"ОСВ", id:"report",  icon:"mdi mdi-circle-outline" },
+            { value:"ЗП", id:"report-salary",  icon:"mdi mdi-circle-outline" },
+
           ]
         },
+        { value:"Зарплата",  icon:"mdi mdi-cube",
+          data: [
+            { value:"Начисление зарплаты", id:"list-salary-accrual", icon:"mdi mdi-circle-outline" },
+            { value:"Зарплатная ведомость", id:"report-salary-total", icon:"mdi mdi-circle-outline" },
+          ]
+        },
+
         //{ value:"Firebase", id:"firebase",  icon:"mdi  mdi-puzzle" },
-        { value:"Настройки", id:"settings",  icon:"mdi mdi-settings" },
+        { value:"Настройки", id:"settings",  icon:"mdi mdi-tools" },
         { value:"Открытые отчеты", id:"info", icon:"mdi mdi-database", data:[] },
 			],
       
