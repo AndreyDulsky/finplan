@@ -1,7 +1,7 @@
 import {JetView} from "webix-jet";
 import UpdateFormView from "core/updateFormView";
 //import {departments} from "models/department/departments";
-import {typeSalary} from "models/department/type-salary";
+//import {typeSalary} from "models/department/type-salary";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
