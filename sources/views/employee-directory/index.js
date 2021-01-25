@@ -94,7 +94,7 @@ export default class EmployeeDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'department_id,name', 'expand': 'department'}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'department_id', 'expand': 'department'}),//"api->accounting/contragents",
               save: "api->accounting/employees",
 
               scheme: {
