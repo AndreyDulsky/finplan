@@ -105,7 +105,7 @@ export default class EmployeeDirectoryView extends JetView{
                   map: {
                     value: ["department"],
                   },
-                  missing:false
+
                 },
                 $sort:{ by:"department_id", dir:"asc" },
               },
