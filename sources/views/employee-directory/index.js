@@ -74,7 +74,7 @@ export default class EmployeeDirectoryView extends JetView{
               resizeColumn: { headerOnly:true },
 
               columns:[
-                { id:"department_id", header:"Отдел", width: 180, sort: "int",
+                { id:"department_id", header:"Отдел", width: 180,
                   template:function(obj, common) {
 
                     if (obj.$level==1) return common.treetable(obj, common) + obj.value.name;
