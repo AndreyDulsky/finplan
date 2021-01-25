@@ -107,7 +107,7 @@ export default class EmployeeDirectoryView extends JetView{
                   },
 
                 },
-                $sort:{ by:"department_id", dir:"asc" },
+                //$sort:{ by:"department_id", dir:"asc" },
               },
               ready:function(){
                 //this.openAll();
