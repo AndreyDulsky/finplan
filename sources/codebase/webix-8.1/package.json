@@ -1,0 +1,50 @@
+{
+  "_from": "webix",
+  "_id": "webix@8.1.0",
+  "_inBundle": false,
+  "_integrity": "sha512-Ekyw+BIFyH9oGQfovCMRl1abjGEIsHu6uJsKWtgfI0EkZR36WiBIC9wiMX4XOClTehOZSYnPQiIJML+f9xWLng==",
+  "_location": "/webix",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "webix",
+    "name": "webix",
+    "escapedName": "webix",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/webix/-/webix-8.1.0.tgz",
+  "_shasum": "1ff2b98806a0d851827094ae73ab844584e343cb",
+  "_spec": "webix",
+  "_where": "/Users/a_dulsky/PhpstormProjects/webix/webix8.1",
+  "author": {
+    "name": "XB Software"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Webix UI",
+  "keywords": [
+    "webix",
+    "ui",
+    "tree",
+    "datatable",
+    "list",
+    "chart",
+    "form",
+    "grid"
+  ],
+  "license": "SEE LICENSE IN license.text",
+  "main": "webix.js",
+  "name": "webix",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "types": "types/webix.d.ts",
+  "version": "8.1.0"
+}
