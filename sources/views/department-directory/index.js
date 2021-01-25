@@ -1,13 +1,11 @@
 import {JetView} from "webix-jet";
 import UpdateFormView from "core/updateFormView";
-import {departments} from "models/department/departments";
-import {typeSalary} from "models/department/type-salary";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
 
 
-export default class ProductsBedView extends JetView{
+export default class DepartmentView extends JetView{
   config(){
     return {
       localId: "layout",
@@ -24,7 +22,7 @@ export default class ProductsBedView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Сотрудники",
+                  "label": "Отделы",
                   "width": 150
                 },
 
@@ -35,7 +33,7 @@ export default class ProductsBedView extends JetView{
                   value:"fs",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("employee-table");
+                    webix.fullscreen.set("department-table");
                   }
                 },
               ]
@@ -60,9 +58,9 @@ export default class ProductsBedView extends JetView{
               ]
             },
             {
-              view: "treetable",
-              localId: "employee-table",
-              urlEdit: 'employee',
+              view: "datatable",
+              localId: "department-table",
+              urlEdit: 'department',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
@@ -74,18 +72,9 @@ export default class ProductsBedView extends JetView{
               resizeColumn: { headerOnly:true },
 
               columns:[
-                { id:"department_id", header:"Отдел", width: 180, sort: "string", collection: departments,
-                  template:function(obj, common) {
-                    //let department = departments.getItem(obj.department_id);
-                    if (obj.$level==1) return common.treetable(obj, common) + departments.getItem(obj.department_id)['value'];
-                    return  "";
-                  },
-                },
+                { id:"id", header:"#",	width:50 },
                 { id:"name", header:"Наиименование", width: 280, sort: "string" },
-                { id:"rate", header:"Ставка", width: 180, sort: "string" },
-                { id:"is_piecework", header:"Тип зарплаты", width: 180, sort: "string", type:'select',collection: typeSalary },
-                //{ id:"bitrix_id", header:"ID битрикс", width: 120, sort: "string", edit: 'text' },
-                //{ id:"category_id", header:"ID статьи выплат", width: 120, sort: "string", edit: 'text' },
+
                 {
                   "id": "action-delete",
                   "header": "",
@@ -94,16 +83,12 @@ export default class ProductsBedView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'department_id,name'}),//"api->accounting/contragents",
-              save: "api->accounting/employees",
+              url: this.app.config.apiRest.getUrl('get',"accounting/departments", {'sort':'name'}),//"api->accounting/contragents",
+              save: "api->accounting/departments",
+              // scheme: {
+              //    $sort:{ by:"name", dir:"asc" },
+              //  },
 
-              scheme: {
-                $group: 'department_id',
-                //$sort:{ by:"department_id", dir:"asc" },
-              },
-              ready:function(){
-                this.openAll();
-              },
               on:{
                 onItemClick:function(id, e, trg) {
 
@@ -147,27 +132,13 @@ export default class ProductsBedView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("employee-table");
+    let table = this.$$("department-table");
     //table.markSorting("name", "asc");
     let scope = this;
-    // table.attachEvent("onDataRequest", function (start, count) {
-    //   webix.ajax().get(scope.app.config.apiRest.getUrl('get', 'accounting/contragents', {
-    //     "expand": "contragent,category,project,account,data",
-    //     "per-page": count, "start" : start
-    //   })).then(function (data) {
-    //     //table.parse(data);
-    //     // table.parse({
-    //     //   pos: your_pos_value,
-    //     //   total_count: your_total_count,
-    //     //   data: data
-    //     // });
-    //   });
-    //
-    //   return false;
-    // });
 
 
     form.attachEvent("onChange", function(obj){
+
       let filter = {'search':form.getValue()};
       let objFilter = { filter: filter };
 
@@ -179,15 +150,9 @@ export default class ProductsBedView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employees'), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/departments'), objFilter).then(function(data) {
         table.parse(data);
       });
-
-
-      // table.loadNext(0, 0, 0, 0, 1).then(function (data) {
-      //     table.clearAll(true);
-      //     table.parse(data);
-      // });
 
     });
 
@@ -195,8 +160,8 @@ export default class ProductsBedView extends JetView{
   }
 
   doAddClick() {
-    this.$$('employee-table').unselect();
-    this.cashEdit.showForm(this.$$('employee-table'));
+    this.$$('department-table').unselect();
+    this.cashEdit.showForm(this.$$('department-table'));
   }
 
 }

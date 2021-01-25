@@ -87,7 +87,7 @@ export default class UpdateFormView extends JetView {
     //set values for form from table
     state.formEdit.setValues(scope.getRecord());
 
-    //scope.bindCollection(result);
+    scope.bindCollection(result);
     //scope.bindColumnCollection(result);
     //scope.showParts(state.tableRecord);
     // in bindCollection show window after load all records

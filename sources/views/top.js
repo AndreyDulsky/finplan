@@ -118,6 +118,7 @@ export default class TopView extends JetView{
             { value:"Продукция", id:"products-bed", icon:"mdi mdi-circle-outline" },
             { value:"Ткани", id:"cloth-directory", icon:"mdi mdi-circle-outline" },
             { value:"Сотрудники", id:"employee-directory", icon:"mdi mdi-circle-outline" },
+            { value:"Отделы", id:"department-directory", icon:"mdi mdi-circle-outline" },
 
           ]
 				},
