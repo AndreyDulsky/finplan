@@ -77,8 +77,9 @@ export default class EmployeeDirectoryView extends JetView{
                 { id:"department_id", header:"Отдел", width: 180,
                   template:function(obj, common) {
 
-                    if (obj.$level==1) return common.treetable(obj, common) + obj.department.name;
-                    return  "";
+
+                    if (obj.$group) return common.treetable(obj, common) + obj.department.name;
+                    return '';
                   },
                 },
                 { id:"name", header:"Наиименование", width: 280, sort: "string" },
@@ -98,16 +99,15 @@ export default class EmployeeDirectoryView extends JetView{
               save: "api->accounting/employees",
 
               scheme: {
-                // $group: {
-                //   by: function (obj) {
-                //     return obj.department_id
-                //   },
-                //   map: {
-                //     value: ["department"],
-                //   },
-                //
-                //
-                // },
+                $group: {
+                  by: 'department_id',
+                  map: {
+                    'department' : ['department']
+                  }
+
+
+
+                },
 
                 //$sort:{ by:"department_id", dir:"asc" },
               },
