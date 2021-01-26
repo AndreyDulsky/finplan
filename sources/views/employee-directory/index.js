@@ -76,10 +76,8 @@ export default class EmployeeDirectoryView extends JetView{
               columns:[
                 { id:"department_id", header:"Отдел", width: 180,
                   template:function(obj, common) {
-
-
                     if (obj.$group) return common.treetable(obj, common) + obj.department.name;
-                    return '';
+                    return obj.department.name;
                   },
                 },
                 { id:"name", header:"Наиименование", width: 280, sort: "string" },
@@ -98,19 +96,16 @@ export default class EmployeeDirectoryView extends JetView{
               url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'department_id', 'expand': 'department'}),//"api->accounting/contragents",
               save: "api->accounting/employees",
 
-              scheme: {
-                $group: {
-                  by: 'department_id',
-                  map: {
-                    'department' : ['department']
-                  }
-
-
-
-                },
-
-                //$sort:{ by:"department_id", dir:"asc" },
-              },
+              // scheme: {
+              //   $group: {
+              //     by: 'department_id',
+              //     map: {
+              //       'department' : ['department']
+              //     }
+              //   },
+              //
+              //   //$sort:{ by:"department_id", dir:"asc" },
+              // },
               ready:function(){
                 //this.openAll();
               },
