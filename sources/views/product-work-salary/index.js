@@ -218,8 +218,6 @@ export default class ProductWorkSalaryView extends JetView{
     table.attachEvent("onPaste", function(text) {
       // define your pasting logic here
       let sel = this.getSelectedId(true);
-
-
       sel.forEach(item => {
         this.getItem(item.row)[item.column] = text;
         this.refresh(item.row);

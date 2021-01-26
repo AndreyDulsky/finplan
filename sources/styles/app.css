@@ -171,7 +171,9 @@ div[column="2"] div[aria-level="2"] .subrowimage div {
 .webix_column > div.webix_cell_select,
 .webix_column > div.webix_column_select,
 .webix_column > div.webix_row_select {
-    background-color:#F4F5F9  !important;
+    background-color:#eee  !important;
+    border-bottom : 1px solid #ccc;
+    border-right : 1px solid #ccc;
 
 }
 .webix_dtable .webix_column > .webix_drag_over.webix_cell {

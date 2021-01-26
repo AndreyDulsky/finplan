@@ -90,11 +90,16 @@ export default class ProductsBedView extends JetView{
               css:"webix_header_border webix_data_border",
               leftSplit:1,
               //rightSplit:2,
-              select: true,
+              select: 'cell',
+              multiselect:true,
+              blockselect:true,
+              clipboard:"block",
+              //areaselect:true,
               editable:true,
               editaction: "dblclick",
               resizeColumn: { headerOnly:true },
 
+              hover:"myhover",
               columns:[
 
               ],
@@ -117,6 +122,9 @@ export default class ProductsBedView extends JetView{
                 },
 
                 //$sort:{ by:"department_id", dir:"asc" },
+              },
+              ready:function(){
+                this.openAll();
               },
               on:{
                 "data->onStoreUpdated":function(){
@@ -183,16 +191,16 @@ export default class ProductsBedView extends JetView{
     table.clearAll();
     table.load(tableUrl);
 
-    // table.group({
-    //   by: 'department_id',
-    //   map: {
-    //     department : ['department'],
-    //     department_id: ['department_id'],
-    //     department_name: ['department_name'],
-    //     employee_name: ['employee_name'],
-    //     index : ['index']
-    //   }
-    // },0);
+    table.attachEvent("onPaste", function(text) {
+      // define your pasting logic here
+      let sel = this.getSelectedId(true);
+      sel.forEach(item => {
+        //this.getItem(item.row)[item.column] = text;
+        //this.refresh(item.row);
+        scope.updateRowPaste(item.column, this.getItem(item.row))
+      });
+
+    });
 
     dateFrom.attachEvent("onChange", function(id) {
       dateFromValue = format(dateFrom.getValue());
@@ -215,6 +223,28 @@ export default class ProductsBedView extends JetView{
     });
 
     //this.cashEdit = this.ui(UpdateFormView);
+  }
+
+  updateRowPaste(column, record) {
+    let scope =this;
+    let dateEdit = column.replace('-start','').replace('-end','');
+    let employeeId = record.employee_id;
+
+    let isStart = 0;
+    let id = record[dateEdit+'-id'];
+    if (column.indexOf('-start')!= -1) {
+      isStart = 1;
+    }
+    let field = (isStart) ? 'int_start' : 'int_end';
+    let row = {
+      id : id
+    };
+    row[field] = record[column];
+    let tableUrlUpdate = scope.app.config.apiRest.getUrl("put","accounting/employee-time-works", {},row.id);
+
+    webix.ajax().put(tableUrlUpdate, row).then(function(data){
+
+    });
   }
 
   doAddClick() {
@@ -288,11 +318,17 @@ export default class ProductsBedView extends JetView{
     let table = this.$$('time-work-table');
     let record = table.getItem(editor.row);
     let column = editor.column;
+    let value = (state.value) ? state.value : 0 ;
+    this. updateRow(column, record, value);
 
 
+  }
+
+  updateRow(column, record, value) {
+    let scope =this;
     let dateEdit = column.replace('-start','').replace('-end','');
     let employeeId = record.employee_id;
-    let value = (state.value) ? state.value : 0 ;
+
     let isStart = 0;
     let id = record[dateEdit+'-id'];
     if (column.indexOf('-start')!= -1) {
