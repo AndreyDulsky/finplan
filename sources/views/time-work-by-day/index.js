@@ -83,12 +83,12 @@ export default class ProductsBedView extends JetView{
               ]
             },
             {
-              view: "datatable",
+              view: "treetable",
               localId: "time-work-table",
               //urlEdit: 'time-work',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
-              leftSplit:3,
+              leftSplit:1,
               //rightSplit:2,
               select: true,
               editable:true,
@@ -96,29 +96,33 @@ export default class ProductsBedView extends JetView{
               resizeColumn: { headerOnly:true },
 
               columns:[
-                { id:"index", header:"#", sort:"int", width:50},
-                { id:"employee_id", header:"ID", width: 180, sort: "string", hidden: true },
-                { id:"employee_name", header:"Сотрудник", width: 180, sort: "string" },
 
-                {
-                  "id": "action-delete",
-                  "header": "",
-                  "width": 50,
-                  "template": "{common.trashIcon()}"
-                },
-                {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
               //url: this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/visits", {'sort':'name'}),//"api->accounting/contragents",
               //save: "api->accounting/employee-time-works",
               // scheme: {
               //    $sort:{ by:"name", dir:"asc" },
               //  },
+              scheme: {
+                $group: {
+                  by: 'department_id',
+                  map: {
+                    'department' : ['department'],
+                    'department_id': ['department_id'],
+                    'department_name': ['department_name'],
 
+                    'employee_name': ['employee_name'],
+                    'value' : ['index']
+                  }
+                },
+
+                //$sort:{ by:"department_id", dir:"asc" },
+              },
               on:{
                 "data->onStoreUpdated":function(){
-                  this.data.each(function(obj, i){
-                    obj.index = i+1;
-                  })
+                  // this.data.each(function(obj, i){
+                  //   obj.index = i+1;
+                  // })
                 },
                 onAfterEditStop:function(state, editor, ignoreUpdate){
                   var dtable = this;
@@ -129,7 +133,6 @@ export default class ProductsBedView extends JetView{
                   }
                 },
                 onItemClick:function(id, e, trg) {
-
                   if (id.column == 'action-delete') {
                     var table = this;
                     webix.confirm("Удалить запись?").then(function(result){
@@ -144,7 +147,6 @@ export default class ProductsBedView extends JetView{
                         webix.message("Ошибка! Запись не удалена!");
                       });
                     });
-
                   }
                 },
                 onBeforeLoad:function(){
@@ -175,11 +177,22 @@ export default class ProductsBedView extends JetView{
     let dateFromValue = format(this.$$("dateFrom").getValue());
     let dateToValue = format(this.$$("dateTo").getValue());
 
-    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/visits", {"dateFrom": dateFromValue, "dateTo": dateToValue});
+    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/visits", {"dateFrom": dateFromValue, "dateTo": dateToValue, 'expand' : 'department'});
     let scope =this;
     scope.changeColumns(dateFrom, dateTo);
     table.clearAll();
     table.load(tableUrl);
+
+    // table.group({
+    //   by: 'department_id',
+    //   map: {
+    //     department : ['department'],
+    //     department_id: ['department_id'],
+    //     department_name: ['department_name'],
+    //     employee_name: ['employee_name'],
+    //     index : ['index']
+    //   }
+    // },0);
 
     dateFrom.attachEvent("onChange", function(id) {
       dateFromValue = format(dateFrom.getValue());
@@ -201,20 +214,31 @@ export default class ProductsBedView extends JetView{
       table.load(tableUrl);
     });
 
-    this.cashEdit = this.ui(UpdateFormView);
+    //this.cashEdit = this.ui(UpdateFormView);
   }
 
   doAddClick() {
     this.$$('time-work-table').unselect();
-    this.cashEdit.showForm(this.$$('time-work-table'));
+    //this.cashEdit.showForm(this.$$('time-work-table'));
   }
 
   resetColumns(){
     this.$$("time-work-table").config.columns = [
-      { id:"index", header:"#", sort:"int", width:50},
-      { id:"employee_name", header:"Сотрудник", width: 180, sort: "string" },
+      // { id:"index", header:"#", sort:"int", width:50,
+      //   template: function() {
+      //     if (obj.$group) return common.treetable(obj, common) + obj.department_name;
+      //     return obj.index;
+      //   }
+      // },
+      { id:"employee_name", header:"Сотрудник", width: 240, sort: "string",
+        template:function(obj, common) {
+        //debugger;
+          if (obj.$group) return common.treetable(obj, common) + obj.department_name;
+          return common.treetable(obj, common) +obj.index+'. '+obj.employee_name;
+        },
+      },
     ];
-    this.$$("time-work-table").refreshColumns();
+    //this.$$("time-work-table").refreshColumns();
   };
 
   changeColumns(dateFrom, dateTo) {
@@ -233,6 +257,7 @@ export default class ProductsBedView extends JetView{
     for (let key in dates) {
       this.addColumn( format(dates[key]), formatColumn(dates[key]));
     }
+    this.$$("time-work-table").refreshColumns();
   }
 
   addColumn(id, header) {
@@ -240,19 +265,19 @@ export default class ProductsBedView extends JetView{
     let headerStart = [{text: header, colspan: 2}, "н."];
     let headerStop = [{text: "", colspan: 2}, "к."];
 
-    columns.splice(2,0,{ id:id+'-end', header:headerStop,	width:50 , css: {"text-align": "right"},
+    columns.splice(1,0,{ id:id+'-end', header:headerStop,	width:50 , css: {"text-align": "right"},
       format: webix.Number.format, editor:"text",
       template: function(obj) {
         return (!obj[id+'-end'] || obj[id+'-end'] == 0) ? '':obj[id+'-end'];
       }
     });
-    columns.splice(2,0,{ id:id+'-start', header:headerStart,	width:50 , css: {"text-align": "right"},
+    columns.splice(1,0,{ id:id+'-start', header:headerStart,	width:50 , css: {"text-align": "right"},
       format: webix.Number.format, editor:"text",
       template: function(obj) {
         return (!obj[id+'-start'] || obj[id+'-start'] == 0) ? '':obj[id+'-start']
       }
     });
-    this.$$("time-work-table").refreshColumns();
+
   };
 
   afterEditStop(state, editor, ignoreUpdate) {
