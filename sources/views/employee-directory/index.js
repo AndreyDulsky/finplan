@@ -94,7 +94,7 @@ export default class EmployeeDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'department_id,name'}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'name'}),//"api->accounting/contragents",
               save: "api->accounting/employees",
 
               scheme: {
@@ -106,7 +106,7 @@ export default class EmployeeDirectoryView extends JetView{
                   }
                 },
 
-                //$sort:{ by:"department_id", dir:"asc" },
+                $sort:{ by:"department_id", dir:"asc" },
               },
               ready:function(){
                 this.openAll();
@@ -171,7 +171,7 @@ export default class EmployeeDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employees', {'sort':'department_id,name'}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employees', {'sort':'name'}), objFilter).then(function(data) {
         table.parse(data);
       });
 
