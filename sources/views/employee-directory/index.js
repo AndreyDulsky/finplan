@@ -175,6 +175,7 @@ export default class EmployeeDirectoryView extends JetView{
 
       webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employees', {'sort':'name'}), objFilter).then(function(data) {
         table.parse(data);
+        table.openAll();
       });
 
 
