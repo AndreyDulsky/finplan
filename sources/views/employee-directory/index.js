@@ -10,7 +10,7 @@ import "components/searchClose";
 export default class EmployeeDirectoryView extends JetView{
   config(){
     return {
-      //localId: "layout",
+      localId: "layout",
       type:"wide",
       cols:[
         {
@@ -31,11 +31,11 @@ export default class EmployeeDirectoryView extends JetView{
                 {},
                 { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
                 {
-                  view:"button",
-                  value:"fs",
+                  view:"icon",
+                  icon:"mdi mdi-fullscreen",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("employee-table");
+                    webix.fullscreen.set(this.$scope.$$("employee-table"));
                   }
                 },
               ]

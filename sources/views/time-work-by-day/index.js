@@ -29,11 +29,11 @@ export default class ProductsBedView extends JetView{
                 {},
                 { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
                 {
-                  view:"button",
-                  value:"fs",
+                  view:"icon",
+                  icon:"mdi mdi-fullscreen",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("time-work-table");
+                    webix.fullscreen.set(this.$scope.$$("time-work-table"));
                   }
                 },
               ]
@@ -63,25 +63,7 @@ export default class ProductsBedView extends JetView{
 
               ]
             },
-            {
-              "view": "toolbar",
-              "height": 40,
-              "paddingY":2,
-              "cols": [
-                {
-                  "label": "Добавить",
-                  "type":"icon",
-                  "icon":"mdi mdi-plus",
-                  "view": "button",
-                  "height": 50,
-                  "css": "webix_primary",
-                  //"width": 120,
-                  autowidth:true,
-                  click: () => this.doAddClick()
-                },
 
-              ]
-            },
             {
               view: "treetable",
               localId: "time-work-table",
@@ -251,10 +233,7 @@ export default class ProductsBedView extends JetView{
     });
   }
 
-  doAddClick() {
-    this.$$('time-work-table').unselect();
-    //this.cashEdit.showForm(this.$$('time-work-table'));
-  }
+
 
   resetColumns(){
     this.$$("time-work-table").config.columns = [
