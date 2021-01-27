@@ -74,13 +74,13 @@ export default class EmployeeDirectoryView extends JetView{
               resizeColumn: { headerOnly:true },
 
               columns:[
-                { id:"department_id", header:"Отдел", width: 180,
+                { id:"department_id", header:"Сотрудники", width: 280,
                   template:function(obj, common) {
-                    if (obj.$group) return common.treetable(obj, common) + obj.department.name;
-                    return obj.department.name;
+                    if (obj.$group) return common.treetable(obj, common) + obj.department_name;
+                    return common.treetable(obj, common)+obj.name;
                   },
                 },
-                { id:"name", header:"Наиименование", width: 280, sort: "string" },
+                //{ id:"name", header:"Наиименование", width: 280, sort: "string" },
                 //{ id:"rate", header:"Ставка", width: 180, sort: "string" },
                 //{ id:"is_piecework", header:"Тип зарплаты", width: 180, sort: "string", type:'select',collection: typeSalary },
                 //{ id:"bitrix_id", header:"ID битрикс", width: 120, sort: "string", edit: 'text' },
@@ -96,18 +96,18 @@ export default class EmployeeDirectoryView extends JetView{
               url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'department_id', 'expand': 'department'}),//"api->accounting/contragents",
               save: "api->accounting/employees",
 
-              // scheme: {
-              //   $group: {
-              //     by: 'department_id',
-              //     map: {
-              //       'department' : ['department']
-              //     }
-              //   },
-              //
-              //   //$sort:{ by:"department_id", dir:"asc" },
-              // },
+              scheme: {
+                $group: {
+                  by: 'department_id',
+                  map: {
+                    'department_name' : ['department_name']
+                  }
+                },
+
+                //$sort:{ by:"department_id", dir:"asc" },
+              },
               ready:function(){
-                //this.openAll();
+                this.openAll();
               },
               on:{
                 onItemClick:function(id, e, trg) {
