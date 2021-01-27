@@ -82,6 +82,7 @@ export default class EmployeeDirectoryView extends JetView{
                 },
                 { id:"status", header:"Статус", width: 150, sort: "string", collection: [{'id':'0',"value":'Уволен'},{'id':'1',"value":'Работает'}] },
                 //{ id:"name", header:"Наиименование", width: 280, sort: "string" },
+                //{ id:"name", header:"Наиименование", width: 280, sort: "string" },
                 //{ id:"rate", header:"Ставка", width: 180, sort: "string" },
                 //{ id:"is_piecework", header:"Тип зарплаты", width: 180, sort: "string", type:'select',collection: typeSalary },
                 //{ id:"bitrix_id", header:"ID битрикс", width: 120, sort: "string", edit: 'text' },
@@ -107,7 +108,7 @@ export default class EmployeeDirectoryView extends JetView{
                   }
                 },
 
-                $sort:{ by:"department_id", dir:"asc" },
+                $sort:{ by:"department_id", dir:"asc", as:"int" },
               },
               ready:function(){
                 this.openAll();
