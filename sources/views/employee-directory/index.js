@@ -74,12 +74,13 @@ export default class EmployeeDirectoryView extends JetView{
               resizeColumn: { headerOnly:true },
 
               columns:[
-                { id:"department_id", header:"Сотрудники", width: 280,
+                { id:"department_name", header:"Сотрудники", width: 280,
                   template:function(obj, common) {
                     if (obj.$group) return common.treetable(obj, common) + obj.department_name;
                     return common.treetable(obj, common)+obj.name;
                   },
                 },
+                { id:"status", header:"Статус", width: 150, sort: "string", collection: [{'id':'0',"value":'Уволен'},{'id':'1',"value":'Работает'}] },
                 //{ id:"name", header:"Наиименование", width: 280, sort: "string" },
                 //{ id:"rate", header:"Ставка", width: 180, sort: "string" },
                 //{ id:"is_piecework", header:"Тип зарплаты", width: 180, sort: "string", type:'select',collection: typeSalary },
@@ -93,14 +94,15 @@ export default class EmployeeDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'department_id', 'expand': 'department'}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'department_id,name'}),//"api->accounting/contragents",
               save: "api->accounting/employees",
 
               scheme: {
                 $group: {
-                  by: 'department_id',
+                  by: 'department_name',
                   map: {
-                    'department_name' : ['department_name']
+                    'department_name' : ['department_name'],
+                    'name' : ['name']
                   }
                 },
 
@@ -169,7 +171,7 @@ export default class EmployeeDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employees',{'expand': 'department'}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employees', {'sort':'department_id,name'}), objFilter).then(function(data) {
         table.parse(data);
       });
 
