@@ -102,7 +102,8 @@ export default class EmployeeDirectoryView extends JetView{
                   by: 'department_name',
                   map: {
                     'department_name' : ['department_name'],
-                    'name' : ['name']
+                    'name' : ['name'],
+                    'department_id' : ['department_id']
                   }
                 },
 
