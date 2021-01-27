@@ -135,7 +135,6 @@ export default class ProductsBedView extends JetView{
                 onAfterEditStop:function(state, editor, ignoreUpdate){
                   var dtable = this;
                   if(state.value != state.old){
-                    dtable.addCellCss(editor.row, editor.column, "webix_editing_cell");
                     this.$scope.afterEditStop(state, editor, ignoreUpdate);
 
                   }
@@ -242,8 +241,13 @@ export default class ProductsBedView extends JetView{
     row[field] = record[column];
     let tableUrlUpdate = scope.app.config.apiRest.getUrl("put","accounting/employee-time-works", {},row.id);
 
-    webix.ajax().put(tableUrlUpdate, row).then(function(data){
-
+    webix.ajax().put(tableUrlUpdate, row,{
+      error:function(text, data, XmlHttpRequest){
+        scope.$$('time-work-table').addCellCss(record.id, column, "webix_invalid_cell");
+      },
+      success:function(text, data, XmlHttpRequest){
+        scope.$$('time-work-table').addCellCss(record.id, column, "webix_editing_cell");
+      }
     });
   }
 
@@ -341,8 +345,13 @@ export default class ProductsBedView extends JetView{
     row[field] = value;
     let tableUrlUpdate = scope.app.config.apiRest.getUrl("put","accounting/employee-time-works", {},row.id);
 
-    webix.ajax().put(tableUrlUpdate, row).then(function(data){
-
+    webix.ajax().put(tableUrlUpdate, row, {
+      error:function(text, data, XmlHttpRequest){
+        scope.$$('time-work-table').addCellCss(record.id, column, "webix_invalid_cell");
+      },
+      success:function(text, data, XmlHttpRequest){
+        scope.$$('time-work-table').addCellCss(record.id, column, "webix_editing_cell");
+      }
     });
   }
 
