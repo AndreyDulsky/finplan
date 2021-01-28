@@ -118,7 +118,6 @@ export default class ProductsBedView extends JetView{
                   var dtable = this;
                   if(state.value != state.old){
                     this.$scope.afterEditStop(state, editor, ignoreUpdate);
-
                   }
                 },
                 onItemClick:function(id, e, trg) {
