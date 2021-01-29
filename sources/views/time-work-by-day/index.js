@@ -49,7 +49,7 @@ export default class ProductsBedView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.monthStart(new Date())
+                  value: webix.Date.weekStart(new Date())
                 },
                 {
                   view:"datepicker",
@@ -58,7 +58,7 @@ export default class ProductsBedView extends JetView{
                   label: 'по',
                   labelWidth:30,
                   width:160,
-                  value: new Date()
+                  value: webix.Date.add(webix.Date.weekStart(new Date()),6,'day')
                 },
                 {},
                 {
@@ -179,7 +179,9 @@ export default class ProductsBedView extends JetView{
     let scope =this;
     scope.changeColumns(dateFrom, dateTo);
     table.clearAll();
-    table.load(tableUrl);
+    table.load(tableUrl).then(function() {
+      table.openAll();
+    });
 
     table.attachEvent("onPaste", function(text) {
       // define your pasting logic here
@@ -200,7 +202,9 @@ export default class ProductsBedView extends JetView{
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/employee-time-work/visits", {"dateFrom": dateFromValue, "dateTo": dateToValue});
       table.clearAll();
-      table.load(tableUrl);
+      table.load(tableUrl).then(function() {
+        table.openAll();
+      });
     });
     dateTo.attachEvent("onChange", function(id) {
 
@@ -209,7 +213,9 @@ export default class ProductsBedView extends JetView{
       scope.changeColumns(dateFrom, dateTo);
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/employee-time-work/visits", {"dateFrom": dateFromValue, "dateTo": dateToValue});
       table.clearAll();
-      table.load(tableUrl);
+      table.load(tableUrl).then(function() {
+        table.openAll();
+      });
     });
 
     //this.cashEdit = this.ui(UpdateFormView);

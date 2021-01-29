@@ -39,6 +39,7 @@ export default class App extends JetApp {
 		super({ ...defaults, ...config });
 
     //webix.proxy("api", "server/datatable_rest.php");
+    webix.Date.startOnMonday = true;
     webix.proxy.api = {
       $proxy:true,
       params: {"expand":"data,contragent,category,project,account", "per-page":"-1"},

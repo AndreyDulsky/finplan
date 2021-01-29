@@ -62,7 +62,7 @@ export default class EmployeeSalaryMonthView extends JetView{
                   label: 'по',
                   labelWidth:30,
                   width:160,
-                  value: new Date()
+                  value: webix.Date.add(webix.Date.yearStart(new Date()), 11, "month")
                 },
                 {
                   view:"combo-close",
@@ -120,7 +120,7 @@ export default class EmployeeSalaryMonthView extends JetView{
                 },
                 //{ id:'date_salary', header:'Месяц',	width:180 , css: {"text-align": "left"}, format: webix.Date.dateToStr("%Y %F")},
                 { id:'is_piecework', header:'Тип зарплаты',	width:100 , css: {"text-align": "left"}, collection: typeSalary},
-                { id:'is_taskmaster', header:'Бриг.',	width:50 , css: {"text-align": "right"}},
+                { id:'is_taskmaster', header:'Бриг.',	width:50 , css: {"text-align": "right"}, collection: [{'id':'0',"value":'Нет'},{'id':'1',"value":'Да'}]},
                 { id:'rate', header:'Ставка',	width:100 , css: {"text-align": "right"}},
                 { id:'status', header:'Статус',	width:100 , css: {"text-align": "right"}, collection: [{'id':'0',"value":'Уволен'},{'id':'1',"value":'Работает'}]},
                 {
