@@ -9,6 +9,7 @@ import "components/searchClose";
 
 export default class EmployeeDirectoryView extends JetView{
   config(){
+    let scope = this;
     return {
       localId: "layout",
       type:"wide",
@@ -55,6 +56,16 @@ export default class EmployeeDirectoryView extends JetView{
                   //"width": 120,
                   autowidth:true,
                   click: () => this.doAddClick()
+                },
+                {},
+                {
+                  view:"toggle",
+                  type:"icon",
+                  icon: 'mdi mdi-file-tree',
+                  autowidth:true,
+                  value :true,
+                  click: function() { scope.doClickOpenAll() }
+
                 },
 
               ]
@@ -192,6 +203,15 @@ export default class EmployeeDirectoryView extends JetView{
   doAddClick() {
     this.$$('employee-table').unselect();
     this.cashEdit.showForm(this.$$('employee-table'));
+  }
+
+  doClickOpenAll() {
+    let table = this.$$("employee-table");
+    if (table.getOpenItems().length >0 ) {
+      table.closeAll();
+    } else {
+      table.openAll();
+    }
   }
 
 }

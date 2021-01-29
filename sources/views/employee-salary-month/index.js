@@ -9,7 +9,9 @@ import "components/searchClose";
 let formatDateMonth = webix.Date.dateToStr("%Y %F");
 
 export default class EmployeeSalaryMonthView extends JetView{
+
   config(){
+    let scope = this;
     return {
       localId: "layout",
       type:"wide",
@@ -77,7 +79,16 @@ export default class EmployeeSalaryMonthView extends JetView{
                     }
                   }
                 },
-                {}
+                {},
+                {
+                  view:"toggle",
+                  type:"icon",
+                  icon: 'mdi mdi-file-tree',
+                  autowidth:true,
+                  value :true,
+                  click: function() { scope.doClickOpenAll() }
+
+                },
 
               ]
             },
@@ -404,6 +415,15 @@ export default class EmployeeSalaryMonthView extends JetView{
         scope.$$('employee-salary-table').addCellCss(record.id, column, "webix_editing_cell");
       }
     });
+  }
+
+  doClickOpenAll() {
+    let table = this.$$("employee-salary-table");
+    if (table.getOpenItems().length >0 ) {
+      table.closeAll();
+    } else {
+      table.openAll();
+    }
   }
 
 }

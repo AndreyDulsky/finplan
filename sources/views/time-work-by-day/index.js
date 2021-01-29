@@ -7,6 +7,7 @@ import "components/searchClose";
 
 export default class ProductsBedView extends JetView{
   config(){
+    let scope = this;
     return {
       localId: "layout",
       type:"wide",
@@ -59,7 +60,16 @@ export default class ProductsBedView extends JetView{
                   width:160,
                   value: new Date()
                 },
-                {}
+                {},
+                {
+                  view:"toggle",
+                  type:"icon",
+                  icon: 'mdi mdi-file-tree',
+                  autowidth:true,
+                  value :true,
+                  click: function() { scope.doClickOpenAll() }
+
+                },
 
               ]
             },
@@ -331,6 +341,15 @@ export default class ProductsBedView extends JetView{
         scope.$$('time-work-table').addCellCss(record.id, column, "webix_editing_cell");
       }
     });
+  }
+
+  doClickOpenAll() {
+    let table = this.$$("time-work-table");
+    if (table.getOpenItems().length >0 ) {
+      table.closeAll();
+    } else {
+      table.openAll();
+    }
   }
 
 }
