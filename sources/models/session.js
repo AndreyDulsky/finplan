@@ -36,16 +36,17 @@ function login(user, pass){
   let url = rest.getUrl('get','users/login');
 	return new webix.promise((resolve, reject) => {
 
-        webix.ajax().post(url, {'username': user, 'password': pass}, function(text, data, xhr){
-			var result = data.json();
-			if (result.success) {
-                webix.storage.local.put("wjet_user", { user:"admin" });
-                resolve({ user: "admin" });
-			} else {
-                resolve(null);
-			}
+			webix.ajax().post(url, {'username': user, 'password': pass}, function(text, data, xhr){
+				var result = data.json();
+				if (result.success) {
+									webix.storage.local.put("wjet_user", { user:"admin" });
+          				webix.storage.local.put("wjet_permission", result.user['permissions_finplan']);
+									resolve({ user: "admin" });
+				} else {
+									resolve(null);
+				}
 
-		});
+			});
 
 	});
 }

@@ -77,7 +77,7 @@ export default class TopView extends JetView{
 		};
 
 
-		const menu = {
+		let menu = {
 			view:"sidebar",
 			localId:"top:menu",
       id: "top:menu",
@@ -95,60 +95,19 @@ export default class TopView extends JetView{
 			//template: "<i class='material-icons md-36 md-light'>#icon#</i>",
       //template: '<i class="webix_icon mdi-24px #icon#" style="color:#ccc;padding:10px 10px 5px 15px;"></i>',
 			data:[
-				{ value:"Производство", icon:"mdi mdi-view-dashboard",
-          data: [
-            { value:"План производства", id:"start", icon:"mdi mdi-circle-outline" },
-            { value:"План результат", id:"order-result", icon:"mdi mdi-circle-outline" },
-            { value:"План столярка", id:"order-carpenter", icon:"mdi mdi-circle-outline" },
-            { value:"План швейка+крой", id:"order-sewing-cut", icon:"mdi mdi-circle-outline" },
-            { value:"План швейка", id:"order-sewing", icon:"mdi mdi-circle-outline" },
-            { value:"План крой", id:"order-cut", icon:"mdi mdi-circle-outline" },
-            { value:"Заказы", id:"order", icon:"mdi mdi-circle-outline" },
-            { value:"Посещения", id:"time-work-by-day", icon:"mdi mdi-circle-outline" },
-
-          ]
-        },
-				{ value:"Операции", id:"transaction",  icon:"mdi mdi-table" },
-        { value:"Проводки", id:"register",  icon:"mdi mdi-account" },
-
-				{ value:"Справочники",  icon:"mdi mdi-cube",
-					data: [
-					  { value:"Контрагенты", id:"contragents-directory",  icon:"mdi mdi-circle-outline" },
-            { value:"Ставки по выработке", id:"product-work-salary", icon:"mdi mdi-circle-outline" },
-            { value:"Продукция", id:"products-bed", icon:"mdi mdi-circle-outline" },
-            { value:"Ткани", id:"cloth-directory", icon:"mdi mdi-circle-outline" },
-            { value:"Сотрудники", id:"employee-directory", icon:"mdi mdi-circle-outline" },
-            { value:"Сотрудники по месяцам", id:"employee-salary-month", icon:"mdi mdi-circle-outline" },
-            { value:"Отделы", id:"department-directory", icon:"mdi mdi-circle-outline" },
-            { value:"Типы зарплат", id:"employee-salary-type-directory", icon:"mdi mdi-circle-outline" },
-            { value:"Настройки", id:"setting-directory", icon:"mdi mdi-circle-outline" },
-
-          ]
-				},
-        { value:"Отчеты",  icon:"mdi mdi-chart-bar",
-          data: [
-          	{ value:"Движение денег", id:"report-cash-flow",  icon:"mdi mdi-circle-outline" },
-            { value:"Движение денег (График)", id:"report-cash-flow-chart",  icon:"mdi mdi-circle-outline" },
-            { value:"ОСВ", id:"report",  icon:"mdi mdi-circle-outline" },
-            { value:"ЗП", id:"report-salary",  icon:"mdi mdi-circle-outline" },
-
-          ]
-        },
-        { value:"Зарплата",  icon:"mdi mdi-cube",
-          data: [
-            { value:"Начисление зарплаты", id:"list-salary-accrual", icon:"mdi mdi-circle-outline" },
-            { value:"Зарплатная ведомость", id:"report-salary-total", icon:"mdi mdi-circle-outline" },
-          ]
-        },
-
         //{ value:"Firebase", id:"firebase",  icon:"mdi  mdi-puzzle" },
-        { value:"Настройки", id:"settings",  icon:"mdi mdi-tools" },
-        { value:"Открытые отчеты", id:"info", icon:"mdi mdi-database", data:[] },
+
 			],
       
 
 
 		};
+
+		let menuPermissions = webix.storage.local.get("wjet_permission");
+		menu['data'] = menuPermissions;
+		menu['data'].push({ value:"Настройки", id:"settings",  icon:"mdi mdi-tools" },)
+    menu['data'].push({ value:"Открытые отчеты", id:"info", icon:"mdi mdi-database", data:[] })
+
 
 
 		const ui = {
