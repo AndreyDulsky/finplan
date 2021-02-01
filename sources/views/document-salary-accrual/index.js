@@ -8,8 +8,9 @@ export default class DocumentSalaryAccrualView extends DocumentJetView{
   constructor(app, name, record){
     let css = {"color": "green", "text-align": "right", "font-weight": 100};
     let cssNumber = {"text-align": "right"};
+    let id = (record) ? +record.id : 0;
     super(app, name, {
-      url: app.config.apiRest.getUrl('get',"accounting/document-salary-accruals", {'filter':'{"list_id":'+record.id+'}'}),
+      url: app.config.apiRest.getUrl('get',"accounting/document-salary-accruals", {'filter':'{"list_id":'+id+'}'}),
       //save: "api->accounting/document-salary-accruals",
       columns:[
         { id:"index", header:"#", sort:"int", width:50},

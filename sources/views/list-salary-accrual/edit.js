@@ -71,11 +71,11 @@ export default class UpdateFormView extends JetView {
           {template:"Начисление зарплаты", type:"header", borderless:true},
           {view:"icon", icon:"mdi mdi-fullscreen", tooltip:"enable fullscreen mode", click: function(obj, obj1){
             debugger;
-            if(state.win.config.fullscreen){
+            if(state.win.config.fullscreen) {
               webix.fullscreen.exit();
               this.define({icon:"mdi mdi-fullscreen", tooltip:"Enable fullscreen mode"});
             }
-            else{
+            else {
               webix.fullscreen.set(state.win);
               this.define({icon:"mdi mdi-fullscreen-exit", tooltip:"Disable fullscreen mode"});
             }
@@ -273,6 +273,7 @@ export default class UpdateFormView extends JetView {
     let table = this.state.win.getBody().queryView({'localId':'document-salary-accrual-table'});
     let tableUrl = this.app.config.apiRest.getUrl("create","accounting/document-salary-accruals");
     let tableUrlUpdate = this.app.config.apiRest.getUrl("put","accounting/document-salary-accruals");
+
     table.data.each(function(row){
       for (var prop in row) {
         if (prop.indexOf('$') != -1) {
@@ -312,9 +313,11 @@ export default class UpdateFormView extends JetView {
     let state = this.state;
     let table = this.state.win.getBody().queryView({'localId':'document-salary-accrual-table'});
     let formatDate = webix.Date.dateToStr("%Y-%m-%d");
+    let dateDocument = state.win.getBody().queryView({'localId':'date_document'}).getValue();
+
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/get-salary-by-days", {
       sort: 'employee_name',
-      dateDocument: formatDate(state.tableRecord['date_document'])
+      dateDocument: formatDate(dateDocument)
       //filter: '{"B":"'+selectTypeValue+'"}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
