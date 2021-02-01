@@ -27,8 +27,8 @@ export default class EmployeeSalaryMonthView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Посещения",
-                  "width": 150
+                  "label": "Ставка сотрудников по месяцам",
+                  "width": 250
                 },
 
                 {},

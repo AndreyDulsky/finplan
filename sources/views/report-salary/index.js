@@ -799,6 +799,9 @@ export default class OrderResultView extends JetView{
     if (type == 3) {
       selectDate = 'date_sewing';
     }
+    if (type == 4) {
+      selectDate = 'date_cut';
+    }
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
       "expand" : 'productWorkSalary, cloth, product',
