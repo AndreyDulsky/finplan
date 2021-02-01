@@ -122,6 +122,7 @@ export default class EmployeeSalaryMonthView extends JetView{
                 { id:'is_piecework', header:'Тип зарплаты',	width:100 , css: {"text-align": "left"}, collection: typeSalary},
                 { id:'is_taskmaster', header:'Бриг.',	width:50 , css: {"text-align": "right"}, collection: [{'id':'0',"value":'Нет'},{'id':'1',"value":'Да'}]},
                 { id:'rate', header:'Ставка',	width:100 , css: {"text-align": "right"}},
+                { id:'award_const', header:'Премия пост.',	width:110 , css: {"text-align": "right"}},
                 { id:'status', header:'Статус',	width:100 , css: {"text-align": "right"}, collection: [{'id':'0',"value":'Уволен'},{'id':'1',"value":'Работает'}]},
                 {
                   "id": "action-delete",

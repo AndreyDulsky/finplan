@@ -206,6 +206,7 @@ export default class UpdateFormView extends JetView {
       let res2 = state.win.getBody().queryView({'localId':'document-salary-accrual-table'});
 
       res2.waitData.then(function(){
+        res2.openAll();
         res2.data.attachEvent("onDataUpdate", function(id, data, old){
           scope.setSumByTableRows()
         });
@@ -309,6 +310,8 @@ export default class UpdateFormView extends JetView {
 
 
     table.data.each(function(row){
+
+      if (row.$group) return;
       for (var prop in row) {
         if (prop.indexOf('$') != -1) {
           delete row[prop];
@@ -317,6 +320,7 @@ export default class UpdateFormView extends JetView {
 
       delete row['depends'];
       delete row['triggers'];
+
 
       row['date_document'] = dateDocument;
 
@@ -330,7 +334,7 @@ export default class UpdateFormView extends JetView {
             'type_document' : 7,
             'sum' : 0
         };
-        debugger;
+
         if (listId == null) {
           webix.ajax().post(tableListUrl, rowList).then(function (data) {
             let dataJson = data.json();
@@ -429,7 +433,8 @@ export default class UpdateFormView extends JetView {
 
 
   doClickPrint() {
-    let table = this.state.win.getBody();
+    let table = this.state.win.getBody().queryView({'localId':'document-salary-accrual-table'});
+
     webix.print(table, {mode:"landscape", fit:"data"});
   }
 

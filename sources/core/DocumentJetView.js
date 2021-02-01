@@ -7,7 +7,7 @@ export default class DocumentJetView extends JetView {
   }
   config(){
     return {
-      view:"datatable",
+      view:"treetable",
       localId: this.name+"-table",
       //urlEdit: 'time-work',
       css:"webix_header_border webix_data_border",
@@ -19,14 +19,16 @@ export default class DocumentJetView extends JetView {
       columns: this.grid_config.columns,
       url: this.grid_config.url,
       save: this.grid_config.save,
+      scheme: this.grid_config.scheme,
       editable:true,
       editaction: "dblclick",
       math: true,
       hover:"myhover",
       on:{
         "data->onStoreUpdated":function(){
-          this.data.each(function(obj, i){
-            obj.index = i+1;
+
+          this.data.each(function(obj, i, k, l){
+            //obj.index = i+1;
           })
         },
         onItemClick:function(id, e, trg) {
