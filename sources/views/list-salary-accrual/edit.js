@@ -131,6 +131,34 @@ export default class UpdateFormView extends JetView {
                   invalidMessage:"Значение не может быть пустым!"
                 },
                 {
+                  "id" : "form_edit_date_created",
+                  "name":"date_created",
+                  view:"datepicker",
+                  localId: 'date_created',
+                  //inputWidth:150,
+                  label: 'Дата',
+                  labelWidth:50,
+                  width:180,
+                  value: new Date(),
+                  required: true,
+                  invalidMessage:"Значение не может быть пустым!",
+                  hidden: true
+                },
+                {
+                  "id" : "form_edit_type_document",
+                  "name":"type_document",
+                  view:"text",
+                  localId: 'type_document',
+                  label: 'Тип документа',
+                  labelWidth:50,
+                  width:180,
+                  value: '',
+                  disabled: true,
+                  format: '1 111,00',
+                  invalidMessage:"Значение не может быть пустым!",
+                  hidden: true
+                },
+                {
                   "id" : "form_edit_sum",
                   "name":"sum",
                   view:"text",
@@ -229,13 +257,7 @@ export default class UpdateFormView extends JetView {
   doClickSave(copy = false) {
     this.doSaveTable();
 
-    let state = this.state;
-    state.formEdit = state.win.getBody().queryView({'localId':'formEdit'});
-    if (!state.formEdit.validate()) return;
-    //
-    let record = state.formEdit.getValues();
-    state.table.updateItem(record.id, record);
-    state.win.close();
+
     // if (copy) {
     //   state.isUpdate = false;
     //   record.id = '';
@@ -273,6 +295,18 @@ export default class UpdateFormView extends JetView {
     let table = this.state.win.getBody().queryView({'localId':'document-salary-accrual-table'});
     let tableUrl = this.app.config.apiRest.getUrl("create","accounting/document-salary-accruals");
     let tableUrlUpdate = this.app.config.apiRest.getUrl("put","accounting/document-salary-accruals");
+    let dateDocument = this.state.win.getBody().queryView({'localId':'date_document'}).getValue();
+    let tableListUrl = this.app.config.apiRest.getUrl("create","accounting/list-salary-accruals");
+    let rowList = {};
+    let listId = (scope.state.tableRecord) ? scope.state.tableRecord.id : null;
+
+    let state = this.state;
+    state.formEdit = state.win.getBody().queryView({'localId':'formEdit'});
+    if (!state.formEdit.validate()) return;
+    //
+    let record = state.formEdit.getValues();
+
+
 
     table.data.each(function(row){
       for (var prop in row) {
@@ -284,23 +318,56 @@ export default class UpdateFormView extends JetView {
       delete row['depends'];
       delete row['triggers'];
 
-      row['date_document'] = scope.state.tableRecord.date_document;
-      if (!row['list_id']) {
-        isUpdate = false;
-        row['list_id'] = scope.state.tableRecord.id;
-        delete row['id'];
-        webix.ajax().post(tableUrl, row).then(function(data){
+      row['date_document'] = dateDocument;
 
-        });
+      if (!row['list_id']) {
+
+        isUpdate = false;
+        row['list_id'] = listId;
+        delete row['id'];
+        rowList = {
+            'date_document' : dateDocument,
+            'type_document' : 7,
+            'sum' : 0
+        };
+        debugger;
+        if (listId == null) {
+          webix.ajax().post(tableListUrl, rowList).then(function (data) {
+            let dataJson = data.json();
+            listId = dataJson.id;
+            row['list_id'] = listId;
+            state.formEdit.setValues(dataJson);
+            webix.ajax().post(tableUrl, row).then(function (data) {
+              state.table.add(dataJson);
+              state.table.updateItem(listId, dataJson);
+
+            }).then(function() {
+              state.win.close();
+            });
+          });
+        } else {
+          webix.ajax().post(tableUrl, row).then(function (data) {
+
+          }).then(function() {
+            state.win.close();
+          });
+        }
+
+
       } else {
         tableUrlUpdate = scope.app.config.apiRest.getUrl("put","accounting/document-salary-accruals", {},row.id);
         webix.ajax().put(tableUrlUpdate, row).then(function(data){
-
+          record = state.formEdit.getValues();
+          state.win.close();
+          state.table.updateItem(record.id, record);
         });
       }
 
 
     });
+    //record = state.formEdit.getValues();
+    //state.table.updateItem(listId, record);
+
 
   }
 
