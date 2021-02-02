@@ -39,7 +39,7 @@ function login(user, pass){
 			webix.ajax().post(url, {'username': user, 'password': pass}, function(text, data, xhr){
 				var result = data.json();
 				if (result.success) {
-									webix.storage.local.put("wjet_user", { user:"admin" });
+									webix.storage.local.put("wjet_user", { user:"admin", token: result.token });
           				webix.storage.local.put("wjet_permission", result.user['permissions_finplan']);
 									resolve({ user: "admin" });
 				} else {

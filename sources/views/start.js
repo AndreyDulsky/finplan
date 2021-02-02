@@ -186,6 +186,15 @@ export default class StartView extends JetView{
 
               ]
             },
+            {
+              view:"icon",
+              //type:"icon",
+              icon: 'mdi mdi-refresh',
+              autowidth:true,
+              value :true,
+              click: function() { scope.doRefresh() }
+
+            },
 
             {
               view:"toggle",
@@ -611,19 +620,7 @@ export default class StartView extends JetView{
 	}
 
 	init(view) {
-    // let table = this.$$("start-table");
-    // let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {"per-page": "10", sort: '[{"property":"A","direction":"DESC"}]'});
-    //
-    // let scope =this;
-    // webix.ajax(tableUrl).then(function(data) {
-    //   let result = data.json().items;
-    //   table.parse(result);
-    //
-    // });
 
-    //scope.changeColumns(dateFrom, dateTo);
-    //table.clearAll();
-    //table.load(tableUrl);
     let table = this.$$("start-table");
     let format = webix.Date.dateToStr("%d.%m.%y");
     let dateFrom = this.$$("dateFrom");
@@ -631,74 +628,35 @@ export default class StartView extends JetView{
     let dateFromValue = format(this.$$("dateFrom").getValue());
     let dateToValue = format(this.$$("dateTo").getValue());
 
-    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
+    this.restApi = this.app.config.apiRest;
+    webix.extend(table, webix.ProgressBar);
+
+    let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
       "per-page": "1000",
       sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
       filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
-    webix.ajax().get(tableUrl).then(function(data){
+    this.restApi.getLoad(tableUrl).then(function(data){
       table.clearAll();
       table.parse(data.json().items);
     });
-    // table.load(tableUrl,function(text, data, http_request){
-    //   return  data.json().items;
-    // });
+
 
     dateFrom.attachEvent("onChange", function(id) {
       dateFromValue = format(dateFrom.getValue());
       dateToValue = format(dateTo.getValue());
 
-      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
+      let tableUrl = scope.restApi.getUrl('get',"accounting/orders", {
         "per-page": "1000",
         sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
-      webix.ajax().get(tableUrl).then(function(data){
+      scope.restApi.getLoad(tableUrl).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
-        // table.group({
-        //   by:"A",
-        //   map:{
-        //     value:["A"],
-        //     date_obivka:["date_obivka"],
-        //     G:["G","median"],
-        //     V:["V","median"],
-        //     AO:["AO","median"],
-        //     AA:["AA","median"],
-        //     AB:["AB","median"],
-        //     AG:["AG","median"],
-        //     AJ:["AJ","median"],
-        //     J:["J","countValue"],
-        //     coef_sewing:["coef_sewing", "median" ],
-        //     coef_cut:["coef_cut", "median" ],
-        //   }
-        // });
-        // table.group({
-        //   by:"date_obivka", // 'company' is the name of a data property
-        //   map:{
-        //     G:["G","median"],
-        //     V:["V","median"],
-        //     AO:["AO","median"],
-        //     AA:["AA","median"],
-        //     AB:["AB","median"],
-        //     AG:["AG","median"],
-        //     AJ:["AJ","median"],
-        //     J:["J","countValue"],
-        //     coef_sewing:["coef_sewing", "median" ],
-        //     coef_cut:["coef_cut", "median" ],
-        //     value:["date_obivka"],
-        //     A:["A"],
-        //
-        //
-        //     //state:["grouped","string"],
-        //     //missing:false
-        //   },
-        // },0);
-
-
       });
 
     });
@@ -708,17 +666,39 @@ export default class StartView extends JetView{
       dateFromValue = format(dateFrom.getValue());
       dateToValue = format(dateTo.getValue());
 
-      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
+      let tableUrl = scope.restApi.getUrl('get',"accounting/orders",{
         "per-page": "1000",
         sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
-        //filter: '{"AE":{">=":"01.02.20"}}'
       });
 
-      webix.ajax().get(tableUrl).then(function(data){
+      scope.restApi.getLoad(tableUrl).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
       });
+    });
+  }
+
+  doRefresh() {
+    let table = this.$$("start-table");
+    let format = webix.Date.dateToStr("%d.%m.%y");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+
+    let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
+      "per-page": "1000",
+      sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+    });
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
+    this.restApi.getLoad(tableUrl).then(function(data){
+      table.clearAll();
+      table.parse(data.json().items);
+      table.enable();
     });
   }
 

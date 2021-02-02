@@ -124,6 +124,15 @@ export default class OrdersView extends JetView{
               ]
             },
             {
+              view:"icon",
+              //type:"icon",
+              icon: 'mdi mdi-refresh',
+              autowidth:true,
+              value :true,
+              click: function() { scope.doRefresh() }
+
+            },
+            {
               view:"toggle",
               type:"icon",
               icon: 'mdi mdi-file-tree',
@@ -312,6 +321,8 @@ export default class OrdersView extends JetView{
     });
 
 
+
+
     dateFrom.attachEvent("onChange", function(id) {
       dateFromValue = format(dateFrom.getValue());
       dateToValue = format(dateTo.getValue());
@@ -446,6 +457,43 @@ export default class OrdersView extends JetView{
     });
   }
 
+  doRefresh() {
+    let table = this.$$("order-table");
+    let format = webix.Date.dateToStr("%d.%m.%y");
+    let selectType = this.$$("select-type");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+    let selectTypeValue = selectType.getValue();
+    let filter =  {filter:{"B": {"in":[selectTypeValue]}}};
+    if (selectTypeValue == 4) {
+      filter = {
+        filter: {
+          "or":[
+            {"B": {"in":[3,1,2,5,6]}},
+            {"date_shipment":{">=":dateFromValue, '<=':dateToValue}, "B":4}
+          ]
+        }
+      };
+    }
+    this.restApi = this.app.config.apiRest;
+    let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
+      "per-page": "1200",
+      sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
+    });
+
+    webix.extend(table, webix.ProgressBar);
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
+    this.restApi.getLoad(tableUrl, filter).then(function(data){
+      table.clearAll();
+      table.parse(data.json().items);
+      table.enable();
+    });
+
+  }
 
 
   doClickOpenAll() {

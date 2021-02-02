@@ -50,8 +50,19 @@ export default class App extends JetApp {
       save:function(view, update, dp) {
 
         let id = update.data.id;
-      	if (update.operation === "update")
-          return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), update.data);
+        let editor;
+
+      	if (update.operation === "update") {
+          editor = dp.config.master.getEditor();
+          return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), update.data, {
+            error:function(text, data, XmlHttpRequest){
+              view.addCellCss(id, editor.column, "webix_invalid_cell");
+            },
+            success:function(text, data, XmlHttpRequest){
+              view.addCellCss(id, editor.column, "webix_editing_cell");
+            }
+          });
+        }
         if (update.operation === "insert")
           return webix.ajax().post(restObj.getUrl('create',this.source,this.params), update.data);
         if (update.operation === "delete")

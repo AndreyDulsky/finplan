@@ -2,13 +2,15 @@ export class ApiRest {
 
   constructor(){
     let $scope = this;
+    let wjetUser = webix.storage.local.get("wjet_user");
     if (location.host == 'localhost:8082') {
       this.urlBase = "http://admin.startsellshop.local/api";
     } else {
       this.urlBase = "http://admin.startsell.biz/api";
     }
     this.authKeyName = 'auth_token';
-    this.authKey = '7110eda4d09e062aa5e4a390b0a572ac0d2c022066';
+
+    this.authKey = wjetUser.token;//'7110eda4d09e062aa5e4a390b0a572ac0d2c022066';
     this.dataCollection = {};
   }
 
@@ -57,6 +59,10 @@ export class ApiRest {
       this.dataCollection[model] = webix.ajax(url, callback);
     }
     return this.dataCollection[model];
+  }
+
+  getLoad(url, params, callback) {
+      return webix.ajax(url, params);
   }
 
   getCollection(model, params) {
