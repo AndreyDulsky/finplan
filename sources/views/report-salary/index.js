@@ -916,6 +916,6 @@ export default class OrderResultView extends JetView{
   doClickPrint() {
     let table = this.$$("report-salary-table");
 
-    webix.print(table, {mode:"landscape", fit:"data"});
+    webix.print(table, { fit:"data"});
   }
 }
