@@ -88,7 +88,7 @@ export default class UserDirectoryView extends JetView{
                 { id:"id", header:"ID", width: 40 },
                 { id:"username", header:"Логин", width: 150},
                 { id:"email", header:"E-mail", width: 200},
-                { id:"status", header:"Статус", width: 80, sort: "string", collection: [{'id':'10',"value":'Активен'},{'id':'30',"value":'Неактивен'}] },
+                { id:"status", header:"Статус", width: 80, sort: "string", collection: [{'id':'10',"value":'Активен'},{'id':'0',"value":'Неактивен'}] },
                 { id:"type", header:"Тип прав", width: 80, sort: "string" },
                 { id:"last_login", header:"Последний заход", width: 140, sort: "string" },
                 { id:"login_ip", header:"IP адрес", width: 120, sort: "string" },
