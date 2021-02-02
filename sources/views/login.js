@@ -32,9 +32,10 @@ export default class LoginView extends JetView{
     Login(){
         const user = this.app.getService("user");
         const form = this.getRoot().queryView({ view:"form" });
-
+        let scope = this.app;
         if (form.validate()){
             const data = form.getValues();
+
             user.login(data.login, data.pass).catch(function(){
                 webix.html.removeCss(form.$view, "invalid_login");
                 form.elements.pass.focus();

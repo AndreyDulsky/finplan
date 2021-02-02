@@ -2,7 +2,7 @@ export class ApiRest {
 
   constructor(){
     let $scope = this;
-    let wjetUser = webix.storage.local.get("wjet_user");
+    //let wjetUser = webix.storage.local.get("wjet_user");
     if (location.host == 'localhost:8082') {
       this.urlBase = "http://admin.startsellshop.local/api";
     } else {
@@ -10,14 +10,24 @@ export class ApiRest {
     }
     this.authKeyName = 'auth_token';
 
-    this.authKey = wjetUser.token;//'7110eda4d09e062aa5e4a390b0a572ac0d2c022066';
+    //this.authKey = (wjetUser) ? wjetUser.token : '';//'7110eda4d09e062aa5e4a390b0a572ac0d2c022066';
     this.dataCollection = {};
+  }
+
+  getAuthKey() {
+    if (!this.authKey) {
+      let wjetUser = webix.storage.local.get("wjet_user");
+
+      this.authKey =  (wjetUser) ? wjetUser.token : '';
+    }
+    return this.authKey;
   }
 
   getUrl(type, model, params = {}, id = '') {
     let url = this.urlBase+'/'+model;
     let paramKey = '?'+this.authKeyName+'='+this.authKey;
-    params[this.authKeyName] = this.authKey;
+
+    params[this.authKeyName] = this.getAuthKey();
     let out = [];
     for (var key in params) {
       if (params.hasOwnProperty(key)) {
@@ -62,7 +72,11 @@ export class ApiRest {
   }
 
   getLoad(url, params, callback) {
-      return webix.ajax(url, params);
+      return webix.ajax(url, params, {
+        error:function(text, data, XmlHttpRequest){
+          //webix.storage.local.remove("wjet_user")
+        }
+      });
   }
 
   getCollection(model, params) {

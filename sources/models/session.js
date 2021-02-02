@@ -31,7 +31,9 @@ function status(){
 	});
 }
 
+
 function login(user, pass){
+
 	let rest = new ApiRest();
   let url = rest.getUrl('get','users/login');
 	return new webix.promise((resolve, reject) => {
@@ -39,9 +41,11 @@ function login(user, pass){
 			webix.ajax().post(url, {'username': user, 'password': pass}, function(text, data, xhr){
 				var result = data.json();
 				if (result.success) {
-									webix.storage.local.put("wjet_user", { user:"admin", token: result.token });
+          				//rest.authKey = result.token;
+									webix.storage.local.put("wjet_user", { user:"admin", token:result.token });
+
           				webix.storage.local.put("wjet_permission", result.user['permissions_finplan']);
-									resolve({ user: "admin" });
+									resolve({ user: "admin", token: result.token });
 				} else {
 									resolve(null);
 				}
