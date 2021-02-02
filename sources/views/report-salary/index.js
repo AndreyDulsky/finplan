@@ -285,6 +285,7 @@ export default class OrderResultView extends JetView{
 
               ]
             },
+            { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
 
             {
               view:"toggle",
@@ -422,6 +423,12 @@ export default class OrderResultView extends JetView{
             },
 
             { id:"cost_cut", header:[ "Раб. крой", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
+              "css": {"color": "green", "text-align": "right"},
+              // "template" : function(data) {
+              //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
+              // }
+            },
+            { id:"BY", header:[ "Настил", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
               "css": {"color": "green", "text-align": "right"},
               // "template" : function(data) {
               //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
@@ -782,6 +789,7 @@ export default class OrderResultView extends JetView{
   }
 
   showBatch(newv){
+    webix.storage.local.remove("report-salary-table");
     let table = this.$$("report-salary-table");
     this.$$("report-salary-table").showColumnBatch(newv);
     let dateFrom = this.$$("dateFrom");
@@ -903,5 +911,11 @@ export default class OrderResultView extends JetView{
     scope.getItem(id).icon = icon;
     scope.updateItem(id);
     webix.storage.local.put("report-salary-table", grid.getState());
+  }
+
+  doClickPrint() {
+    let table = this.$$("report-salary-table");
+
+    webix.print(table, {mode:"landscape", fit:"data"});
   }
 }
