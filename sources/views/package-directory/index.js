@@ -25,7 +25,7 @@ export default class UserDirectoryView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Пользователи",
+                  "label": "Пакеты",
                   "width": 150
                 },
 
@@ -36,7 +36,7 @@ export default class UserDirectoryView extends JetView{
                   icon:"mdi mdi-fullscreen",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set(this.$scope.$$("user-table"));
+                    webix.fullscreen.set(this.$scope.$$("package-table"));
                   }
                 },
               ]
@@ -72,8 +72,8 @@ export default class UserDirectoryView extends JetView{
             },
             {
               view: "treetable",
-              localId: "user-table",
-              urlEdit: 'user',
+              localId: "package-table",
+              urlEdit: 'package',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
@@ -86,13 +86,10 @@ export default class UserDirectoryView extends JetView{
 
               columns:[
                 { id:"id", header:"ID", width: 40 },
-                { id:"username", header:"Логин", width: 150},
-                { id:"email", header:"E-mail", width: 200},
-                { id:"status", header:"Статус", width: 80, sort: "string", collection: [{'id':'10',"value":'Активен'},{'id':'0',"value":'Неактивен'}] },
-                { id:"type", header:"Тип прав", width: 80, sort: "string" },
-                { id:"last_login", header:"Последний заход", width: 140, sort: "string" },
-                { id:"login_ip", header:"IP адрес", width: 120, sort: "string" },
-                { id:"created_at", header:"Создан", width: 140, sort: "string" },
+                { id:"name", header:"Наименование", width: 150},
+                { id:"key", header:"Ключ", width: 200},
+                { id:"price", header:"Цена", width: 80, sort: "string"},
+
                 {
                   "id": "action-delete",
                   "header": "",
@@ -101,8 +98,8 @@ export default class UserDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/users", {'sort':'name'}),//"api->accounting/contragents",
-              save: "api->accounting/users",
+              url: this.app.config.apiRest.getUrl('get',"accounting/packages", {'sort':'name'}),//"api->accounting/contragents",
+              save: "api->accounting/packages",
 
               scheme: {
                 // $sort:{ by:"department_id", dir:"asc", as:"int" },
@@ -154,7 +151,7 @@ export default class UserDirectoryView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("user-table");
+    let table = this.$$("package-table");
     //table.markSorting("name", "asc");
     let scope = this;
 
@@ -171,7 +168,7 @@ export default class UserDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/users', {'sort':'name'}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/packages', {'sort':'name'}), objFilter).then(function(data) {
         table.parse(data);
         table.openAll();
       });
@@ -188,12 +185,12 @@ export default class UserDirectoryView extends JetView{
   }
 
   doAddClick() {
-    this.$$('user-table').unselect();
-    this.cashEdit.showForm(this.$$('user-table'));
+    this.$$('package-table').unselect();
+    this.cashEdit.showForm(this.$$('package-table'));
   }
 
   doClickOpenAll() {
-    let table = this.$$("user-table");
+    let table = this.$$("package-table");
     if (table.getOpenItems().length >0 ) {
       table.closeAll();
     } else {
