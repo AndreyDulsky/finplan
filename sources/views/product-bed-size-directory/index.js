@@ -1,13 +1,15 @@
 import {JetView} from "webix-jet";
 import UpdateFormView from "core/updateFormView";
-import {productTypes} from "models/product/product-type";
+//import {departments} from "models/department/departments";
+//import {typeSalary} from "models/department/type-salary";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
 
 
-export default class ProductsBedView extends JetView{
+export default class ProductBedSizeDirectoryView extends JetView{
   config(){
+    let scope = this;
     return {
       localId: "layout",
       type:"wide",
@@ -23,18 +25,18 @@ export default class ProductsBedView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Продукция",
+                  "label": "Пакеты",
                   "width": 150
                 },
 
                 {},
                 { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
                 {
-                  view:"button",
-                  value:"fs",
+                  view:"icon",
+                  icon:"mdi mdi-fullscreen",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("product-bed-table");
+                    webix.fullscreen.set(this.$scope.$$("product-bed-size-table"));
                   }
                 },
               ]
@@ -55,13 +57,23 @@ export default class ProductsBedView extends JetView{
                   autowidth:true,
                   click: () => this.doAddClick()
                 },
+                {},
+                {
+                  view:"toggle",
+                  type:"icon",
+                  icon: 'mdi mdi-file-tree',
+                  autowidth:true,
+                  value :true,
+                  click: function() { scope.doClickOpenAll() }
+
+                },
 
               ]
             },
             {
-              view: "datatable",
-              localId: "product-bed-table",
-              urlEdit: 'product-bed',
+              view: "treetable",
+              localId: "product-bed-size-table",
+              urlEdit: 'product-bed-size',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
               //leftSplit:1,
@@ -73,26 +85,9 @@ export default class ProductsBedView extends JetView{
               resizeColumn: { headerOnly:true },
 
               columns:[
-                { id:"id", header:"#",	width:50 },
-                { id:"name", header:"Наиименование", width: 280, sort: "string" },
-                //{ id:"name_bitrix", header:"Битрикс", width: 180, sort: "string" },
-                { id:"type_id", header:"Тип", width: 180, sort: "string", collection: productTypes },
-                { id:"expense_cloth_120", header:"Рас. тк. 120", width: 120, sort: "string", edit: 'text' },
-                { id:"expense_cloth_140", header:"Рас. тк. 140", width: 120, sort: "string", edit: 'text' },
-                { id:"expense_cloth_160", header:"Рас. тк. 160", width: 120, sort: "string", edit: 'text' },
-                { id:"expense_cloth_180", header:"Рас. тк. 180", width: 120, sort: "string", edit: 'text' },
-                { id:"expense_cloth_200", header:"Рас. тк. 200", width: 120, sort: "string", edit: 'text' },
+                { id:"id", header:"ID", width: 40 },
+                { id:"name", header:"Наименование", width: 150},
 
-                { id:"price", header:"Кат. 0",	width:100 },
-                { id:"price_1", header:"Кат. 1" },
-                { id:"price_2", header:"Кат. 2." },
-                { id:"price_3", header:"Кат. 3." },
-                { id:"price_4", header:"Кат. 4",	width:100 },
-                { id:"price_5", header:"Кат. 5",	width:100 },
-                { id:"price_6", header:"Кат. 6",	width:100 },
-
-
-                { id:"price_7", header:"Кат. 7",	width:110 },
                 {
                   "id": "action-delete",
                   "header": "",
@@ -101,12 +96,16 @@ export default class ProductsBedView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/product-beds", {'sort':'name'}),//"api->accounting/contragents",
-              save: "api->accounting/product-beds",
-              // scheme: {
-              //    $sort:{ by:"name", dir:"asc" },
-              //  },
+              url: this.app.config.apiRest.getUrl('get',"accounting/product-bed-sizes", {'sort':'name'}),//"api->accounting/contragents",
+              save: "api->accounting/product-bed-sizes",
 
+              scheme: {
+                // $sort:{ by:"department_id", dir:"asc", as:"int" },
+                $init:function(obj){ obj.index = this.count()+1; }
+              },
+              ready:function(){
+                this.openAll();
+              },
               on:{
                 onItemClick:function(id, e, trg) {
 
@@ -150,28 +149,12 @@ export default class ProductsBedView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("product-bed-table");
+    let table = this.$$("product-bed-size-table");
     //table.markSorting("name", "asc");
     let scope = this;
-    // table.attachEvent("onDataRequest", function (start, count) {
-    //   webix.ajax().get(scope.app.config.apiRest.getUrl('get', 'accounting/contragents', {
-    //     "expand": "contragent,category,project,account,data",
-    //     "per-page": count, "start" : start
-    //   })).then(function (data) {
-    //     //table.parse(data);
-    //     // table.parse({
-    //     //   pos: your_pos_value,
-    //     //   total_count: your_total_count,
-    //     //   data: data
-    //     // });
-    //   });
-    //
-    //   return false;
-    // });
 
 
     form.attachEvent("onChange", function(obj){
-
       let filter = {'search':form.getValue()};
       let objFilter = { filter: filter };
 
@@ -183,8 +166,9 @@ export default class ProductsBedView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/product-beds'), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/product-bed-sizes', {'sort':'name'}), objFilter).then(function(data) {
         table.parse(data);
+        table.openAll();
       });
 
 
@@ -199,8 +183,17 @@ export default class ProductsBedView extends JetView{
   }
 
   doAddClick() {
-    this.$$('product-bed-table').unselect();
-    this.cashEdit.showForm(this.$$('product-bed-table'));
+    this.$$('product-bed-size-table').unselect();
+    this.cashEdit.showForm(this.$$('product-bed-size-table'));
+  }
+
+  doClickOpenAll() {
+    let table = this.$$("product-bed-size-table");
+    if (table.getOpenItems().length >0 ) {
+      table.closeAll();
+    } else {
+      table.openAll();
+    }
   }
 
 }

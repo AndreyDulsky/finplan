@@ -19,7 +19,11 @@ window.procent = function(row, id){
   return Math.round(item.value*100*100/sum) / 100
 }
 
-export default class UpdateFormView extends JetView {
+let formatDate = webix.Date.dateToStr("%d.%m.%y");
+let formatDateStandart = webix.Date.dateToStr("%Y-%m-%d");
+
+
+export default class UpdateFormOrderView extends JetView {
   constructor(app, name){
     super(app,name);
     this.state = new CoreEditClass(this);
@@ -79,6 +83,7 @@ export default class UpdateFormView extends JetView {
     let elementsCount = Object.keys(state.formEdit.elements).length;
     let result = obj.json();
 
+
     //set state formData
     state.formData = result;
     //set elements form
@@ -102,9 +107,14 @@ export default class UpdateFormView extends JetView {
       return state.tableRecord;
     }
     return {
-      date_operation: new Date(),
-      is_committed : 1,
-      type_operation: 2
+      C: formatDate(new Date()),
+      D: formatDate(webix.Date.add(new Date(),21,"day",true)),
+      index: 1,
+      B: 6,
+      G: 0,
+      AE: formatDateStandart(webix.Date.add(new Date(),14,"day",true)),
+      R: ''
+
     }
   }
 
@@ -171,6 +181,35 @@ export default class UpdateFormView extends JetView {
     let state = this.state;
     let btnSave = this.$$("btn_save");
     let btnCopy = this.$$("btn_copy");
+    let comboContragentId = this.$$("contragent");
+    let inputContragentName = this.$$("form_F");
+
+    let comboProductId = this.$$("product");
+    let inputProductName = this.$$("form_product_name");
+
+    let comboProductSizeId = this.$$("product_size");
+    let inputProductSizeName = this.$$("form_size_name");
+
+
+    let comboClothId = this.$$("cloth");
+    let inputClothName = this.$$("form_cloth_name");
+
+    let comboKarkasId = this.$$("karkas");
+    let inputProductSizeKarkasName = this.$$("size_karkas_name");
+
+    let comboFootId = this.$$("foot");
+    let inputFootName = this.$$("form_foot_name");
+
+    let comboButtonId = this.$$("button");
+    let inputButtonName = this.$$("form_button_name");
+
+    let comboBottomId = this.$$("bottom");
+    let inputBottomName = this.$$("form_bottom_name");
+
+    let comboOtstrochkaId = this.$$("otstrochka");
+    let inputOtstrochkaName = this.$$("form_otstrochka_name");
+
+    let comboProductTypeId = this.$$("product_type");
 
     btnSave.attachEvent("onItemClick", function(newValue) {
       scope.doClickSave();
@@ -179,8 +218,128 @@ export default class UpdateFormView extends JetView {
       scope.doClickSave(true);
     });
 
+    // comboProductId.getPopup().getList().bind(comboProductTypeId.getPopup().getList(), function(obj, filter){
+    //   //debugger;
+    //   return obj.type_id == filter.id; //note is the list data obj (table name on the server side)
+    // });
+    let api = this.apiRest;
+    let params = {"per-page": -1};
+
+    comboProductTypeId.attachEvent("onChange", function(newValue) {
+      comboProductId.setValue();
+      let dataCollection = api.getCollection('accounting/product-beds', params);
+      dataCollection.filter(function(obj) {
+        return obj.type_id == newValue;
+      });
+
+      comboProductId.getPopup().getList().sync(dataCollection);
+
+    });
+
+    comboContragentId.attachEvent("onChange", function(newValue) {
+      inputContragentName.setValue(comboContragentId.getText());
+      scope.setPrice();
+    });
+    comboProductId.attachEvent("onChange", function(newValue) {
+      inputProductName.setValue(comboProductId.getText()+' '+comboProductSizeId.getText());
+      scope.setPrice();
+    });
+    comboProductSizeId.attachEvent("onChange", function(newValue) {
+      inputProductSizeName.setValue(comboProductSizeId.getText());
+      inputProductName.setValue(comboProductId.getText()+' '+comboProductSizeId.getText());
+      scope.setPrice();
+    });
+    comboClothId.attachEvent("onChange", function(newValue) {
+      inputClothName.setValue(comboClothId.getText());
+      scope.setPrice();
+    });
+    comboFootId.attachEvent("onChange", function(newValue) {
+      inputFootName.setValue(comboFootId.getText());
+      scope.setPrice();
+    });
+    comboButtonId.attachEvent("onChange", function(newValue) {
+      inputButtonName.setValue(comboButtonId.getValue());
+      scope.setPrice();
+    });
+
+    comboBottomId.attachEvent("onChange", function(newValue) {
+      inputBottomName.setValue(comboBottomId.getText());
+      scope.setPrice();
+    });
+
+    comboOtstrochkaId.attachEvent("onChange", function(newValue) {
+      inputOtstrochkaName.setValue(comboOtstrochkaId.getText());
+      scope.setPrice();
+    });
+
+    comboKarkasId.attachEvent("onChange", function(newValue) {
+      if (newValue == 'без каркаса') {
+        inputProductSizeKarkasName.setValue('');
+      }
+      if (newValue == 'стандарт') {
+        inputProductSizeKarkasName.setValue(comboProductSizeId.getText());
+      }
+      if (newValue == 'подиум') {
+        inputProductSizeKarkasName.setValue(comboProductSizeId.getText());
+      }
+      if (newValue == 'люкс') {
+        inputProductSizeKarkasName.setValue(comboProductSizeId.getText()+' '+newValue);
+      }
+      scope.setPrice();
+
+    });
+
+
+
   }
 
+  setPrice() {
+    let inputPrice = this.$$("form_price");
+    inputPrice.setValue(this.getPrice());
+  }
+  getPrice() {
+    let comboProductId = this.$$("product");
+    let comboProductSizeId = this.$$("product_size");
+    let comboClothId = this.$$("cloth");
+    let comboKarkasId = this.$$("karkas");
+    let comboFootId = this.$$("foot");
+    let comboButtonId = this.$$("button");
+    let comboBottomId = this.$$("bottom");
+    let comboOtstrochkaId = this.$$("otstrochka");
+    let product, cloth, price =0, index = '', indexMore7 = 0, size;
+
+    if (comboProductId.getValue()!=0 && comboProductSizeId.getValue()!=0 && comboClothId.getValue()!=0) {
+      product = comboProductId.getList().getItem(comboProductId.getValue());
+      cloth = comboClothId.getList().getItem(comboClothId.getValue());
+      size = comboProductSizeId.getList().getItem(comboProductSizeId.getValue());
+      index = cloth.category;
+      if (index > 7) {
+        indexMore7 = index-7;
+      }
+      index = (index == 0) ? index = 'price' : 'price_'+index;
+      price = parseInt(product[index]);
+      if (indexMore7 > 0) {
+        price= price + (parseInt(product['price_7']) - parseInt(product['price_6']))*parseInt(indexMore7);
+      }
+
+      if (size.name === '180х200') {
+        price = price * 1.13;
+      }
+      if (size.name === '200х200') {
+        price = price * 1.35;
+      }
+      if (size.name === '140х200') {
+        price = price - 220;
+      }
+      if (size.name === '120х200') {
+        price = price - 430;
+      }
+      if (size.name === '90х200') {
+        price = price - 600;
+      }
+    }
+    return Math.round(price);
+  }
 
   attachClickEvents() {
     let scope = this;

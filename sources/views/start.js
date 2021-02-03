@@ -1,4 +1,7 @@
 import {JetView} from "webix-jet";
+import "components/comboClose";
+import "components/comboDateClose";
+import "components/searchClose";
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -186,6 +189,7 @@ export default class StartView extends JetView{
 
               ]
             },
+
             {
               view:"icon",
               //type:"icon",
@@ -252,6 +256,7 @@ export default class StartView extends JetView{
 				/*wjet::Settings*/
         {
           view:"treetable",
+
           css:"webix_header_border webix_data_border",
           leftSplit:1,
           //rightSplit:2,
@@ -677,6 +682,8 @@ export default class StartView extends JetView{
         table.parse(data.json().items);
       });
     });
+
+
   }
 
   doRefresh() {
@@ -774,4 +781,6 @@ export default class StartView extends JetView{
     scope.updateItem(id);
     webix.storage.local.put("start-table", grid.getState());
   }
+
+
 }

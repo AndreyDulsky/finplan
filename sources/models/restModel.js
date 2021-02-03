@@ -79,14 +79,14 @@ export class ApiRest {
       });
   }
 
-  getCollection(model, params) {
+  getCollection(model, params, field = 'name') {
     let url = this.getUrl('get', model, params);
     if (!this.dataCollection[model]) {
       this.dataCollection[model] = new webix.DataCollection({
         url: url,
         scheme: {
           $init: function (obj) {
-            obj['value'] = obj.name;
+            obj['value'] = obj[field];
           }
         }
       });

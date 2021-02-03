@@ -1,5 +1,9 @@
 import {JetView} from "webix-jet";
 import "components/searchClose";
+import UpdateFormOrderView from "core/updateFormOrderView";
+import "components/comboClose";
+import "components/comboDateClose";
+import "components/searchClose";
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -126,6 +130,15 @@ export default class OrdersView extends JetView{
             {
               view:"icon",
               //type:"icon",
+              icon: 'mdi mdi-plus',
+              autowidth:true,
+              value :true,
+              click: function() { scope.doAdd() }
+
+            },
+            {
+              view:"icon",
+              //type:"icon",
               icon: 'mdi mdi-refresh',
               autowidth:true,
               value :true,
@@ -171,6 +184,7 @@ export default class OrdersView extends JetView{
         /*wjet::Settings*/
         {
           view:"treetable",
+          urlEdit: 'order',
           css:"webix_header_border webix_data_border",
           leftSplit:1,
           //rightSplit:2,
@@ -455,6 +469,8 @@ export default class OrdersView extends JetView{
       });
 
     });
+
+    this.formEdit = this.ui(UpdateFormOrderView);
   }
 
   doRefresh() {
@@ -507,5 +523,12 @@ export default class OrdersView extends JetView{
 
   showBatch(newv){
     this.$$("order-table").showColumnBatch(newv);
+  }
+
+  doAdd() {
+    let table = this.$$('order-table');
+    table.unselect();
+
+    this.formEdit.showForm(table);
   }
 }
