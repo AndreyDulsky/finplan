@@ -192,3 +192,11 @@ div[column="2"] div[aria-level="2"] .subrowimage div {
     border-top: 8px solid #ccc;
     border-left: 8px solid transparent;
 }
+
+.green .webix_el_box{
+    color: green;
+}
+
+.red .webix_el_box{
+    color: red;
+}

@@ -37,8 +37,8 @@ export default class UpdateFormOrderView extends JetView {
           view: "window",
           position: function (state) {
               state.left = 44;
-              state.top = 42;
-              state.width = state.maxWidth / 3;
+              state.top = 34;
+              state.width = state.maxWidth / 3+70;
               state.height = state.maxHeight - 42;
           },
           head: "Редактирование",
@@ -47,7 +47,7 @@ export default class UpdateFormOrderView extends JetView {
           body: {
             localId: "formEdit",
             view: 'form',
-            scroll : "auto",
+            scroll : "y",
             elements: this.state.formConfig
           }
       }
@@ -72,6 +72,7 @@ export default class UpdateFormOrderView extends JetView {
     state.win = this.$$("winEdit");
 
     state.formEdit.clearValidation();
+
     //get config elements for form and urls collection;
     api.get(state.formUrl).then(function(data) {
       scope.showWindow(data, scope);
@@ -89,14 +90,26 @@ export default class UpdateFormOrderView extends JetView {
     //set elements form
     scope.renderForm(elementsCount);
 
-    //set values for form from table
-    state.formEdit.setValues(scope.getRecord());
-
+    //loading
+    state.formEdit.clear();
+    webix.extend(state.formEdit, webix.ProgressBar);
+    state.formEdit.disable();
+    state.formEdit.showProgress({
+      type:"icon",
+      hide: false
+    });
     scope.bindCollection(result);
+    //set values for form from table
+
+    // state.formEdit.setValues(scope.getRecord());
+
+
     //scope.bindColumnCollection(result);
     //scope.showParts(state.tableRecord);
     // in bindCollection show window after load all records
+
     state.win.show();
+
   }
 
 
@@ -120,6 +133,7 @@ export default class UpdateFormOrderView extends JetView {
 
 
   renderForm(elementsCount) {
+
     let state  = this.state;
     //render first time
     if (elementsCount === 0 ) {
@@ -128,6 +142,7 @@ export default class UpdateFormOrderView extends JetView {
         state.formConfig,
         state.formEdit
       );
+
       //this.attachFormParamsElements();
 
       //atach events for first render
@@ -136,6 +151,7 @@ export default class UpdateFormOrderView extends JetView {
   }
 
   bindCollection(result) {
+    let scope = this;
     let state = this.state;
     let api = this.apiRest;
     let loadedCount = 0;
@@ -143,20 +159,45 @@ export default class UpdateFormOrderView extends JetView {
     let collectionsCount = Object.keys(collections).length;
     let params = {"per-page": -1};
     for (let elementId in collections) {
+
       //find element by id and get his options
       let list = $$(elementId).getPopup().getList();
       //get data by url collection
+
       let nameField = (collections[elementId].field) ? collections[elementId].field : 'name';
       let dataCollection = api.getCollection(collections[elementId].url, params, nameField);
 
+
       dataCollection.waitData.then(function() {
         loadedCount++;
+        if (collections[elementId].params) {
+          if (collections[elementId].params.filter) {
+            let filters= collections[elementId].params.filter;
+
+            for (let filterId in filters) {
+
+              let dataFilter = new webix.DataCollection({ data: dataCollection.data });
+              dataFilter.filter(function(obj) {
+                return obj[filterId] == filters[filterId];
+              });
+              list.sync(dataFilter);
+            }
+          }
+        } else {
+          list.sync(dataCollection);
+        }
+
+
         if (loadedCount === collectionsCount) {
-          state.win.show();
+
+          state.formEdit.setValues(scope.getRecord());
+          state.formEdit.enable();
+          state.formEdit.hideProgress();
+
         }
       });
       //set data collection
-      list.sync(dataCollection);
+      //list.sync(dataCollection);
     }
   }
 
@@ -177,10 +218,13 @@ export default class UpdateFormOrderView extends JetView {
   }
 
   attachFormEvents() {
+
     let scope = this;
     let state = this.state;
     let btnSave = this.$$("btn_save");
     let btnCopy = this.$$("btn_copy");
+    let btnCancel = this.$$("btn_cancel");
+    let btnCalculation = this.$$("btn_calculation");
     let comboContragentId = this.$$("contragent");
     let inputContragentName = this.$$("form_F");
 
@@ -194,11 +238,11 @@ export default class UpdateFormOrderView extends JetView {
     let comboClothId = this.$$("cloth");
     let inputClothName = this.$$("form_cloth_name");
 
-    let comboKarkasId = this.$$("karkas");
-    let inputProductSizeKarkasName = this.$$("size_karkas_name");
+    let comboKarkasId = this.$$("carcass_type");
+    let inputProductSizeKarkasName = this.$$("carcass_type_name");
 
-    let comboFootId = this.$$("foot");
-    let inputFootName = this.$$("form_foot_name");
+    let comboFootId = this.$$("leg");
+    let inputFootName = this.$$("form_leg_name");
 
     let comboButtonId = this.$$("button");
     let inputButtonName = this.$$("form_button_name");
@@ -206,8 +250,8 @@ export default class UpdateFormOrderView extends JetView {
     let comboBottomId = this.$$("bottom");
     let inputBottomName = this.$$("form_bottom_name");
 
-    let comboOtstrochkaId = this.$$("otstrochka");
-    let inputOtstrochkaName = this.$$("form_otstrochka_name");
+    let comboOtstrochkaId = this.$$("stitching");
+    let inputOtstrochkaName = this.$$("form_stitching_name");
 
     let comboProductTypeId = this.$$("product_type");
 
@@ -216,6 +260,13 @@ export default class UpdateFormOrderView extends JetView {
     });
     btnCopy.attachEvent("onItemClick", function(newValue) {
       scope.doClickSave(true);
+    });
+    btnCancel.attachEvent("onItemClick", function(newValue) {
+      scope.state.win.hide();
+    });
+
+    btnCalculation.attachEvent("onItemClick", function(newValue) {
+      scope.doClickCalculation(true);
     });
 
     // comboProductId.getPopup().getList().bind(comboProductTypeId.getPopup().getList(), function(obj, filter){
@@ -238,15 +289,17 @@ export default class UpdateFormOrderView extends JetView {
 
     comboContragentId.attachEvent("onChange", function(newValue) {
       inputContragentName.setValue(comboContragentId.getText());
-      scope.setPrice();
+
     });
     comboProductId.attachEvent("onChange", function(newValue) {
       inputProductName.setValue(comboProductId.getText()+' '+comboProductSizeId.getText());
       scope.setPrice();
     });
     comboProductSizeId.attachEvent("onChange", function(newValue) {
+
       inputProductSizeName.setValue(comboProductSizeId.getText());
       inputProductName.setValue(comboProductId.getText()+' '+comboProductSizeId.getText());
+      scope.changeSizeKarkasName(comboKarkasId.getText());
       scope.setPrice();
     });
     comboClothId.attachEvent("onChange", function(newValue) {
@@ -255,37 +308,27 @@ export default class UpdateFormOrderView extends JetView {
     });
     comboFootId.attachEvent("onChange", function(newValue) {
       inputFootName.setValue(comboFootId.getText());
-      scope.setPrice();
+      //scope.setPrice();
     });
     comboButtonId.attachEvent("onChange", function(newValue) {
-      inputButtonName.setValue(comboButtonId.getValue());
-      scope.setPrice();
+      inputButtonName.setValue(comboButtonId.getText());
+      //scope.setPrice();
     });
 
     comboBottomId.attachEvent("onChange", function(newValue) {
       inputBottomName.setValue(comboBottomId.getText());
-      scope.setPrice();
+      //scope.setPrice();
     });
 
     comboOtstrochkaId.attachEvent("onChange", function(newValue) {
       inputOtstrochkaName.setValue(comboOtstrochkaId.getText());
-      scope.setPrice();
+      //scope.setPrice();
     });
 
     comboKarkasId.attachEvent("onChange", function(newValue) {
-      if (newValue == 'без каркаса') {
-        inputProductSizeKarkasName.setValue('');
-      }
-      if (newValue == 'стандарт') {
-        inputProductSizeKarkasName.setValue(comboProductSizeId.getText());
-      }
-      if (newValue == 'подиум') {
-        inputProductSizeKarkasName.setValue(comboProductSizeId.getText());
-      }
-      if (newValue == 'люкс') {
-        inputProductSizeKarkasName.setValue(comboProductSizeId.getText()+' '+newValue);
-      }
-      scope.setPrice();
+
+      scope.changeSizeKarkasName(comboKarkasId.getText());
+      //scope.setPrice();
 
     });
 
@@ -293,65 +336,35 @@ export default class UpdateFormOrderView extends JetView {
 
   }
 
-  setPrice() {
-    let inputPrice = this.$$("form_price");
-    inputPrice.setValue(this.getPrice());
-  }
-  getPrice() {
-    let comboProductId = this.$$("product");
+  changeSizeKarkasName(newValue) {
+    let inputProductSizeKarkasName = this.$$("carcass_type_name");
     let comboProductSizeId = this.$$("product_size");
-    let comboClothId = this.$$("cloth");
-    let comboKarkasId = this.$$("karkas");
-    let comboFootId = this.$$("foot");
-    let comboButtonId = this.$$("button");
-    let comboBottomId = this.$$("bottom");
-    let comboOtstrochkaId = this.$$("otstrochka");
-    let product, cloth, price =0, index = '', indexMore7 = 0, size;
-
-    if (comboProductId.getValue()!=0 && comboProductSizeId.getValue()!=0 && comboClothId.getValue()!=0) {
-      product = comboProductId.getList().getItem(comboProductId.getValue());
-      cloth = comboClothId.getList().getItem(comboClothId.getValue());
-      size = comboProductSizeId.getList().getItem(comboProductSizeId.getValue());
-      index = cloth.category;
-      if (index > 7) {
-        indexMore7 = index-7;
-      }
-      index = (index == 0) ? index = 'price' : 'price_'+index;
-      price = parseInt(product[index]);
-      if (indexMore7 > 0) {
-        price= price + (parseInt(product['price_7']) - parseInt(product['price_6']))*parseInt(indexMore7);
-      }
-
-      if (size.name === '180х200') {
-        price = price * 1.13;
-      }
-      if (size.name === '200х200') {
-        price = price * 1.35;
-      }
-      if (size.name === '140х200') {
-        price = price - 220;
-      }
-      if (size.name === '120х200') {
-        price = price - 430;
-      }
-      if (size.name === '90х200') {
-        price = price - 600;
-      }
+    if (newValue == 'без каркаса') {
+      inputProductSizeKarkasName.setValue('');
     }
-    return Math.round(price);
+    if (newValue == 'стандарт') {
+      inputProductSizeKarkasName.setValue(comboProductSizeId.getText());
+    }
+    if (newValue == 'подиум') {
+      inputProductSizeKarkasName.setValue(comboProductSizeId.getText());
+    }
+    if (newValue == 'люкс') {
+      inputProductSizeKarkasName.setValue(comboProductSizeId.getText()+' '+newValue);
+    } else {
+      inputProductSizeKarkasName.setValue(comboProductSizeId.getText());
+    }
   }
+
+
 
   attachClickEvents() {
     let scope = this;
+    let api = this.apiRest;
+    let state = this.state;
     webix.attachEvent("onClick", function(element, b, c) {
       // if (!element.target) {
       //   return;
       // }
-
-      //debugger;
-      //if (element.target.classList.value === "btn-save") {
-      //  scope.onClickSave();
-      //}
 
     });
   }
@@ -391,6 +404,57 @@ export default class UpdateFormOrderView extends JetView {
     }, function(){
       webix.message("Ошибка! Данные не сохранены!");
     });
+  }
+
+  setPrice() {
+    let api = this.apiRest;
+    let state = this.state;
+    let scope = this;
+    let inputPrice = this.$$("form_price");
+    let tableUrl = api.getUrl('get',"accounting/product-bed/get-price", {
+      "per-page": "-1"
+    });
+    this.labelSetValue();
+    //debugger;
+    let valuesForm = state.formEdit.getValues();
+    //debugger;
+    if (valuesForm['product_id'] == '') return;
+    if (valuesForm['cloth_id'] == '') return;
+    if (valuesForm['size_id'] === '') return;
+
+
+    webix.ajax().get(tableUrl, valuesForm).then(function(data){
+      let result = data.json();
+      inputPrice.setValue(result['sum']);
+      let res =0;
+      for (let lebelId in result['rules']) {
+        res = parseInt(result['rules'][lebelId]);
+        if (res > 0 ) {
+          res = '+' + result['rules'][lebelId];
+          webix.html.removeCss(scope.$$(lebelId).$view,"red");
+          webix.html.addCss(scope.$$(lebelId).$view, "green");
+          scope.$$(lebelId).refresh();
+        } else {
+          webix.html.removeCss(scope.$$(lebelId).$view,"green");
+          webix.html.addCss(scope.$$(lebelId).$view, "red");
+          scope.$$(lebelId).refresh();
+        }
+        scope.$$(lebelId).setValue(res);
+
+      }
+
+    });
+  }
+
+  labelSetValue() {
+    this.$$('size').setValue('');
+    this.$$('cloth_id').setValue('');
+    this.$$('client_id').setValue('');
+    this.$$("form_price").setValue(0);
+  }
+
+  doClickCalculation() {
+    this.setPrice();
   }
 
 

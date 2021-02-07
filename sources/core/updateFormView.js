@@ -33,9 +33,9 @@ export default class UpdateFormView extends JetView {
           view: "window",
           position: function (state) {
               state.left = 44;
-              state.top = 42;
+              state.top = 34;
               state.width = state.maxWidth / 3;
-              state.height = state.maxHeight - 42;
+              state.height = state.maxHeight - 38;
           },
           head: "Редактирование",
           close: true,
@@ -69,12 +69,14 @@ export default class UpdateFormView extends JetView {
 
     state.formEdit.clearValidation();
     //get config elements for form and urls collection;
+
     api.get(state.formUrl).then(function(data) {
       scope.showWindow(data, scope);
     });
   }
 
   showWindow(obj, scope) {
+
     let state  = scope.state;
     let elementsCount = Object.keys(state.formEdit.elements).length;
     let result = obj.json();
@@ -84,8 +86,17 @@ export default class UpdateFormView extends JetView {
     //set elements form
     scope.renderForm(elementsCount);
 
+    //loading
+    state.formEdit.clear();
+    webix.extend(state.formEdit, webix.ProgressBar);
+    state.formEdit.disable();
+    state.formEdit.showProgress({
+      type:"icon",
+      hide: false
+    });
+
     //set values for form from table
-    state.formEdit.setValues(scope.getRecord());
+    //state.formEdit.setValues(scope.getRecord());
 
     scope.bindCollection(result);
     //scope.bindColumnCollection(result);
@@ -123,16 +134,21 @@ export default class UpdateFormView extends JetView {
       //atach events for first render
       this.attachFormEvents();
     }
+
   }
 
   bindCollection(result) {
+
     let state = this.state;
+    let scope = this;
     let api = this.apiRest;
     let loadedCount = 0;
     let collections = result.data.dataCollections;
     let collectionsCount = Object.keys(collections).length;
     let params = {"per-page": -1};
+
     for (let elementId in collections) {
+
       //find element by id and get his options
       let list = $$(elementId).getPopup().getList();
       //get data by url collection
@@ -141,12 +157,19 @@ export default class UpdateFormView extends JetView {
 
       dataCollection.waitData.then(function() {
         loadedCount++;
+        list.sync(dataCollection);
         if (loadedCount === collectionsCount) {
-          state.win.show();
+          state.formEdit.setValues(scope.getRecord());
+          state.formEdit.enable();
+          state.formEdit.hideProgress();
         }
       });
       //set data collection
-      list.sync(dataCollection);
+    }
+    if (collectionsCount == 0 ) {
+      state.formEdit.setValues(scope.getRecord());
+      state.formEdit.enable();
+      state.formEdit.hideProgress();
     }
   }
 
@@ -167,6 +190,7 @@ export default class UpdateFormView extends JetView {
   }
 
   attachFormEvents() {
+
     let scope = this;
     let state = this.state;
     let btnSave = this.$$("btn_save");

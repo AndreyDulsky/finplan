@@ -272,6 +272,20 @@ export default class OrdersView extends JetView{
             // var state = webix.storage.local.get("treetable_state");
             // if (state)
             //   this.setState(state);
+            webix.ui({
+              view:"contextmenu", id:"cm",
+              data: ["Редактировать",  "Удалить"],
+              on:{
+                onItemClick:function(id){
+                  var context = this.getContext();
+                  scope.$$("order-table").unselect();
+                  scope.$$("order-table").select(context.id.row, context.id.column,true);
+                  if (id == 'Редактировать') {
+                    scope.formEdit.showForm(scope.$$("order-table"));
+                  }
+                }
+              }
+            }).attachTo(this);
             this.openAll();
           },
 
@@ -290,7 +304,10 @@ export default class OrdersView extends JetView{
             },
             onBeforeDrop:function(context, e){
 
-            }
+            },
+            onItemDblClick:function(id, e, trg) {
+              this.$scope.formEdit.showForm(this);
+            },
           }
 
         }
