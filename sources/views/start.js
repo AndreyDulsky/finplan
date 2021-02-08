@@ -199,6 +199,15 @@ export default class StartView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
+            {
+              view:"icon",
+              //type:"icon",
+              icon: 'mdi mdi-update',
+              autowidth:true,
+              value :true,
+              click: function() { location.reload(true); }
+
+            },
 
             {
               view:"toggle",
