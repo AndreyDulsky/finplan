@@ -180,6 +180,7 @@ export default class UpdateFormOrderView extends JetView {
               dataFilter.filter(function(obj) {
                 return obj[filterId] == filters[filterId];
               });
+
               list.sync(dataFilter);
             }
           }

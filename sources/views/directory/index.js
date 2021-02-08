@@ -96,7 +96,7 @@ export default class DirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/directories", {'sort':'name'}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/directories", {'sort':'type_id'}),//"api->accounting/contragents",
               save: "api->accounting/directories",
 
               scheme: {
@@ -166,7 +166,7 @@ export default class DirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/directories', {'sort':'name'}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/directories', {'sort':'type_id'}), objFilter).then(function(data) {
         table.parse(data);
         table.openAll();
       });

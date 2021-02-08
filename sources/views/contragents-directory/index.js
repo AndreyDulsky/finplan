@@ -171,7 +171,7 @@ export default class ContragentsDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/contragents', {"expand":"contragent,category,project,account,data"}), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/contragents', {"order":"contragent,category,project,account,data"}), objFilter).then(function(data) {
         table.parse(data);
       });
 
