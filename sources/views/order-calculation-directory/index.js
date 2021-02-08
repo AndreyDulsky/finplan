@@ -88,6 +88,7 @@ export default class CalculationDirectoryView extends JetView{
                 { id:"id", header:"ID", width: 40 },
                 { id:"name", header:"Наименование", width: 150},
                 { id:"type_model", header:"Модель", width: 150},
+                { id:"connection_field", header:"Ключевое поле", width: 150},
 
                 {
                   "id": "action-delete",
