@@ -423,10 +423,10 @@ export default class UpdateFormOrderView extends JetView {
     if (valuesForm['cloth_id'] == '') return;
     if (valuesForm['size_id'] === '') return;
     if (valuesForm['leg_id'] === '') return;
-    if (valuesForm['button_id'] === '') return;
     if (valuesForm['bottom_id'] === '') return;
-    if (valuesForm['stitching_id'] === '') return;
     if (valuesForm['carcass_type_id'] === '') return;
+    //if (valuesForm['stitching_id'] === '') return;
+    //if (valuesForm['button_id'] === '') return;
 
 
 
