@@ -308,27 +308,27 @@ export default class UpdateFormOrderView extends JetView {
     });
     comboFootId.attachEvent("onChange", function(newValue) {
       inputFootName.setValue(comboFootId.getText());
-      //scope.setPrice();
+      scope.setPrice();
     });
     comboButtonId.attachEvent("onChange", function(newValue) {
       inputButtonName.setValue(comboButtonId.getText());
-      //scope.setPrice();
+      scope.setPrice();
     });
 
     comboBottomId.attachEvent("onChange", function(newValue) {
       inputBottomName.setValue(comboBottomId.getText());
-      //scope.setPrice();
+      scope.setPrice();
     });
 
     comboOtstrochkaId.attachEvent("onChange", function(newValue) {
       inputOtstrochkaName.setValue(comboOtstrochkaId.getText());
-      //scope.setPrice();
+      scope.setPrice();
     });
 
     comboKarkasId.attachEvent("onChange", function(newValue) {
 
       scope.changeSizeKarkasName(comboKarkasId.getText());
-      //scope.setPrice();
+      scope.setPrice();
 
     });
 
@@ -421,6 +421,12 @@ export default class UpdateFormOrderView extends JetView {
     if (valuesForm['product_id'] == '') return;
     if (valuesForm['cloth_id'] == '') return;
     if (valuesForm['size_id'] === '') return;
+    if (valuesForm['leg_id'] === '') return;
+    if (valuesForm['button_id'] === '') return;
+    if (valuesForm['bottom_id'] === '') return;
+    if (valuesForm['stitching_id'] === '') return;
+    if (valuesForm['carcass_type_id'] === '') return;
+
 
 
     webix.ajax().get(tableUrl, valuesForm).then(function(data){
@@ -447,6 +453,7 @@ export default class UpdateFormOrderView extends JetView {
   }
 
   labelSetValue() {
+    this.$$('leg_id').setValue('');
     this.$$('size').setValue('');
     this.$$('cloth_id').setValue('');
     this.$$('client_id').setValue('');
