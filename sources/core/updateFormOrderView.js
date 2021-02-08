@@ -454,6 +454,10 @@ export default class UpdateFormOrderView extends JetView {
   }
 
   labelSetValue() {
+    this.$$('stitching_id').setValue('');
+    this.$$('carcass_type_id').setValue('');
+    this.$$('bottom_id').setValue('');
+    this.$$('button_id').setValue('');
     this.$$('leg_id').setValue('');
     this.$$('size').setValue('');
     this.$$('cloth_id').setValue('');
