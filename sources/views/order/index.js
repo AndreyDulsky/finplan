@@ -274,7 +274,7 @@ export default class OrdersView extends JetView{
             //   this.setState(state);
             webix.ui({
               view:"contextmenu", id:"cm",
-              data: ["Редактировать",  "Удалить"],
+              data: ["Редактировать"],
               on:{
                 onItemClick:function(id){
                   var context = this.getContext();
@@ -305,9 +305,9 @@ export default class OrdersView extends JetView{
             onBeforeDrop:function(context, e){
 
             },
-            onItemDblClick:function(id, e, trg) {
-              this.$scope.formEdit.showForm(this);
-            },
+            // onItemDblClick:function(id, e, trg) {
+            //   this.$scope.formEdit.showForm(this);
+            // },
           }
 
         }
