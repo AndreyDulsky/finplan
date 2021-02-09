@@ -267,9 +267,9 @@ export default class StartView extends JetView{
           view:"treetable",
 
           css:"webix_header_border webix_data_border",
-          leftSplit:1,
+          leftSplit:2,
           //rightSplit:2,
-          select: "cell",
+          select: "row",
           resizeColumn: { headerOnly:true },
           localId: 'start-table',
           //subrow:"#N#",
@@ -304,49 +304,149 @@ export default class StartView extends JetView{
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
             },
-
-
-            { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
-            { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, editor:"text"},
+            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text"  },
             { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:150, editor:"text" },
             { id:"G",
-              width:90,
+              width:100,
               header:[ "Сумма план", { content:"textFilter" }, { content:"totalColumn" }],
               "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text"
               //footer: {content: "summColumn", css: {"text-align": "right"}}
 
             },
-            { id:"coefMoney", header:[ "Коэф. ден. план", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"V", header:[ "Сумма факт", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
-              template: function(obj) {
-                let per =  parseFloat(obj.G.replace(",",""));
-                if (obj.$group) return webix.Number.format(per/7860,{
-                  decimalDelimiter:".",
-                  decimalSize:2
-                });
-                return webix.Number.format(parseFloat(per/7860), {
-                  decimalDelimiter:",",
-                  decimalSize:2
-                });
-              }
+              "css": {"color": "green", "text-align": "right",  "font-weight": 500}
             },
 
-            { id:"AA", header:[ "Коэф. вр. план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:100,
+
+            { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
+            { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, editor:"text"},
+
+
+            { id:"AA", header:[ "К.об.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1
 
             },
-            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
+            { id:"AB", header:[ "К.об.факт", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80,
+              "css": {"color": "green","text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.W == 1) {
+                  return '<i class="mdi mdi-marker-check"></i>';
+                }
+                return  (obj.W === null) ? "" : obj.W;
+              }
+            },
+            { id:"CH", header:[ "К.шв.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80,
+              "css": {"color": "green","text-align": "right",  "font-weight": 500}, batch:1,
+            },
+
+            { id:"coef_sewing", header:[ "К.шв.факт", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80,
+              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
+            },
+            { id:"BP", header:[ "Шв.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.BP == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.BP === null) ? "" : obj.BP;
+              }
+            },
+
+            { id:"M", header:[ "Ст.ткани", { content:"selectFilter" } , ""], width:70, editor:"text" },
+            { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90,  editor:"text" },
+            { id:"CI", header:[ "К.кр.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:85,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"coef_cut", header:[ "К.кр.факт", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:90,
+              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
+            },
+            { id:"BW", header:[ "Крой", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.BW == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.BW === null) ? "" : obj.BW;
+              }
+            },
+            { id:"AG", header:[ "К.ст.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"coef_carpenter", header:[ "К.ст.факт", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:100,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.BA == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.BA === null) ? "" : obj.BA;
+              }
+            },
+
+            { id:"CD", header:[ "Уп.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.CD == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.CD === null) ? "" : obj.CD;
+              }
+            },
+            {
+              id:"date_shipment",
+              header:[ "Дата отгр.", { content:"selectFilter" }, "" ],
+              width:100,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_shipment));
+              }
+            },
+
+            { id:"B", header:[ "Ст.отгр.", { content:"selectFilter" }, "" ], width:70,  editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.B == 4) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.B === null) ? "" : obj.B;
+              }
+            },
+
+
+
+
+
+            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
             { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
               width:70,
               "css": {"text-align": "center"},
               batch:1, editor:"text" },
             { id:"H", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
-            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
-            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, editor:"text" },
-            { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:70,  editor:"text" },
+
+
 
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
               editor:"popup",
@@ -374,16 +474,7 @@ export default class StartView extends JetView{
               }
 
             },
-            { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.W == 1) {
-                  return '<i class="mdi mdi-marker-check"></i>';
-                }
-                return  (obj.W === null) ? "" : obj.W;
-              }
-            },
+
             {
               id:"date_sewing",
               header:[ "Дата Шв.", { content:"selectFilter" }, "" ],
@@ -391,28 +482,6 @@ export default class StartView extends JetView{
               editor:"date",
               format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1
-            },
-            { id:"BP", header:[ "Шв.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.BP == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
-                }
-                return  (obj.BP === null) ? "" : obj.BP;
-              }
-            },
-            { id:"date_carpenter", header:[ "Дата Ст.", { content:"selectFilter" }, "" ], width:90, batch:1 , editor:"date",
-              format:webix.Date.dateToStr("%d.%m.%y"),},
-            { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.BA == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
-                }
-                return  (obj.BA === null) ? "" : obj.BA;
-              }
             },
             {
               id:"date_cut",
@@ -427,16 +496,9 @@ export default class StartView extends JetView{
               }
             },
 
-            { id:"BW", header:[ "Крой", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.BW == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
-                }
-                return  (obj.BW === null) ? "" : obj.BW;
-              }
-            },
+            { id:"date_carpenter", header:[ "Дата Ст.", { content:"selectFilter" }, "" ], width:90, batch:1 , editor:"date",
+              format:webix.Date.dateToStr("%d.%m.%y"),},
+
             {
               id:"date_packaging",
               header:[ "Дата Уп", { content:"selectFilter" }, "" ],
@@ -450,103 +512,68 @@ export default class StartView extends JetView{
               }
             },
 
-            { id:"CD", header:[ "Уп.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.CD == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
-                }
-                return  (obj.CD === null) ? "" : obj.CD;
-              }
-            },
 
-            {
-              id:"date_shipment",
-              header:[ "Дата отгр.", { content:"selectFilter" }, "" ],
+
+
+
+
+            { id:"coefMoney", header:[ "К.ден.план", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              hidden: false,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
               template: function(obj) {
-                return formatDate(parserDate(obj.date_shipment));
+                let per =  parseFloat(obj.G.replace(",",""));
+                if (obj.$group) return webix.Number.format(per/7860,{
+                  decimalDelimiter:".",
+                  decimalSize:2
+                });
+                return webix.Number.format(parseFloat(per/7860), {
+                  decimalDelimiter:",",
+                  decimalSize:2
+                });
               }
             },
-
-            { id:"B", header:[ "Отг.", { content:"selectFilter" }, "" ], width:50,  editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.B == 4) {
-                  return '<i class="mdi mdi-check-circle"></i>';
-                }
-                return  (obj.B === null) ? "" : obj.B;
-              }
-            },
-
-            { id:"V", header:[ "Сумма факт", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:100,
-              "css": {"color": "green", "text-align": "right",  "font-weight": 500}
-            },
-            { id:"AO", header:[ "Коэф. ден.", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"AO", header:[ "К.ден.факт", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
               "css": {"color": "green", "text-align": "right",  "font-weight": 500}, batch:1,
 
 
             },
-            { id:"AB", header:[ "Коэф. вр.", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:100,
-              "css": {"color": "green","text-align": "right",  "font-weight": 500}, batch:1,
-            },
-            { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" },
-            { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:100,
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
-            },
-            { id:"AJ", header:[ "Коэф. шв+крой", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:120,
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
-            },
 
-            { id:"CH", header:[ "Коэф. Пош. план.", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:100,
-              "css": {"color": "green","text-align": "right",  "font-weight": 500}, batch:1,
-            },
 
-            { id:"coef_sewing", header:[ "Коэф. Пош. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:120,
-              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
-            },
-            { id:"coef_cut", header:[ "Коэф. Крой. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:120,
-              "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
-            },
+
+            // { id:"AJ", header:[ "Коэф. шв+крой", { content:"textFilter" }, { content:"totalColumn" } ],
+            //   width:120,
+            //   "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            // },
+
+
+
             //{ id:"Z", header:"Обивка изг.", width:100, batch:3 },
             //{ id:"W", header:"Статус", width:100, batch:3 },
             //{ id:"AH", header:"Дата", width:100, batch:3 },
-            { id:"AK", header:"Обивка царги", width:110, batch:3, editor:"text" },
-            { id:"AL", header:"Статус царги", width:60, batch:3, editor:"text" },
-            { id:"AM", header:"Дата царги", width:90, batch:3, editor:"text" },
-            { id:"AP", header:"Поралон изг.", width:110, batch:3, editor:"text" },
-            { id:"AQ", header:"Статус пар. изг.", width:60, batch:3, editor:"text" },
-            { id:"AR", header:"Дата пор. изг.", width:90, batch:3 , editor:"text"},
-            { id:"AU", header:"Поралон царги", width:115 , batch:3, editor:"text"},
-            { id:"AV", header:"Статус пор. цар.", width:60, batch:3 , editor:"text"},
-            { id:"AW", header:"Дата пор. цар.", width:90, batch:3 , editor:"text"},
+            // { id:"AK", header:"Обивка царги", width:110, batch:3, editor:"text" },
+            // { id:"AL", header:"Статус царги", width:60, batch:3, editor:"text" },
+            // { id:"AM", header:"Дата царги", width:90, batch:3, editor:"text" },
+            // { id:"AP", header:"Поралон изг.", width:110, batch:3, editor:"text" },
+            // { id:"AQ", header:"Статус пар. изг.", width:60, batch:3, editor:"text" },
+            // { id:"AR", header:"Дата пор. изг.", width:90, batch:3 , editor:"text"},
+            // { id:"AU", header:"Поралон царги", width:115 , batch:3, editor:"text"},
+            // { id:"AV", header:"Статус пор. цар.", width:60, batch:3 , editor:"text"},
+            // { id:"AW", header:"Дата пор. цар.", width:90, batch:3 , editor:"text"},
+            { id:"Z", header:[ "Обивщик ФИО", { content:"selectFilter" }, "" ], width:100, editor:"text" },
+            { id:"BO", header:[ "Пошив ФИО", { content:"selectFilter" }, "" ],  width:115 , batch:1, editor:"text"},
+            { id:"BV", header:[ "Крой ФИО", { content:"selectFilter" }, "" ], width:115 ,  editor:"text"},
             { id:"AZ", header:[ "Столярка ФИО", { content:"selectFilter" }, "" ],  width:115 , editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
-            { id:"BB", header:[ "Дата ст.", { content:"selectFilter" }, "" ], width:90 , editor:"text"},
-            { id:"BO", header:[ "Пошив ФИО", { content:"selectFilter" }, "" ],  width:115 , batch:1, editor:"text"},
+            //{ id:"BB", header:[ "Дата ст.", { content:"selectFilter" }, "" ], width:90 , editor:"text"},
+
             //{ id:"BP", header:"Статус", width:60, batch:3 },
 
-            { id:"BQ", header:[ "Дата пош.", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },
-            { id:"BV", header:[ "Крой ФИО", { content:"selectFilter" }, "" ], width:115 ,  editor:"text"},
+            //{ id:"BQ", header:[ "Дата пош.", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text" },
+
             //{ id:"BW", header:"Статус крой", width:60,  editor:"text" },
-            { id:"BX", header:[ "Дата крой", { content:"selectFilter" }, "" ], width:90,  editor:"text" },
-            { id:"CI", header:[ "Коэф. крой. план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:125,
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
-            }
+            //{ id:"BX", header:[ "Дата крой", { content:"selectFilter" }, "" ], width:90,  editor:"text" },
+
 
 
 
