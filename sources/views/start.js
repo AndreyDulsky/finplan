@@ -345,7 +345,7 @@ export default class StartView extends JetView{
             },
             { id:"CH", header:[ "К.шв.план", { content:"textFilter" }, { content:"totalColumn" } ],
               width:80,
-              "css": {"color": "green","text-align": "right",  "font-weight": 500}, batch:1,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
 
             { id:"coef_sewing", header:[ "К.шв.факт", { content:"textFilter" }, { content:"totalColumn" } ],
