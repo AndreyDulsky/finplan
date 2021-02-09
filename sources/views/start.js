@@ -389,7 +389,7 @@ export default class StartView extends JetView{
             },
             { id:"coef_carpenter", header:[ "К.ст.факт", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+              "css": {"color": "green", "text-align": "right",  "font-weight": 500}, batch:1,
             },
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
@@ -593,6 +593,9 @@ export default class StartView extends JetView{
                 J:["J","countValue"],
                 coef_sewing:["coef_sewing", "median" ],
                 coef_cut:["coef_cut", "median" ],
+                CH:["CH", "median" ],
+                CI:["CI", "median" ],
+
                 value:["date_obivka"],
                 A:["A"],
 
