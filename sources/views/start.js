@@ -593,6 +593,7 @@ export default class StartView extends JetView{
                 J:["J","countValue"],
                 coef_sewing:["coef_sewing", "median" ],
                 coef_cut:["coef_cut", "median" ],
+                coef_carpenter:["coef_carpenter", "median" ],
                 CH:["CH", "median" ],
                 CI:["CI", "median" ],
 
