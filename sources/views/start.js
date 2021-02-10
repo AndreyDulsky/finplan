@@ -500,13 +500,16 @@ export default class StartView extends JetView{
               format:webix.Date.dateToStr("%d.%m.%y"),},
 
             {
-              id:"date_packaging",
+              id:"CG",
               header:[ "Дата Уп", { content:"selectFilter" }, "" ],
               width:100,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1,
-              hidden: false
+              hidden: false,
+              template: function(obj) {
+                return formatDate(parserDate(obj.CG));
+              }
             },
 
 
