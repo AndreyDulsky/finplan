@@ -475,7 +475,7 @@ export default class UpdateFormOrderView extends JetView {
   setDefaultValues() {
     this.$$('leg').setValue(1);
     this.$$('carcass_type').setValue(2);
-    this.$$('product_size').setValue(1);
+    this.$$('product_size').setValue(7);
     this.$$('product_type').setValue(1);
     this.$$('form_type').setValue('стандарт');
     this.$$('bottom').setValue(5);
