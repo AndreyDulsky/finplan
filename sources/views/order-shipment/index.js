@@ -263,6 +263,7 @@ export default class OrderShipmentView extends JetView{
               }
 
             },
+            { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
           ]
         },
         /*wjet::Settings*/
@@ -580,6 +581,7 @@ export default class OrderShipmentView extends JetView{
     let dateTo = this.$$("dateTo");
     let dateFromValue = format(this.$$("dateFrom").getValue());
     let dateToValue = format(this.$$("dateTo").getValue());
+    let form = this.$$("form-search");
 
     this.restApi = this.app.config.apiRest;
     webix.extend(table, webix.ProgressBar);
@@ -630,6 +632,49 @@ export default class OrderShipmentView extends JetView{
         table.parse(data.json().items);
       });
     });
+
+    form.attachEvent("onChange", function(obj){
+
+      let filter;// = {'A':form.getValue()};
+
+        //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+      filter = {
+        "or":[
+          {"date_shipment_plan":{">=":dateFromValue, '<=':dateToValue}}
+        ]
+      };
+
+
+
+
+
+      if (form.getValue() != "") {
+        filter = {'A':form.getValue()};
+      }
+      let objFilter = { filter: filter };
+      webix.extend(table, webix.ProgressBar);
+
+      table.clearAll(true);
+      table.showProgress({
+        delay:2000,
+        hide:false
+      });
+
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
+        "per-page": "1000",
+        sort: '[{"property":"date_shipment_plan","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        //filter: '{"date_shipment_plan":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        //filter: '{"B":"'+selectTypeValue+'"}',
+        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+      });
+
+      webix.ajax().get( tableUrl, objFilter).then(function(data) {
+        table.parse(data.json().items);
+      });
+
+    });
+
+
 
 
   }
