@@ -256,6 +256,9 @@ export default class UpdateFormOrderView extends JetView {
     let comboOtstrochkaId = this.$$("stitching");
     let inputOtstrochkaName = this.$$("form_stitching_name");
 
+    let comboOptionsId = this.$$("option");
+    let inputOptionsName = this.$$("form_option_name");
+
     let comboProductTypeId = this.$$("product_type");
 
     btnSave.attachEvent("onItemClick", function(newValue) {
@@ -332,6 +335,11 @@ export default class UpdateFormOrderView extends JetView {
     comboKarkasId.attachEvent("onChange", function(newValue) {
 
       scope.changeSizeKarkasName(comboKarkasId.getText());
+      scope.setPrice();
+
+    });
+    comboOptionsId.attachEvent("onChange", function(newValue) {
+      inputOptionsName.setValue(comboOptionsId.getText());
       scope.setPrice();
 
     });
@@ -457,6 +465,7 @@ export default class UpdateFormOrderView extends JetView {
   }
 
   labelSetValue() {
+    this.$$('options_id').setValue('');
     this.$$('stitching_id').setValue('');
     this.$$('carcass_type_id').setValue('');
     this.$$('bottom_id').setValue('');
