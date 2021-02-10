@@ -212,7 +212,7 @@ export default class OrdersView extends JetView{
             // {
             //   id:"AE", header:"Дата", width:120,
             //   template:function(obj, common){
-            //     if (obj.$group) return common.treetable(obj, common) + obj.AE;
+            //     if (obj.$group) return  obj.AE;
             //     return "";
             //   }
             //

@@ -118,18 +118,18 @@ webix.editors.$popup.text = {
   }
 };
 
-// webix.editors.$popup = {
-//   date:{
-//     view:"popup",
-//     body:{
-//       view:"calendar",
-//       timepicker:true,
-//       weekNumber:true,
-//       width: 220,
-//       height:200
-//     }
-//   }
-// };
+webix.editors.$popup = {
+  date:{
+    view:"popup",
+    body:{
+      view:"calendar",
+      timepicker:true,
+      weekNumber:true,
+      width: 220,
+      height:200
+    }
+  }
+};
 
 webix.Date.monthEnd = function(obj){
   obj = webix.Date.monthStart(obj);
@@ -139,9 +139,11 @@ webix.Date.monthEnd = function(obj){
   return obj;
 }
 
-let formatDate = webix.Date.dateToStr("%d.%m.%y");
-var parserDate = webix.Date.strToDate("%Y-%m-%d");
 
+let formatDate = webix.Date.dateToStr("%d.%m.%y");
+let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
+var parserDate = webix.Date.strToDate("%Y-%m-%d");
+var parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
 export default class StartView extends JetView{
 
 
@@ -197,6 +199,16 @@ export default class StartView extends JetView{
               autowidth:true,
               value :true,
               click: function() { scope.doRefresh() }
+
+            },
+            {
+              view:"toggle",
+              type:"icon",
+              icon: 'mdi mdi-calendar',
+              localId: "toggleTime",
+              autowidth:true,
+              value :true,
+              click: function() { scope.doTimeToggle() }
 
             },
             {
@@ -292,17 +304,24 @@ export default class StartView extends JetView{
             // },
 
             {
-              id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
+              id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:180,
 
               tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
               template:function(obj, common){
 
-                if (obj.$level==1) return common.treetable(obj, common) + formatDate(obj.value);
+                if (obj.$level==1) return common.treetable(obj, common) + obj.value;
                 //if (obj.$level == 2) return common.treetable(obj, common) + obj.A;
                 //if (obj.$group) return common.treetable(obj,common) + (obj.value || obj.item);
                 return obj.A;
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
+            },
+            {
+              id:"date_obivka", header:"Дата", width:120, editor: 'date',
+              template:function(obj, common){
+                return formatDateTime(parserDateTime(obj.date_obivka));
+              }
+
             },
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text"  },
@@ -578,7 +597,7 @@ export default class StartView extends JetView{
           save: "api->accounting/orders",
           scheme:{
             $group:{
-              by:function(obj){ return obj.date_obivka}, // 'company' is the name of a data property
+              by:function(obj){ return formatDate(obj.date_obivka); }, // 'company' is the name of a data property
               map:{
                 G:["G","median"],
                 V:["V","median"],
@@ -594,7 +613,9 @@ export default class StartView extends JetView{
                 CH:["CH", "median" ],
                 CI:["CI", "median" ],
 
-                value:["date_obivka"],
+                value:[function(obj) {
+                  return formatDate(obj.date_obivka);
+                }],
                 A:["A"],
 
 
@@ -726,6 +747,88 @@ export default class StartView extends JetView{
       });
     });
 
+
+  }
+
+  doTimeToggle()  {
+    let toggle = this.$$("toggleTime");
+
+    let table = this.$$("start-table");
+    let format = webix.Date.dateToStr("%d.%m.%y");
+    let dateFrom = this.$$("dateFrom");
+    let dateTo = this.$$("dateTo");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+
+    this.restApi = this.app.config.apiRest;
+    webix.extend(table, webix.ProgressBar);
+
+    let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
+      "per-page": "1000",
+      sort: '[{"property":"AE","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+    });
+    let scope =this;
+
+    this.restApi.getLoad(tableUrl).then(function(data){
+      table.clearAll();
+      table.parse(data.json().items);
+      if (!toggle.getValue()) {
+        table.group({
+          by: function (obj) {
+            return formatDateTime(obj.date_obivka)
+          },
+          map: {
+            G: ["G", "median"],
+            V: ["V", "median"],
+            AO: ["AO", "median"],
+            AA: ["AA", "median"],
+            AB: ["AB", "median"],
+            AG: ["AG", "median"],
+            AJ: ["AJ", "median"],
+            J: ["J", "countValue"],
+            coef_sewing: ["coef_sewing", "median"],
+            coef_cut: ["coef_cut", "median"],
+            coef_carpenter: ["coef_carpenter", "median"],
+            CH: ["CH", "median"],
+            CI: ["CI", "median"],
+
+            value: [function (obj) {
+              return formatDateTime(obj.date_obivka);
+            }],
+            A: ["A"],
+          }
+        });
+      } else {
+        table.group({
+          by: function (obj) {
+            return formatDate(obj.date_obivka)
+          },
+          map: {
+            G: ["G", "median"],
+            V: ["V", "median"],
+            AO: ["AO", "median"],
+            AA: ["AA", "median"],
+            AB: ["AB", "median"],
+            AG: ["AG", "median"],
+            AJ: ["AJ", "median"],
+            J: ["J", "countValue"],
+            coef_sewing: ["coef_sewing", "median"],
+            coef_cut: ["coef_cut", "median"],
+            coef_carpenter: ["coef_carpenter", "median"],
+            CH: ["CH", "median"],
+            CI: ["CI", "median"],
+
+            value: [function (obj) {
+              return formatDate(obj.date_obivka);
+            }],
+            A: ["A"],
+          }
+        });
+      }
+
+    });
 
   }
 
