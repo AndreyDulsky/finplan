@@ -192,6 +192,7 @@ export default class UpdateFormOrderView extends JetView {
         if (loadedCount === collectionsCount) {
 
           state.formEdit.setValues(scope.getRecord());
+          if (!state.isUpdate) scope.setDefaultValues();
           state.formEdit.enable();
           state.formEdit.hideProgress();
 
@@ -469,6 +470,17 @@ export default class UpdateFormOrderView extends JetView {
 
   doClickCalculation() {
     this.setPrice();
+  }
+
+  setDefaultValues() {
+    this.$$('leg').setValue(1);
+    this.$$('carcass_type').setValue(2);
+    this.$$('product_size').setValue(1);
+    this.$$('product_type').setValue(1);
+    this.$$('form_type').setValue('стандарт');
+    this.$$('bottom').setValue(5);
+
+
   }
 
 
