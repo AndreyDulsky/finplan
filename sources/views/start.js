@@ -507,9 +507,6 @@ export default class StartView extends JetView{
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1,
               hidden: false,
-              template: function(obj) {
-                return formatDate(parserDate(obj.CG));
-              }
             },
 
 
