@@ -229,6 +229,7 @@ export default class UpdateFormOrderView extends JetView {
     let comboContragentId = this.$$("contragent");
     let inputContragentName = this.$$("form_F");
 
+
     let comboProductId = this.$$("product");
     let inputProductName = this.$$("form_product_name");
 
@@ -290,6 +291,7 @@ export default class UpdateFormOrderView extends JetView {
 
     comboContragentId.attachEvent("onChange", function(newValue) {
       inputContragentName.setValue(comboContragentId.getText());
+      scope.setPrice();
 
     });
     comboProductId.attachEvent("onChange", function(newValue) {
@@ -459,7 +461,7 @@ export default class UpdateFormOrderView extends JetView {
     this.$$('bottom_id').setValue('');
     this.$$('button_id').setValue('');
     this.$$('leg_id').setValue('');
-    this.$$('size').setValue('');
+    this.$$('size_id').setValue('');
     this.$$('cloth_id').setValue('');
     this.$$('client_id').setValue('');
     this.$$("form_price").setValue(0);
