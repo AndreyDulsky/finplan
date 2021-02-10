@@ -424,7 +424,7 @@ export default class StartView extends JetView{
               }
             },
 
-            { id:"B", header:[ "Ст.отгр.", { content:"selectFilter" }, "" ], width:70,  editor:"text",
+            { id:"B", header:[ "Отгр.", { content:"selectFilter" }, "" ], width:70,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
               template: function(obj) {
                 if (obj.$group) return "";
@@ -508,7 +508,7 @@ export default class StartView extends JetView{
               batch:1,
               hidden: false,
               template: function(obj) {
-                return formatDate(parserDate(obj.date_packaging));
+                return formatDate(parserDate(obj.CG));
               }
             },
 
