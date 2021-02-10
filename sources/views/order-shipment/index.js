@@ -221,10 +221,11 @@ export default class OrderShipmentView extends JetView{
 
             },
             { view:"select",  value:1, labelWidth:100, options:[
-              { id:1, value:"Производство" },
-              { id:2, value:"Продажи" },
-              { id:3, value:"Выработка" }
-            ],
+                { id:1, value:"Производство" },
+                { id:2, value:"Продажи" },
+                { id:3, value:"Выработка" }
+              ],
+              hidden: true,
               width: 200,
               on:{
                 onChange:function(newv){
