@@ -31,6 +31,33 @@ webix.GroupMethods.median = function(prop, data){
   });
 };
 
+webix.GroupMethods.countSame = function(prop, data){
+  if (!data.length) return 0;
+  var summ = 0;
+  let array = {};
+  for (var i = data.length - 1; i >= 0; i--) {
+
+    if (data[i].$level == 1 ) {
+      let per =prop(data[i]);
+
+      if (per!="") {
+        //debugger;
+
+        if (per != null)  array[per] = per;
+
+      }
+
+    }
+  }
+
+  return webix.i18n.numberFormat(Object.keys(array).length,{
+    groupDelimiter:",",
+    groupSize:3,
+    decimalDelimiter:".",
+    decimalSize:2
+  });
+};
+
 webix.GroupMethods.countValue = function(prop, data){
   if (!data.length) return 0;
   var count = 0;
@@ -136,7 +163,17 @@ webix.Date.monthEnd = function(obj){
   return obj;
 }
 
+webix.ui.datafilter.mySummColumn = webix.extend({
+  refresh:function(master, node, value){
+    var result = 0;
+    master.data.each(function(obj){
+      if (obj.rank)
+        result += obj.fee;
+    });
 
+    node.innerHTML = result;
+  }
+}, webix.ui.datafilter.summColumn);
 
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
@@ -407,7 +444,7 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "right",  "font-weight": 500}, batch:2,
             },
             { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text", batch:2 },
-            { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, { content:"sumColumn" } ],
               width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:2,
             },
@@ -427,7 +464,7 @@ export default class OrderSewingView extends JetView{
             { id:"AZ", header:"Столярка", width:115 , batch:3, editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
             { id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
-            { id:"BO", header:[ "ФИО пош.", { content:"selectFilter" },""], width:115 , batch:1, editor:"text"},
+            { id:"BO", header:[ "ФИО пош.", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:1, editor:"text"},
             //{ id:"BP", header:"Статус", width:60, batch:3 },
             //{ id:"BQ", header:"Дата", width:90, batch:1, editor:"text" },
             { id:"BV", header:"Крой", width:115 , batch:1, editor:"text"},
@@ -435,7 +472,6 @@ export default class OrderSewingView extends JetView{
             //{ id:"BX", header:"Дата", width:90, batch:1, editor:"text" },
             { id:"CD", header:"Упаковка", width:80, batch:3, editor:"text" },
             { id:"CE", header:"Дата", width:90, batch:3, editor:"text" },
-
 
 
           ],
@@ -453,6 +489,8 @@ export default class OrderSewingView extends JetView{
                 CH:["CH","median"],
                 coef_sewing:["coef_sewing", "median" ],
                 time_sewing:["time_sewing", "median" ],
+                BO:["BO", "countSame" ],
+
 
 
 
