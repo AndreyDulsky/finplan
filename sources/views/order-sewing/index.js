@@ -133,14 +133,7 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
   }
 }, webix.ui.datafilter.summColumn);
 
-webix.editors.$popup.text = {
-  view:"popup",
-  body:{
-    view:"textarea",
-    width:250,
-    height:100
-  }
-};
+
 
 webix.editors.$popup = {
   date:{
@@ -151,6 +144,14 @@ webix.editors.$popup = {
       //weekNumber:true,
       //width: 220,
       //height:200
+    }
+  },
+  text : {
+    view:"popup",
+    body:{
+      view:"textarea",
+      width:250,
+      height:100
     }
   }
 };
@@ -228,6 +229,7 @@ export default class OrderSewingView extends JetView{
 
             },
             { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
+            { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
             {
               view:"toggle",
               type:"icon",
@@ -311,6 +313,7 @@ export default class OrderSewingView extends JetView{
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
             { id:"coefMoney", header:[ "Коэф. ден. план", { content:"textFilter" }, { content:"totalColumn" } ],
               width:120,
+              hidden: true,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
               template: function(obj) {
                 let per =  parseFloat(obj.G.replace(",",""));
@@ -455,15 +458,20 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "right",  "font-weight": 500}, batch:2,
             },
             { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text", batch:2 },
-            { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, { content:"sumColumn" } ],
+            { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, "" ],
               width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:2,
             },
 
-            //{ id:"Z", header:"Обивка изг.", width:100, batch:3 },
+            { id:"BO", header:[ "ФИО пош.", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:1, editor:"text"},
+            { id:"BV", header:[ "Фио Крой", { content:"selectFilter" }, { content:"mySummColumn" } ], width:115 , batch:1, editor:"text"},
+
+            { id:"desc_sewing", header:[ "Причина", { content:"selectFilter" },""], width:150,  editor:"popup" },
             //{ id:"W", header:"Статус", width:100, batch:3 },
             //{ id:"AH", header:"Дата", width:100, batch:3 },
-            { id:"AK", header:"Обивка царги", width:110, batch:3, editor:"text" },
+            { id:"loss_sewing", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:1, editor:"text" },
+            { id:"time_loss_sewing", header:[ "Время потерь, мин", { content:"selectFilter" },""], width:110, batch:1, editor:"text" },
+
             { id:"AL", header:"Статус", width:60, batch:3, editor:"text" },
             { id:"AM", header:"Дата", width:90, batch:3, editor:"text" },
             { id:"AP", header:"Паралон изг.", width:110, batch:3, editor:"text" },
@@ -475,10 +483,10 @@ export default class OrderSewingView extends JetView{
             { id:"AZ", header:"Столярка", width:115 , batch:3, editor:"text"},
             //{ id:"BA", header:"Статус", width:60, batch:3 },
             { id:"BB", header:"Дата", width:90, batch:3 , editor:"text"},
-            { id:"BO", header:[ "ФИО пош.", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:1, editor:"text"},
+
             //{ id:"BP", header:"Статус", width:60, batch:3 },
             //{ id:"BQ", header:"Дата", width:90, batch:1, editor:"text" },
-            { id:"BV", header:"Крой", width:115 , batch:1, editor:"text"},
+
             //{ id:"BW", header:"Статус", width:60, batch:1, editor:"text" },
             //{ id:"BX", header:"Дата", width:90, batch:1, editor:"text" },
             { id:"CD", header:"Упаковка", width:80, batch:3, editor:"text" },
@@ -815,7 +823,13 @@ export default class OrderSewingView extends JetView{
 
   doClickPrint() {
     let table = this.$$("sewing-table");
-
+    //table.showColumnBatch(2);
     webix.print(table, { fit:"data"});
+    //table.showColumnBatch(1);
+  }
+
+  doClickToExcel() {
+    let table = this.$$("sewing-table");
+    webix.toExcel(table);
   }
 }

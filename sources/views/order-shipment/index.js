@@ -201,6 +201,8 @@ export default class OrderShipmentView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
+            { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
+            { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
             {
               view:"icon",
               //type:"icon",
@@ -773,6 +775,18 @@ export default class OrderShipmentView extends JetView{
     scope.getItem(id).icon = icon;
     scope.updateItem(id);
     webix.storage.local.put("order-shipment-table", grid.getState());
+  }
+
+  doClickPrint() {
+    let table = this.$$("order-shipment-table");
+    //table.showColumnBatch(2);
+    webix.print(table, { fit:"data"});
+    //table.showColumnBatch(1);
+  }
+
+  doClickToExcel() {
+    let table = this.$$("order-shipment-table");
+    webix.toExcel(table);
   }
 
 

@@ -145,6 +145,8 @@ export default class OrdersView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
+            { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
+            { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
             {
               view:"toggle",
               type:"icon",
@@ -547,5 +549,17 @@ export default class OrdersView extends JetView{
     table.unselect();
 
     this.formEdit.showForm(table);
+  }
+
+  doClickPrint() {
+    let table = this.$$("order-table");
+    //table.showColumnBatch(2);
+    webix.print(table, { fit:"data"});
+    //table.showColumnBatch(1);
+  }
+
+  doClickToExcel() {
+    let table = this.$$("order-table");
+    webix.toExcel(table);
   }
 }

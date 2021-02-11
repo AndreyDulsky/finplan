@@ -285,7 +285,9 @@ export default class OrderResultView extends JetView{
 
               ]
             },
+
             { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
+            { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
 
             {
               view:"toggle",
@@ -917,5 +919,10 @@ export default class OrderResultView extends JetView{
     let table = this.$$("report-salary-table");
 
     webix.print(table, { fit:"data"});
+  }
+
+  doClickToExcel() {
+    let table = this.$$("report-salary-table");
+    webix.toExcel(table);
   }
 }

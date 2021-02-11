@@ -201,6 +201,8 @@ export default class StartView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
+            { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
+            { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
             {
               view:"toggle",
               type:"icon",
@@ -926,6 +928,18 @@ export default class StartView extends JetView{
     scope.getItem(id).icon = icon;
     scope.updateItem(id);
     webix.storage.local.put("start-table", grid.getState());
+  }
+
+  doClickPrint() {
+    let table = this.$$("start-table");
+    //table.showColumnBatch(2);
+    webix.print(table, { fit:"data"});
+    //table.showColumnBatch(1);
+  }
+
+  doClickToExcel() {
+    let table = this.$$("start-table");
+    webix.toExcel(table);
   }
 
 
