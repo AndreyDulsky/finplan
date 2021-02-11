@@ -115,18 +115,18 @@ webix.editors.$popup.text = {
   }
 };
 
-// webix.editors.$popup = {
-//   date:{
-//     view:"popup",
-//     body:{
-//       view:"calendar",
-//       timepicker:true,
-//       weekNumber:true,
-//       width: 220,
-//       height:200
-//     }
-//   }
-// };
+webix.editors.$popup = {
+  date:{
+    view:"popup",
+    body:{
+      view:"calendar",
+      timepicker:true,
+      weekNumber:true,
+      width: 220,
+      height:200
+    }
+  }
+};
 
 webix.Date.monthEnd = function(obj){
   obj = webix.Date.monthStart(obj);
