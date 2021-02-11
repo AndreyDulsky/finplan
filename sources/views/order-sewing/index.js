@@ -239,7 +239,7 @@ export default class OrderSewingView extends JetView{
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
               template:function(obj, common){
 
-                if (obj.$level == 1) return common.treetable(obj, common) + formatDate(obj.date_sewing);
+                if (obj.$level == 1) return common.treetable(obj, common) + formatDateTime(obj.date_sewing);
                 return obj.A;
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
