@@ -283,7 +283,7 @@ export default class OrderSewingView extends JetView{
 
             },
             { id:"CH", header:[ "Коэф. пош. план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:125,
+              width:125, editor:"text",
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
             {
