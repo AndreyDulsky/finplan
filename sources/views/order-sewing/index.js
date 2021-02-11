@@ -227,6 +227,7 @@ export default class OrderSewingView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
+            { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
             {
               view:"toggle",
               type:"icon",
@@ -810,5 +811,11 @@ export default class OrderSewingView extends JetView{
     }
 
 
+  }
+
+  doClickPrint() {
+    let table = this.$$("sewing-table");
+
+    webix.print(table, { fit:"data"});
   }
 }
