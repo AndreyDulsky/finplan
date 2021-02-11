@@ -291,7 +291,11 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "right",  "font-weight": 500}, batch:1
 
             },
-            { id:"CH", header:[ "Коэф. пош. план", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"CH", header:[ "Коэф.шв.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:125, editor:"text",
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"time_sewing", header:[ "Время.шв.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
               width:125, editor:"text",
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
@@ -448,6 +452,8 @@ export default class OrderSewingView extends JetView{
                 AG:["AG","median"],
                 CH:["CH","median"],
                 coef_sewing:["coef_sewing", "median" ],
+                time_sewing:["time_sewing", "median" ],
+
 
 
                 //state:["grouped","string"],
