@@ -121,9 +121,9 @@ webix.editors.$popup = {
     body:{
       view:"calendar",
       timepicker:true,
-      weekNumber:true,
-      width: 220,
-      height:200
+      //weekNumber:true,
+      //width: 220,
+      //height:200
     }
   }
 };
