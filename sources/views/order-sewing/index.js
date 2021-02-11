@@ -182,6 +182,15 @@ export default class OrderSewingView extends JetView{
               ]
             },
             {
+              view:"icon",
+              //type:"icon",
+              icon: 'mdi mdi-refresh',
+              autowidth:true,
+              value :true,
+              click: function() { scope.doRefresh() }
+
+            },
+            {
               view:"toggle",
               type:"icon",
               icon: 'mdi mdi-file-tree',
@@ -552,6 +561,16 @@ export default class OrderSewingView extends JetView{
     //   return  data.json().items;
     // });
 
+    table.attachEvent("onAfterEditStop", function(state, editor, ignoreUpdate){
+      let record = {};
+      if(editor.column === "date_sewing_plan"){
+         record = table.getItem(editor.row);
+         record['date_sewing'] = state.value;
+         table.refresh(editor.row);
+      }
+
+    });
+
     dateFrom.attachEvent("onChange", function(id) {
       dateFromValue = format(dateFrom.getValue());
       dateToValue = format(dateTo.getValue());
@@ -610,6 +629,29 @@ export default class OrderSewingView extends JetView{
     webix.ajax().put(tableUrl, data).then(function(data){
       webix.message('Данные сохранены!');
     });
+
+  }
+
+  doRefresh() {
+    let table = this.$$("sewing-table");
+    let format = webix.Date.dateToStr("%d.%m.%y");
+    let dateFrom = this.$$("dateFrom");
+    let dateTo = this.$$("dateTo");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+    this.restApi = this.app.config.apiRest;
+    let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
+      "per-page": "500",
+      sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+    });
+    let scope =this;
+    this.restApi.getLoad(tableUrl).then(function(data){
+      table.clearAll();
+      table.parse(data.json().items);
+    });
+
 
   }
 }
