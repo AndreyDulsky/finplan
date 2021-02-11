@@ -230,6 +230,16 @@ export default class OrderSewingView extends JetView{
             {
               view:"toggle",
               type:"icon",
+              icon: 'mdi mdi-calendar',
+              localId: "toggleTime",
+              autowidth:true,
+              value :true,
+              click: function() { scope.doPlanToggle() }
+
+            },
+            {
+              view:"toggle",
+              type:"icon",
               icon: 'mdi mdi-file-tree',
               autowidth:true,
               value :true,
@@ -273,10 +283,10 @@ export default class OrderSewingView extends JetView{
             // },
 
             {
-              id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:130,
+              id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:180,
               template:function(obj, common){
 
-                if (obj.$level == 1) return common.treetable(obj, common) + formatDateTime(obj.date_sewing);
+                if (obj.$level == 1) return common.treetable(obj, common) + obj.value;
                 return obj.A;
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
@@ -339,13 +349,13 @@ export default class OrderSewingView extends JetView{
             {
               id:"date_sewing",
               header:[ "Дата Шв.", { content:"selectFilter" }, "" ],
-              width:90,
+              width:110,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1,
               hidden: false,
               template: function(obj) {
-                return formatDate(parserDate(obj.date_sewing));
+                return formatDateTime(parserDateTime(obj.date_sewing));
               }
             },
             {
@@ -490,12 +500,10 @@ export default class OrderSewingView extends JetView{
                 coef_sewing:["coef_sewing", "median" ],
                 time_sewing:["time_sewing", "median" ],
                 BO:["BO", "countSame" ],
-
-
-
-
-                //state:["grouped","string"],
-                missing:false
+                missing:false,
+                value: [function (obj) {
+                  return formatDateTime(obj.date_sewing);
+                }],
               },
               // footer:{
               //   W:["W", "sum"],
@@ -589,6 +597,8 @@ export default class OrderSewingView extends JetView{
     let dateTo = this.$$("dateTo");
     let dateFromValue = format(this.$$("dateFrom").getValue());
     let dateToValue = format(this.$$("dateTo").getValue());
+
+    webix.extend(table, webix.ProgressBar);
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
       "per-page": "500",
@@ -691,10 +701,113 @@ export default class OrderSewingView extends JetView{
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
     this.restApi.getLoad(tableUrl).then(function(data){
       table.clearAll();
       table.parse(data.json().items);
+      table.enable();
+
     });
+
+
+  }
+
+
+  doPlanToggle()  {
+    let toggle = this.$$("toggleTime");
+
+    let table = this.$$("sewing-table");
+    let format = webix.Date.dateToStr("%d.%m.%y");
+    let dateFrom = this.$$("dateFrom");
+    let dateTo = this.$$("dateTo");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+    this.restApi = this.app.config.apiRest;
+
+    let scope =this;
+
+
+
+
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
+
+    if (!toggle.getValue()) {
+      let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
+        "per-page": "500",
+        sort: '[{"property":"date_sewing_plan","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"date_sewing_plan":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+      });
+      this.restApi.getLoad(tableUrl).then(function(data){
+        table.clearAll();
+        table.parse(data.json().items);
+        table.group({
+          by: function (obj) {
+            return formatDateTime(obj.date_sewing_plan);
+          },
+          map:{
+            G:["G","median"],
+            V:["V","median"],
+            AO:["AO","median"],
+            AA:["AA","median"],
+            AB:["AB","median"],
+            AG:["AG","median"],
+            CH:["CH","median"],
+            coef_sewing:["coef_sewing", "median" ],
+            time_sewing:["time_sewing", "median" ],
+            BO:["BO", "countSame" ],
+            missing:false,
+            value: [function (obj) {
+              return formatDateTime(obj.date_sewing_plan);
+            }],
+          },
+        });
+        table.enable();
+      });
+
+    } else {
+      let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
+        "per-page": "500",
+        sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+      });
+      this.restApi.getLoad(tableUrl).then(function(data){
+        table.clearAll();
+        table.parse(data.json().items);
+        table.group({
+          by: function (obj) {
+            return formatDateTime(obj.date_sewing);
+          },
+          map:{
+            G:["G","median"],
+            V:["V","median"],
+            AO:["AO","median"],
+            AA:["AA","median"],
+            AB:["AB","median"],
+            AG:["AG","median"],
+            CH:["CH","median"],
+            coef_sewing:["coef_sewing", "median" ],
+            time_sewing:["time_sewing", "median" ],
+            BO:["BO", "countSame" ],
+            missing:false,
+            value: [function (obj) {
+              return formatDateTime(obj.date_sewing);
+            }],
+          },
+        });
+        table.enable();
+      });
+
+    }
 
 
   }
