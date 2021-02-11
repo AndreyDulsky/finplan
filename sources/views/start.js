@@ -317,9 +317,9 @@ export default class StartView extends JetView{
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
             },
             {
-              id:"date_obivka", header:"Дата", width:120, editor: 'date',
-              template:function(obj, common){
-                return formatDateTime(parserDateTime(obj.date_obivka));
+              id:"AE", header:"Дата", width:120, editor: 'date',
+              template:function(obj, common) {
+                return formatDateTime(parserDateTime(obj.AE));
               }
 
             },

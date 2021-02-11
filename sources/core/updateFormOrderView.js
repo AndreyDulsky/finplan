@@ -190,7 +190,8 @@ export default class UpdateFormOrderView extends JetView {
 
 
         if (loadedCount === collectionsCount) {
-
+          //debugger;
+          scope.labelSetValue();
           state.formEdit.setValues(scope.getRecord());
           if (!state.isUpdate) scope.setDefaultValues();
           state.formEdit.enable();
@@ -426,7 +427,7 @@ export default class UpdateFormOrderView extends JetView {
     let tableUrl = api.getUrl('get',"accounting/product-bed/get-price", {
       "per-page": "-1"
     });
-    this.labelSetValue();
+
     //debugger;
     let valuesForm = state.formEdit.getValues();
     //debugger;

@@ -136,9 +136,12 @@ webix.Date.monthEnd = function(obj){
   return obj;
 }
 
-let formatDate = webix.Date.dateToStr("%d.%m.%y");
-var parserDate = webix.Date.strToDate("%Y-%m-%d");
 
+
+let formatDate = webix.Date.dateToStr("%d.%m.%y");
+let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
+let parserDate = webix.Date.strToDate("%Y-%m-%d");
+let parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
 export default class OrderSewingView extends JetView{
 
 
@@ -285,7 +288,7 @@ export default class OrderSewingView extends JetView{
             },
             {
               id:"date_sewing",
-              header:[ "Дата Пош.", { content:"selectFilter" }, "" ],
+              header:[ "Дата Шв.", { content:"selectFilter" }, "" ],
               width:90,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
@@ -293,6 +296,18 @@ export default class OrderSewingView extends JetView{
               hidden: false,
               template: function(obj) {
                 return formatDate(parserDate(obj.date_sewing));
+              }
+            },
+            {
+              id:"date_sewing_plan",
+              header:[ "Дата Шв.план", { content:"selectFilter" }, "" ],
+              width:110,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.date_sewing_plan));
               }
             },
             { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
