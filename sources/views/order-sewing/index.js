@@ -815,7 +815,7 @@ export default class OrderSewingView extends JetView{
     dateTo.attachEvent("onChange", function(id) {
 
       dateFromValue = format(dateFrom.getValue());
-      dateToValue = formatDate(dateTo.getValue())+' 23:59';
+      dateToValue = formatDate(dateTo.getValue());//+' 23:59';
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
         "per-page": "500",
