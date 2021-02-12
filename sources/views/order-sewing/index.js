@@ -210,7 +210,7 @@ export default class OrderSewingView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.weekStart(new Date())
+                  value: webix.Date.add(new Date(), -1, "day")
                 },
                 {
                   view:"datepicker",
@@ -236,16 +236,16 @@ export default class OrderSewingView extends JetView{
             },
             { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
             { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
-            {
-              view:"toggle",
-              type:"icon",
-              icon: 'mdi mdi-calendar',
-              localId: "toggleTime",
-              autowidth:true,
-              value :true,
-              click: function() { scope.doPlanToggle() }
-
-            },
+            // {
+            //   view:"toggle",
+            //   type:"icon",
+            //   icon: 'mdi mdi-calendar',
+            //   localId: "toggleTime",
+            //   autowidth:true,
+            //   value :true,
+            //   click: function() { scope.doPlanToggle() }
+            //
+            // },
             {
               view:"toggle",
               type:"icon",
@@ -256,14 +256,14 @@ export default class OrderSewingView extends JetView{
 
             },
             { view:"select",  value:1, labelWidth:100, options:[
-              { id:1, value:"Производство" },
-              { id:2, value:"Продажи" },
-              { id:3, value:"Выработка" }
+              { id:1, value:"По дате факт" },
+              { id:2, value:"По дате план" },
+
             ],
               width: 200,
               on:{
                 onChange:function(newv){
-                  scope.showBatch(newv);
+                  scope.doPlanToggle(newv);
                 }
               }
             },
@@ -285,6 +285,7 @@ export default class OrderSewingView extends JetView{
           editable:true,
           visibleBatch:1,
           editaction: "dblclick",
+          tooltip:true,
           columns:[
 
             // {
@@ -293,6 +294,7 @@ export default class OrderSewingView extends JetView{
 
             {
               id:"A", header:[ "# заказа", { content:"textFilter" },"" ],	width:180,
+              tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
               template:function(obj, common){
 
                 if (obj.$level == 1) return common.treetable(obj, common) + obj.value;
@@ -359,7 +361,7 @@ export default class OrderSewingView extends JetView{
             },
             {
               id:"date_sewing",
-              header:[ "Дата Шв.", { content:"selectFilter" }, "" ],
+              header:[ "Дата Шв.факт", { content:"selectFilter" }, "" ],
               width:110,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
@@ -386,7 +388,7 @@ export default class OrderSewingView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BP == 1) {
-                  return '<i class="mdi mdi-check"></i>';
+                  return '<i class="mdi mdi-check-circle"></i>';
                 }
                 return  (obj.BP === null) ? "" : obj.BP;
               }
@@ -423,7 +425,7 @@ export default class OrderSewingView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.W == 1) {
-                  return '<i class="mdi mdi-check"></i>';
+                  return '<i class="mdi mdi-marker-check"></i>';
                 }
                 return  (obj.W === null) ? "" : obj.W;
               }
@@ -434,18 +436,18 @@ export default class OrderSewingView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BW == 1) {
-                  return '<i class="mdi mdi-check"></i>';
+                  return '<i class="mdi mdi-check-circle"></i>';
                 }
                 return  (obj.BW === null) ? "" : obj.BW;
               }
             },
 
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
-              "css": {"color": "black", "text-align": "center",  "font-weight": 500},
+              "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BA == 1) {
-                  return '<i class="mdi mdi-check"></i>';
+                  return '<i class="mdi mdi-check-circle"></i>';
                 }
                 return  (obj.BA === null) ? "" : obj.BA;
               }
@@ -733,6 +735,7 @@ export default class OrderSewingView extends JetView{
     //let gant = this.$$("gant");
 
     let format = webix.Date.dateToStr("%d.%m.%y");
+    let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
     let dateFrom = this.$$("dateFrom");
     let dateTo = this.$$("dateTo");
     let dateFromValue = format(this.$$("dateFrom").getValue());
@@ -811,7 +814,7 @@ export default class OrderSewingView extends JetView{
     dateTo.attachEvent("onChange", function(id) {
 
       dateFromValue = format(dateFrom.getValue());
-      dateToValue = format(dateTo.getValue());
+      dateToValue = formatDate(dateTo.getValue())+' 23:59';
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
         "per-page": "500",
@@ -889,7 +892,7 @@ export default class OrderSewingView extends JetView{
   }
 
 
-  doPlanToggle()  {
+  doPlanToggle(type)  {
     let toggle = this.$$("toggleTime");
 
     let table = this.$$("sewing-table");
@@ -911,7 +914,7 @@ export default class OrderSewingView extends JetView{
       hide:false
     });
 
-    if (!toggle.getValue()) {
+    if (type == 2) {
       let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
         "per-page": "500",
         sort: '[{"property":"date_sewing_plan","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
