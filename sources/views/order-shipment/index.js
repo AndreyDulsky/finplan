@@ -40,8 +40,8 @@ webix.GroupMethods.countValue = function(prop, data){
   for (var i = data.length - 1; i >= 0; i--) {
 
     if (data[i].$level == 1 ) {
-      let per =parseInt(prop(data[i]));
-      if (!isNaN(per)) count = count+1;
+      let per = prop(data[i]);
+      if (per != '') count = count+1;
     }
   }
   return count;
@@ -52,7 +52,6 @@ webix.ui.datafilter.totalColumn = webix.extend({
     var result = 0, _val;
     master.data.each(function (obj) {
       if (obj.$group) return;
-
 
       _val = obj[value.columnId];
       if (value.columnId == 'coefMoney') {
@@ -91,8 +90,8 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
     master.data.each(function (obj) {
       if (obj.$group) return;
 
-      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
-      if (!isNaN(_val)) result = result+1;
+      _val = /*implement your logic*/ obj[value.columnId];// / obj.OTHER_COL;
+      if (_val!='') result = result+1;
     });
     result = webix.i18n.numberFormat(result,{
       groupDelimiter:",",
@@ -344,7 +343,7 @@ export default class OrderShipmentView extends JetView{
 
 
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text"  },
-            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
+            { id:"I", header:[ "Изделие", { content:"textFilter" }, { content:"totalColumnCount" } ], width:200, editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
             { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
               width:70,
@@ -496,6 +495,7 @@ export default class OrderShipmentView extends JetView{
                 AG:["AG","median"],
                 AJ:["AJ","median"],
                 J:["J","countValue"],
+                I:["I","countValue"],
                 coef_sewing:["coef_sewing", "median" ],
                 coef_cut:["coef_cut", "median" ],
                 coef_carpenter:["coef_carpenter", "median" ],

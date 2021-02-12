@@ -298,7 +298,8 @@ export default class OrderSewingView extends JetView{
                 if (obj.$level == 1) return common.treetable(obj, common) + obj.value;
                 return obj.A;
               },
-              "css": {"color": "black", "text-align": "right", "font-weight": 500}
+              "css": {"color": "black", "text-align": "right", "font-weight": 500},
+              "sort" : "date"
             },
 
             { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:70, batch:2, editor:"select",
@@ -541,7 +542,7 @@ export default class OrderSewingView extends JetView{
             //   }
             //   //row:"A"
             // },
-            $sort:{ by:"date_sewing", dir:"asc", as: "date" },
+           // $sort:{ by:"date_sewing", dir:"asc", as: "date" },
 
 
             $init:function(item) {
@@ -920,6 +921,7 @@ export default class OrderSewingView extends JetView{
       this.restApi.getLoad(tableUrl).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
+
         table.group({
           by: function (obj) {
             return formatDateTime(obj.date_sewing_plan);
@@ -941,6 +943,8 @@ export default class OrderSewingView extends JetView{
             }],
           },
         });
+        table.sort("date_sewing_plan", "asc", "date");
+
         table.enable();
       });
 
