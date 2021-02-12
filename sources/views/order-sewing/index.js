@@ -273,7 +273,7 @@ export default class OrderSewingView extends JetView{
         {
           view:"treetable",
           css:"webix_header_border webix_data_border",
-          leftSplit:1,
+          leftSplit:2,
           //rightSplit:2,
           select: "row",
           resizeColumn: { headerOnly:true },
@@ -303,11 +303,12 @@ export default class OrderSewingView extends JetView{
               "css": {"color": "black", "text-align": "right", "font-weight": 500},
               "sort" : "date"
             },
+            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
 
-            { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:70, batch:2, editor:"select",
-              options:[{"id": 1, "value": "1"}, {"id": 3, "value": "3"}, {"id": 4, "value": "4"},
-                {"id": 5, "value": "5"}, {"id": 6, "value": "6"}
-              ] },
+            // { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:70, batch:2, editor:"select",
+            //   options:[{"id": 1, "value": "1"}, {"id": 3, "value": "3"}, {"id": 4, "value": "4"},
+            //     {"id": 5, "value": "5"}, {"id": 6, "value": "6"}
+            //   ] },
             { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, editor:"text"},
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text", batch:2  },
@@ -319,7 +320,7 @@ export default class OrderSewingView extends JetView{
               //footer: {content: "summColumn", css: {"text-align": "right"}}
 
             },
-            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
+
             { id:"coefMoney", header:[ "Коэф. ден. план", { content:"textFilter" }, { content:"totalColumn" } ],
               width:120,
               hidden: true,
