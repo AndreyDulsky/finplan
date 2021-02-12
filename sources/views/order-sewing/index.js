@@ -748,7 +748,7 @@ export default class OrderSewingView extends JetView{
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
       "per-page": "500",
       sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
@@ -798,7 +798,7 @@ export default class OrderSewingView extends JetView{
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
         "per-page": "500",
         sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
       webix.ajax().get(tableUrl).then(function(data){
@@ -821,7 +821,7 @@ export default class OrderSewingView extends JetView{
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
         "per-page": "500",
         sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
 
@@ -874,7 +874,7 @@ export default class OrderSewingView extends JetView{
     let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
       "per-page": "500",
       sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
@@ -957,7 +957,7 @@ export default class OrderSewingView extends JetView{
       let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
         "per-page": "500",
         sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"date_sewing":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"'+dateToValue+'"}}'
       });
       this.restApi.getLoad(tableUrl).then(function(data){

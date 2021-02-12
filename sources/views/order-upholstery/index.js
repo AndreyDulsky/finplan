@@ -502,7 +502,7 @@ export default class OrderUpholsteryView extends JetView{
           scheme:{
             $group:{
               by:function (obj) {
-                return obj.AE;
+                return formatDateHour(obj.date_obivka);
               }, // 'company' is the name of a data property
               map:{
                 G:["G","median"],
@@ -517,7 +517,7 @@ export default class OrderUpholsteryView extends JetView{
                 BO:["BO", "countSame" ],
                 missing:false,
                 value: [function (obj) {
-                  return obj.AE;
+                  return formatDateHour(obj.date_obivka);
                 }],
               },
               // footer:{
@@ -753,12 +753,12 @@ export default class OrderUpholsteryView extends JetView{
 
 
     table.attachEvent("onAfterEditStop", function(state, editor, ignoreUpdate){
-      // let record = {};
-      // if(editor.column === "date_upholstery_plan"){
-      //   record = table.getItem(editor.row);
-      //   record['date_upholstery'] = state.value;
-      //   table.refresh(editor.row);
-      // }
+      let record = {};
+      if(editor.column === "date_upholstery_plan"){
+        record = table.getItem(editor.row);
+        record['date_obivka'] = state.value;
+        table.refresh(editor.row);
+      }
 
     });
 
