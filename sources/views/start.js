@@ -40,8 +40,8 @@ webix.GroupMethods.countValue = function(prop, data){
   for (var i = data.length - 1; i >= 0; i--) {
 
     if (data[i].$level == 1 ) {
-      let per =parseInt(prop(data[i]));
-      if (!isNaN(per)) count = count+1;
+      let per = prop(data[i]);
+      if (per != '') count = count+1;
     }
   }
   return count;
@@ -91,8 +91,8 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
     master.data.each(function (obj) {
       if (obj.$group) return;
 
-      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
-      if (!isNaN(_val)) result = result+1;
+      _val = /*implement your logic*/ obj[value.columnId];// / obj.OTHER_COL;
+      if (_val!='') result = result+1;
     });
     result = webix.i18n.numberFormat(result,{
       groupDelimiter:",",
@@ -108,6 +108,7 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
     node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
+
 
 webix.editors.$popup.text = {
   view:"popup",
