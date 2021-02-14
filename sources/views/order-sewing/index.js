@@ -1016,10 +1016,10 @@ export default class OrderSewingView extends JetView{
 
     if (toggle.getValue() == 1) {
       by = function (obj) {
-        return parserDateTime(obj.date_sewing);
+        return parserDateHour(obj.date_sewing);
       };
       map['value'] = [function (obj) {
-        return parserDateTime(obj.date_sewing);
+        return parserDateHour(obj.date_sewing);
       }];
       table.group({
         by: by,
@@ -1029,10 +1029,10 @@ export default class OrderSewingView extends JetView{
 
     if (toggle.getValue() == 2) {
       by = function (obj) {
-        return parserDateTime(obj.date_sewing_plan);
+        return parserDateHour(obj.date_sewing_plan);
       };
       map['value'] = [function (obj) {
-        return parserDateTime(obj.date_sewing_plan);
+        return parserDateHour(obj.date_sewing_plan);
       }];
       table.group({
         by: by,
