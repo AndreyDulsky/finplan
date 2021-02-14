@@ -264,6 +264,10 @@ export default class OrderSewingView extends JetView{
                 { id:3, value:"По дате окончания шв.план" },
                 { id:4, value:"По дате обивки факт" },
                 { id:5, value:"По дате обивки план" },
+                { id:6, value:"По дате распил.факт/Дата обивки" },
+                { id:7, value:"По дате распил.план" },
+
+
 
               ],
               width: 250,
@@ -348,7 +352,7 @@ export default class OrderSewingView extends JetView{
               width:80,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:1,
+              //batch:1,
               template: function(obj) {
                 return formatDate(parserDate(obj.date_obivka));
               }
@@ -407,7 +411,7 @@ export default class OrderSewingView extends JetView{
               //   return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
               // }
             },
-            { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+            { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
@@ -423,12 +427,13 @@ export default class OrderSewingView extends JetView{
               width:120,
               "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
             },
+            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:1,editor:"text" },
+            { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90,  batch:1, editor:"text" },
 
             { id:"J", header:[ "Размер", { content:"selectFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
-            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text"},
-            { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, editor:"text" },
-            { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90,  editor:"text" },
+            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, batch:1,editor:"text"},
+
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
               editor:"popup",
               template:function(obj, common){
@@ -467,7 +472,7 @@ export default class OrderSewingView extends JetView{
               }
             },
 
-            { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
+            { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 if (obj.$group) return "";
@@ -477,6 +482,15 @@ export default class OrderSewingView extends JetView{
                 return  (obj.BA === null) ? "" : obj.BA;
               }
             },
+
+
+            { id:"BV", header:[ "Фио Крой", { content:"selectFilter" }, { content:"mySummColumn" } ], width:115 , batch:1, editor:"text"},
+
+            { id:"desc_sewing", header:[ "Причина", { content:"selectFilter" },""], width:150,  editor:"popup" , batch:1},
+            //{ id:"W", header:"Статус", width:100, batch:3 },
+            //{ id:"AH", header:"Дата", width:100, batch:3 },
+            { id:"loss_sewing", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:1, editor:"text" },
+            { id:"time_loss_sewing", header:[ "Время потерь, мин", { content:"selectFilter" },""], width:110, batch:1, editor:"text" },
 
             { id:"V", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ],
               width:100,
@@ -498,20 +512,52 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "right",  "font-weight": 500}, batch:2,
             },
 
+            // Sawcut
+            { id:"date_carpenter",header:[ "Дата стол.", { content:"selectFilter" },""], width:120, batch:6, editor:"date",
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.date_carpenter));
+              }
+            },
+            { id:"date_carpenter_plan",header:[ "Дата стол.план", { content:"selectFilter" },""], width:120, batch:6, editor:"date",
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.date_carpenter_plan));
+              }
+            },
+            { id:"date_sawcut",header:[ "Дата расп.факт", { content:"selectFilter" },""], width:120, batch:6, editor:"date",
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.date_sawcut));
+              }
+            },
+            { id:"date_sawcut_plan",header:[ "Дата расп.план", { content:"selectFilter" },""], width:120, batch:6, editor:"date",
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.date_sawcut_plan));
+              }
+            },
+            { id:"status_sawcut", header:[ "Расп.", { content:"selectFilter" },""], width:60, batch:6, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 600},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.status_sawcut == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.status_sawcut === null) ? "" : obj.status_sawcut;
+              }
+            },
 
-            { id:"BV", header:[ "Фио Крой", { content:"selectFilter" }, { content:"mySummColumn" } ], width:115 , batch:1, editor:"text"},
+            { id:"time_sawcut_start", header:[ "Время нач.", { content:"selectFilter" },""], width:120, batch:6, editor:"text",
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.time_sawcut_start));
+              }
+            },
+            { id:"time_sawcut_end", header:[ "Время оконч.", { content:"selectFilter" },""], width:120, batch:6 , editor:"text",
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.time_sawcut_end));
+              }
+            },
+            { id:"desc_sawcut", header:[ "Причина", { content:"selectFilter" },""], width:150,  editor:"popup" , batch:6},
+            { id:"loss_sawcut", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:6, editor:"text" },
+            { id:"time_loss_sawcut", header:[ "Время потерь, мин", { content:"selectFilter" },""], width:110, batch:6, editor:"text" },
 
-            { id:"desc_sewing", header:[ "Причина", { content:"selectFilter" },""], width:150,  editor:"popup" },
-            //{ id:"W", header:"Статус", width:100, batch:3 },
-            //{ id:"AH", header:"Дата", width:100, batch:3 },
-            { id:"loss_sewing", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:1, editor:"text" },
-            { id:"time_loss_sewing", header:[ "Время потерь, мин", { content:"selectFilter" },""], width:110, batch:1, editor:"text" },
-
-            { id:"AL", header:"Статус", width:60, batch:3, editor:"text" },
-            { id:"AM", header:"Дата", width:90, batch:3, editor:"text" },
-            { id:"AP", header:"Паралон изг.", width:110, batch:3, editor:"text" },
-            { id:"AQ", header:"Статус", width:60, batch:3, editor:"text" },
-            { id:"AR", header:"Дата", width:90, batch:3 , editor:"text"},
             { id:"AU", header:"Паралон царги", width:115 , batch:3, editor:"text"},
             { id:"AV", header:"Статус", width:60, batch:3 , editor:"text"},
             { id:"AW", header:"Дата", width:90, batch:3 , editor:"text"},
@@ -970,6 +1016,12 @@ export default class OrderSewingView extends JetView{
     if (toggle.getValue() == 5) {
       field = 'date_upholstery_plan';
     }
+    if (toggle.getValue() == 6) {
+      field = 'AE';
+    }
+    if (toggle.getValue() == 7) {
+      field = 'date_sawcut_plan';
+    }
     return field;
   }
 
@@ -990,6 +1042,12 @@ export default class OrderSewingView extends JetView{
     }
     if (toggle.getValue() == 5) {
       field = 'date_upholstery_plan';
+    }
+    if (toggle.getValue() == 6) {
+      field = 'date_sawcut';
+    }
+    if (toggle.getValue() == 7) {
+      field = 'date_sawcut_plan';
     }
     return field;
   }
@@ -1013,6 +1071,8 @@ export default class OrderSewingView extends JetView{
       BO:["BO", "countSame" ],
       missing:false,
     };
+
+    this.showBatch(1);
 
     if (toggle.getValue() == 1) {
       by = function (obj) {
@@ -1076,6 +1136,32 @@ export default class OrderSewingView extends JetView{
       };
       map['value'] = [function (obj) {
         return parserDateHour(obj.date_upholstery_plan);
+      }];
+      table.group({
+        by: by,
+        map: map,
+      });
+    }
+    if (toggle.getValue() == 6) {
+      this.showBatch(6);
+      by = function (obj) {
+        return parserDateHour(obj.date_sawcut);
+      };
+      map['value'] = [function (obj) {
+        return parserDateHour(obj.date_sawcut);
+      }];
+      table.group({
+        by: by,
+        map: map,
+      });
+    }
+    if (toggle.getValue() == 7) {
+      this.showBatch(6);
+      by = function (obj) {
+        return parserDateHour(obj.date_sawcut_plan);
+      };
+      map['value'] = [function (obj) {
+        return parserDateHour(obj.date_sawcut_plan);
       }];
       table.group({
         by: by,
