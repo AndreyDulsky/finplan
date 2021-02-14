@@ -182,6 +182,7 @@ let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
 let parserDate = webix.Date.strToDate("%Y-%m-%d");
 let parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
+let parserDateHour = webix.Date.strToDate("%Y-%m-%d %H");
 
 let formatDateHour =  webix.Date.dateToStr("%d.%m.%y %H");
 
@@ -255,12 +256,16 @@ export default class OrderSewingView extends JetView{
               click: function() { scope.doClickOpenAll() }
 
             },
-            { view:"select",  value:1, labelWidth:100, options:[
-              { id:1, value:"По дате факт" },
-              { id:2, value:"По дате план" },
+            { view:"select",
+              localId: "toggle-plan",
+                value:1, labelWidth:100, options:[
+                { id:1, value:"По дате шв.факт(групировка)/Дата обивки (фильтер)" },
+                { id:2, value:"По дате шв.план" },
+                { id:3, value:"По дате окончания шв.план" },
+                { id:4, value:"По дате обивки" },
 
-            ],
-              width: 200,
+              ],
+              width: 250,
               on:{
                 onChange:function(newv){
                   scope.doPlanToggle(newv);
@@ -300,6 +305,7 @@ export default class OrderSewingView extends JetView{
                 if (obj.$level == 1) return common.treetable(obj, common) + obj.value;
                 return obj.A;
               },
+              format:formatDateHour,
               "css": {"color": "black", "text-align": "right", "font-weight": 500},
               "sort" : "date"
             },
@@ -360,6 +366,10 @@ export default class OrderSewingView extends JetView{
               width:125, editor:"text",
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
+            { id:"time_sewing_fact", header:[ "Время.шв.факт,ч", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:125, editor:"text",
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
             {
               id:"date_sewing",
               header:[ "Дата Шв.факт", { content:"selectFilter" }, "" ],
@@ -382,6 +392,18 @@ export default class OrderSewingView extends JetView{
               hidden: false,
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_sewing_plan));
+              }
+            },
+            {
+              id:"date_sewing_plan_end",
+              header:[ "Дата Шв.план ок.", { content:"selectFilter" }, "" ],
+              width:125,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
               }
             },
             { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
@@ -718,19 +740,7 @@ export default class OrderSewingView extends JetView{
   }
 
   init(view) {
-    // let table = this.$$("start-table");
-    // let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {"per-page": "10", sort: '[{"property":"A","direction":"DESC"}]'});
-    //
-    // let scope =this;
-    // webix.ajax(tableUrl).then(function(data) {
-    //   let result = data.json().items;
-    //   table.parse(result);
-    //
-    // });
 
-    //scope.changeColumns(dateFrom, dateTo);
-    //table.clearAll();
-    //table.load(tableUrl);
     let table = this.$$("sewing-table");
     // let timeline = this.$$("timeline");
     // let timelinePlan = this.$$("timeline-plan");
@@ -745,16 +755,20 @@ export default class OrderSewingView extends JetView{
 
     webix.extend(table, webix.ProgressBar);
 
-    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
+    let filedFilter = this.getFilterFieldByTypeGroup();
+    let filedSort = this.getSortFieldByTypeGroup();
+
+    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders",{
       "per-page": "500",
-      sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
-      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+      sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      //filter: '{"AE":{">=":"01.02.20"}}'
     });
     let scope =this;
     webix.ajax().get(tableUrl).then(function(data){
       table.clearAll();
       table.parse(data.json().items);
+      scope.doTableGroup();
       // timeline.clearAll();
       // timeline.parse(data.json().items);
       // timelinePlan.clearAll();
@@ -795,15 +809,19 @@ export default class OrderSewingView extends JetView{
       dateFromValue = format(dateFrom.getValue());
       dateToValue = format(dateTo.getValue());
 
-      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
+      let filedFilter = scope.getFilterFieldByTypeGroup();
+      let filedSort = scope.getSortFieldByTypeGroup();
+
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
         "per-page": "500",
-        sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
       webix.ajax().get(tableUrl).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
+        scope.doTableGroup();
         // timeline.clearAll();
         // timeline.parse(data.json().items);
         // timelinePlan.clearAll();
@@ -818,16 +836,20 @@ export default class OrderSewingView extends JetView{
       dateFromValue = format(dateFrom.getValue());
       dateToValue = formatDate(dateTo.getValue());//+' 23:59';
 
+      let filedFilter = scope.getFilterFieldByTypeGroup();
+      let filedSort = scope.getSortFieldByTypeGroup();
+
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
         "per-page": "500",
-        sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
 
       webix.ajax().get(tableUrl).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
+        scope.doTableGroup();
         // timeline.clearAll();
         // timeline.parse(data.json().items);
         // timelinePlan.clearAll();
@@ -866,15 +888,15 @@ export default class OrderSewingView extends JetView{
   doRefresh() {
     let table = this.$$("sewing-table");
     let format = webix.Date.dateToStr("%d.%m.%y");
-    let dateFrom = this.$$("dateFrom");
-    let dateTo = this.$$("dateTo");
     let dateFromValue = format(this.$$("dateFrom").getValue());
     let dateToValue = format(this.$$("dateTo").getValue());
     this.restApi = this.app.config.apiRest;
+    let filedFilter = this.getFilterFieldByTypeGroup();
+    let filedSort = this.getSortFieldByTypeGroup();
     let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
       "per-page": "500",
-      sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
@@ -886,6 +908,7 @@ export default class OrderSewingView extends JetView{
     this.restApi.getLoad(tableUrl).then(function(data){
       table.clearAll();
       table.parse(data.json().items);
+      scope.doTableGroup();
       table.enable();
 
     });
@@ -895,8 +918,6 @@ export default class OrderSewingView extends JetView{
 
 
   doPlanToggle(type)  {
-    let toggle = this.$$("toggleTime");
-
     let table = this.$$("sewing-table");
     let format = webix.Date.dateToStr("%d.%m.%y");
     let dateFrom = this.$$("dateFrom");
@@ -907,88 +928,140 @@ export default class OrderSewingView extends JetView{
 
     let scope =this;
 
-
-
-
     table.disable();
     table.showProgress({
       type:"icon",
       hide:false
     });
+    let filedFilter = this.getFilterFieldByTypeGroup();
+    let filedSort = this.getSortFieldByTypeGroup();
 
-    if (type == 2) {
-      let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
-        "per-page": "500",
-        sort: '[{"property":"date_sewing_plan","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"date_sewing_plan":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
-        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+    let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
+      "per-page": "500",
+      sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+      filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+    });
+    this.restApi.getLoad(tableUrl).then(function(data){
+      table.clearAll();
+      table.parse(data.json().items);
+      scope.doTableGroup();
+      table.enable();
+    });
+  }
+
+  getFilterFieldByTypeGroup() {
+
+    let toggle = this.$$("toggle-plan");
+    let field = 'AE';
+    if (toggle.getValue() == 1) {
+      field = 'AE';
+    }
+    if (toggle.getValue() == 2) {
+      field = 'date_sewing_plan';
+    }
+    if (toggle.getValue() == 3) {
+      field = 'date_sewing_plan';
+    }
+    if (toggle.getValue() == 4) {
+      field = 'AE';
+    }
+    return field;
+  }
+
+  getSortFieldByTypeGroup() {
+    let toggle = this.$$("toggle-plan");
+    let field = 'date_sewing';
+    if (toggle.getValue() == 1) {
+      field = 'date_sewing';
+    }
+    if (toggle.getValue() == 2) {
+      field = 'date_sewing_plan';
+    }
+    if (toggle.getValue() == 3) {
+      field = 'date_sewing_plan';
+    }
+    if (toggle.getValue() == 4) {
+      field = 'AE';
+    }
+    return field;
+  }
+
+  doTableGroup()  {
+    let toggle = this.$$("toggle-plan");
+    let table = this.$$("sewing-table");
+
+    let by = {};
+    let map = {
+      G:["G","median"],
+      V:["V","median"],
+      AO:["AO","median"],
+      AA:["AA","median"],
+      AB:["AB","median"],
+      AG:["AG","median"],
+      CH:["CH","median"],
+      coef_sewing:["coef_sewing", "median" ],
+      time_sewing:["time_sewing", "median" ],
+      BO:["BO", "countSame" ],
+      missing:false,
+    };
+
+    if (toggle.getValue() == 1) {
+      by = function (obj) {
+        return formatDateHour(obj.date_sewing);
+      };
+      map['value'] = [function (obj) {
+        return formatDateHour(obj.date_sewing)+':00';
+      }];
+      table.group({
+        by: by,
+        map: map,
       });
-      this.restApi.getLoad(tableUrl).then(function(data){
-        table.clearAll();
-        table.parse(data.json().items);
+    }
 
-        table.group({
-          by: function (obj) {
-            return formatDateTime(obj.date_sewing_plan);
-          },
-          map:{
-            G:["G","median"],
-            V:["V","median"],
-            AO:["AO","median"],
-            AA:["AA","median"],
-            AB:["AB","median"],
-            AG:["AG","median"],
-            CH:["CH","median"],
-            coef_sewing:["coef_sewing", "median" ],
-            time_sewing:["time_sewing", "median" ],
-            BO:["BO", "countSame" ],
-            missing:false,
-            value: [function (obj) {
-              return formatDateTime(obj.date_sewing_plan);
-            }],
-          },
-        });
-        table.sort("date_sewing_plan", "asc", "date");
-
-        table.enable();
+    if (toggle.getValue() == 2) {
+      by = function (obj) {
+        return formatDateTime(obj.date_sewing_plan);
+      };
+      map['value'] = [function (obj) {
+        return formatDateTime(obj.date_sewing_plan);
+      }];
+      table.group({
+        by: by,
+        map: map,
       });
+    }
+    if (toggle.getValue() == 3) {
+      by = function (obj) {
+        return formatDateHour(obj.date_sewing_plan_end);
+      };
+      map['value'] = [function (obj) {
+        return formatDateHour(obj.date_sewing_plan_end)+':00';
+      }];
 
-    } else {
-      let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
-        "per-page": "500",
-        sort: '[{"property":"date_sewing","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"AE":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
-        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+      table.sort(function(a,b) {
+        a = a.date_sewing_plan_end;
+        b = b.date_sewing_plan_end;
+        return a>b?1:(a<b?-1:0);
       });
-      this.restApi.getLoad(tableUrl).then(function(data){
-        table.clearAll();
-        table.parse(data.json().items);
-        table.group({
-          by: function (obj) {
-            return formatDateHour(obj.date_sewing);
-          },
-          map:{
-            G:["G","median"],
-            V:["V","median"],
-            AO:["AO","median"],
-            AA:["AA","median"],
-            AB:["AB","median"],
-            AG:["AG","median"],
-            CH:["CH","median"],
-            coef_sewing:["coef_sewing", "median" ],
-            time_sewing:["time_sewing", "median" ],
-            BO:["BO", "countSame" ],
-            missing:false,
-            value: [function (obj) {
-              return formatDateHour(obj.date_sewing);
-            }],
-          },
-        });
-        table.enable();
+      table.group({
+        by: by,
+        map: map,
       });
 
     }
-
+    if (toggle.getValue() == 4) {
+      by = function (obj) {
+        return formatDate(obj.date_obivka);
+      };
+      map['value'] = [function (obj) {
+        return formatDate(obj.date_obivka);
+      }];
+      table.group({
+        by: by,
+        map: map,
+      });
+    }
 
   }
 
