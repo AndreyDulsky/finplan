@@ -262,7 +262,8 @@ export default class OrderSewingView extends JetView{
                 { id:1, value:"По дате шв.факт(групировка)/Дата обивки (фильтер)" },
                 { id:2, value:"По дате шв.план" },
                 { id:3, value:"По дате окончания шв.план" },
-                { id:4, value:"По дате обивки" },
+                { id:4, value:"По дате обивки факт" },
+                { id:5, value:"По дате обивки план" },
 
               ],
               width: 250,
@@ -302,12 +303,12 @@ export default class OrderSewingView extends JetView{
               tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
               template:function(obj, common){
 
-                if (obj.$level == 1) return common.treetable(obj, common) + obj.value;
+                if (obj.$level == 1) return common.treetable(obj, common) + formatDateHour(obj.value)+':00';
                 return obj.A;
               },
-              format:formatDateHour,
+              //format:formatDateHour,
               "css": {"color": "black", "text-align": "right", "font-weight": 500},
-              "sort" : "date"
+              //"sort" : "date"
             },
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
 
@@ -399,12 +400,12 @@ export default class OrderSewingView extends JetView{
               header:[ "Дата Шв.план ок.", { content:"selectFilter" }, "" ],
               width:125,
               editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
+              format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
               batch:1,
               hidden: false,
-              template: function(obj) {
-                return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
-              }
+              // template: function(obj) {
+              //   return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
+              // }
             },
             { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
@@ -530,34 +531,34 @@ export default class OrderSewingView extends JetView{
           ],
           save: "api->accounting/orders",
           scheme:{
-            $group:{
-              by:function (obj) {
-                return formatDateHour(obj.date_sewing);
-              }, // 'company' is the name of a data property
-              map:{
-                G:["G","median"],
-                V:["V","median"],
-                AO:["AO","median"],
-                AA:["AA","median"],
-                AB:["AB","median"],
-                AG:["AG","median"],
-                CH:["CH","median"],
-                coef_sewing:["coef_sewing", "median" ],
-                time_sewing:["time_sewing", "median" ],
-                BO:["BO", "countSame" ],
-                missing:false,
-                value: [function (obj) {
-                  return formatDateHour(obj.date_sewing);
-                }],
-              },
-              // footer:{
-              //   W:["W", "sum"],
-              //   //V:["V"],
-              //   row:function(obj ){ return "<span style='float:right;'>Всего: "+webix.i18n.numberFormat(obj.V)+"</span>"; }
-              // },
-
-              //row:"A"
-            },
+            // $group:{
+            //   by:function (obj) {
+            //     return formatDateHour(obj.date_sewing);
+            //   }, // 'company' is the name of a data property
+            //   map:{
+            //     G:["G","median"],
+            //     V:["V","median"],
+            //     AO:["AO","median"],
+            //     AA:["AA","median"],
+            //     AB:["AB","median"],
+            //     AG:["AG","median"],
+            //     CH:["CH","median"],
+            //     coef_sewing:["coef_sewing", "median" ],
+            //     time_sewing:["time_sewing", "median" ],
+            //     BO:["BO", "countSame" ],
+            //     missing:false,
+            //     value: [function (obj) {
+            //       return formatDateHour(obj.date_sewing);
+            //     }],
+            //   },
+            //   // footer:{
+            //   //   W:["W", "sum"],
+            //   //   //V:["V"],
+            //   //   row:function(obj ){ return "<span style='float:right;'>Всего: "+webix.i18n.numberFormat(obj.V)+"</span>"; }
+            //   // },
+            //
+            //   //row:"A"
+            // },
             // $group:{
             //   by:"A", // 'company' is the name of a data property
             //   map:{
@@ -966,6 +967,9 @@ export default class OrderSewingView extends JetView{
     if (toggle.getValue() == 4) {
       field = 'AE';
     }
+    if (toggle.getValue() == 5) {
+      field = 'date_upholstery_plan';
+    }
     return field;
   }
 
@@ -983,6 +987,9 @@ export default class OrderSewingView extends JetView{
     }
     if (toggle.getValue() == 4) {
       field = 'AE';
+    }
+    if (toggle.getValue() == 5) {
+      field = 'date_upholstery_plan';
     }
     return field;
   }
@@ -1002,16 +1009,17 @@ export default class OrderSewingView extends JetView{
       CH:["CH","median"],
       coef_sewing:["coef_sewing", "median" ],
       time_sewing:["time_sewing", "median" ],
+      date_sewing_plan_end:["date_sewing_plan_end", "median"],
       BO:["BO", "countSame" ],
       missing:false,
     };
 
     if (toggle.getValue() == 1) {
       by = function (obj) {
-        return formatDateHour(obj.date_sewing);
+        return parserDateTime(obj.date_sewing);
       };
       map['value'] = [function (obj) {
-        return formatDateHour(obj.date_sewing)+':00';
+        return parserDateTime(obj.date_sewing);
       }];
       table.group({
         by: by,
@@ -1021,10 +1029,10 @@ export default class OrderSewingView extends JetView{
 
     if (toggle.getValue() == 2) {
       by = function (obj) {
-        return formatDateTime(obj.date_sewing_plan);
+        return parserDateTime(obj.date_sewing_plan);
       };
       map['value'] = [function (obj) {
-        return formatDateTime(obj.date_sewing_plan);
+        return parserDateTime(obj.date_sewing_plan);
       }];
       table.group({
         by: by,
@@ -1033,29 +1041,41 @@ export default class OrderSewingView extends JetView{
     }
     if (toggle.getValue() == 3) {
       by = function (obj) {
-        return formatDateHour(obj.date_sewing_plan_end);
+        //debugger;
+        let date = webix.Date.add(parserDateHour(obj.date_sewing_plan_end), 1, "hour", true);
+        return date;
       };
       map['value'] = [function (obj) {
-        return formatDateHour(obj.date_sewing_plan_end)+':00';
+        return webix.Date.add(parserDateHour(obj.date_sewing_plan_end), 1, "hour", true);
       }];
 
-      table.sort(function(a,b) {
-        a = a.date_sewing_plan_end;
-        b = b.date_sewing_plan_end;
-        return a>b?1:(a<b?-1:0);
-      });
+
       table.group({
         by: by,
         map: map,
       });
+      table.sort("value", "asc", "date")
+
 
     }
     if (toggle.getValue() == 4) {
       by = function (obj) {
-        return formatDate(obj.date_obivka);
+        return obj.date_obivka;
       };
       map['value'] = [function (obj) {
-        return formatDate(obj.date_obivka);
+        return obj.date_obivka;
+      }];
+      table.group({
+        by: by,
+        map: map,
+      });
+    }
+    if (toggle.getValue() == 5) {
+      by = function (obj) {
+        return parserDateHour(obj.date_upholstery_plan);
+      };
+      map['value'] = [function (obj) {
+        return parserDateHour(obj.date_upholstery_plan);
       }];
       table.group({
         by: by,
