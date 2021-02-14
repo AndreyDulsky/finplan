@@ -404,12 +404,13 @@ export default class OrderSewingView extends JetView{
               header:[ "Дата Шв.план ок.", { content:"selectFilter" }, "" ],
               width:125,
               editor:"date",
-              format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
+              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
               batch:1,
               hidden: false,
-              // template: function(obj) {
-              //   return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
-              // }
+              template: function(obj) {
+                if (obj.$group) return '';
+                return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
+              }
             },
             { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
@@ -842,12 +843,17 @@ export default class OrderSewingView extends JetView{
     //   return  data.json().items;
     // });
 
-    table.attachEvent("onAfterEditStop", function(state, editor, ignoreUpdate){
+    table.attachEvent("onBeforeEditStop", function(state, editor, ignoreUpdate){
       let record = {};
       if(editor.column === "date_sewing_plan"){
          record = table.getItem(editor.row);
          record['date_sewing'] = state.value;
          table.refresh(editor.row);
+      }
+      if(editor.column === "date_sawcut_plan"){
+        record = table.getItem(editor.row);
+        record['date_sawcut'] = state.value;
+        table.refresh(editor.row);
       }
 
     });
