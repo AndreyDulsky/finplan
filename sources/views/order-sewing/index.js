@@ -389,8 +389,8 @@ export default class OrderSewingView extends JetView{
             },
             {
               id:"date_sewing_plan",
-              header:[ "Дата Шв.план", { content:"selectFilter" }, "" ],
-              width:110,
+              header:[ "Дата Шв.план старт", { content:"selectFilter" }, "" ],
+              width:140,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1,
@@ -401,8 +401,8 @@ export default class OrderSewingView extends JetView{
             },
             {
               id:"date_sewing_plan_end",
-              header:[ "Дата Шв.план ок.", { content:"selectFilter" }, "" ],
-              width:125,
+              header:[ "Дата Шв.план оконч.", { content:"selectFilter" }, "" ],
+              width:145,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
               batch:1,
@@ -422,6 +422,41 @@ export default class OrderSewingView extends JetView{
                 return  (obj.BP === null) ? "" : obj.BP;
               }
             },
+            { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 500},
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.BW == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.BW === null) ? "" : obj.BW;
+              }
+            },
+            {
+              id:"BT",
+              header:[ "Дата Шв.факт старт", { content:"selectFilter" }, "" ],
+              width:140,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.BT));
+              }
+            },
+            {
+              id:"BU",
+              header:[ "Дата Шв.факт оконч.", { content:"selectFilter" }, "" ],
+              width:145,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.BU));
+              }
+            },
+
             { id:"BO", header:[ "ФИО пош.", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:1, editor:"text"},
 
             { id:"coef_sewing", header:[ "Коэф. Пош. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
@@ -432,7 +467,7 @@ export default class OrderSewingView extends JetView{
             { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90,  batch:1, editor:"text" },
 
             { id:"J", header:[ "Размер", { content:"selectFilter" }, "" ], width:70, batch:2, editor:"text" },
-            { id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
+            //{ id:"K", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, batch:1,editor:"text"},
 
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
@@ -462,16 +497,7 @@ export default class OrderSewingView extends JetView{
               }
             },
             { id:"BX", header:[ "Дата Крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text" },
-            { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100, batch:1, editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 500},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.BW == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
-                }
-                return  (obj.BW === null) ? "" : obj.BW;
-              }
-            },
+
 
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
