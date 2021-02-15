@@ -392,6 +392,19 @@ export default class OrderSewingView extends JetView{
                 return  (obj.BW === null) ? "" : obj.BW;
               }
             },
+            {
+              id:"date_cut_plan",
+              header:[ "Дата кр.план старт", { content:"selectFilter" }, "" ],
+              width:140,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              "css": {"text-align": "center"},
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.date_cut_plan));
+              }
+            },
             { id:"time_sewing", header:[ "Вр.шв.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
               width:90, editor:"text",
               "css": {"text-align": "center",  "font-weight": 500}, batch:1,
@@ -489,19 +502,19 @@ export default class OrderSewingView extends JetView{
               width:125, editor:"text",
               "css": {"text-align": "right", "color":"green", "font-weight": 500}, batch:8,
             },
-            {
-              id:"date_cut_plan",
-              header:[ "Дата кр.план старт", { content:"selectFilter" }, "" ],
-              width:140,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:8,
-              hidden: false,
-              "css": {"text-align": "center"},
-              template: function(obj) {
-                return formatDateTime(parserDateTime(obj.date_cut_plan));
-              }
-            },
+            // {
+            //   id:"date_cut_plan",
+            //   header:[ "Дата кр.план старт", { content:"selectFilter" }, "" ],
+            //   width:140,
+            //   editor:"date",
+            //   //format:webix.Date.dateToStr("%d.%m.%y"),
+            //   batch:1,
+            //   hidden: false,
+            //   "css": {"text-align": "center"},
+            //   template: function(obj) {
+            //     return formatDateTime(parserDateTime(obj.date_cut_plan));
+            //   }
+            // },
             {
               id:"BZ",
               header:[ "Дата кр.факт старт", { content:"selectFilter" }, "" ],
@@ -1209,6 +1222,10 @@ export default class OrderSewingView extends JetView{
       AB:["AB","median"],
       AG:["AG","median"],
       CH:["CH","median"],
+      CI:["CI","median"],
+      time_cut_plan:["time_cut_plan","median"],
+
+
       coef_sewing:["coef_sewing", "median" ],
       time_sewing:["time_sewing", "median" ],
       date_sewing_plan_end:["date_sewing_plan_end", "median"],
