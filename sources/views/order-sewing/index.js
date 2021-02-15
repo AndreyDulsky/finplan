@@ -486,7 +486,7 @@ export default class OrderSewingView extends JetView{
             },
             { id:"time_cut_fact", header:[ "Время.кр.факт,ч", { content:"textFilter" }, { content:"totalColumn" } ],
               width:125, editor:"text",
-              "css": {"text-align": "right",  "font-weight": 500}, batch:8,
+              "css": {"text-align": "right", "color":"green", "font-weight": 500}, batch:8,
             },
             {
               id:"date_cut_plan",
@@ -496,8 +496,22 @@ export default class OrderSewingView extends JetView{
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:8,
               hidden: false,
+              "css": {"text-align": "center"},
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_cut_plan));
+              }
+            },
+            {
+              id:"BZ",
+              header:[ "Дата кр.факт старт", { content:"selectFilter" }, "" ],
+              width:140,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:8,
+              "css": {"text-align": "center", "color":"green", "font-weight": 500},
+              hidden: false,
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.BZ));
               }
             },
             {
@@ -508,23 +522,13 @@ export default class OrderSewingView extends JetView{
               //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
               batch:8,
               hidden: false,
+              "css": {"text-align": "center"},
               template: function(obj) {
                 if (obj.$group) return '';
                 return formatDateTime(parserDateTime(obj.date_cut_plan_end));
               }
             },
-            {
-              id:"BZ",
-              header:[ "Дата кр.факт старт", { content:"selectFilter" }, "" ],
-              width:140,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:8,
-              hidden: false,
-              template: function(obj) {
-                return formatDateTime(parserDateTime(obj.BZ));
-              }
-            },
+
 
             {
               id:"date_cut",
@@ -533,6 +537,7 @@ export default class OrderSewingView extends JetView{
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:8,
+              "css": {"text-align": "center", "color":"green", "font-weight": 500},
               hidden: false,
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_cut));
