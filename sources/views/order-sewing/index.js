@@ -336,19 +336,19 @@ export default class OrderSewingView extends JetView{
 
             },
 
-            { id:"coefMoney", header:[ "Коэф. ден. план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:120,
-              hidden: true,
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
-              template: function(obj) {
-                let per =  parseFloat(obj.G.replace(",",""));
-                if (obj.$group) return webix.Number.format(per/7860,{
-                  decimalDelimiter:".",
-                  decimalSize:2
-                });
-                return webix.Number.format(parseFloat(obj.G/7860));
-              }
-            },
+            // { id:"coefMoney", header:[ "Коэф. ден. план", { content:"textFilter" }, { content:"totalColumn" } ],
+            //   width:120,
+            //   hidden: true,
+            //   "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            //   template: function(obj) {
+            //     let per =  parseFloat(obj.G.replace(",",""));
+            //     if (obj.$group) return webix.Number.format(per/7860,{
+            //       decimalDelimiter:".",
+            //       decimalSize:2
+            //     });
+            //     return webix.Number.format(parseFloat(obj.G/7860));
+            //   }
+            // },
 
             {
               id:"date_obivka",
@@ -362,34 +362,42 @@ export default class OrderSewingView extends JetView{
               }
 
             },
-            { id:"AA", header:[ "Коэф. об. план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:120,
+            { id:"AA", header:[ "К.об.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80,
               "css": {"text-align": "right",  "font-weight": 500}, batch:1
 
             },
-            { id:"CH", header:[ "Коэф.шв.план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:125, editor:"text",
+            { id:"CH", header:[ "К.шв.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80, editor:"text",
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
-            { id:"time_sewing", header:[ "Время.шв.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:125, editor:"text",
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
-            },
-            { id:"time_sewing_fact", header:[ "Время.шв.факт,ч", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:125, editor:"text",
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
-            },
-            {
-              id:"date_sewing",
-              header:[ "Дата Шв.факт", { content:"selectFilter" }, "" ],
-              width:110,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:1,
-              hidden: false,
+            { id:"BP", header:[ "Шв.", { content:"selectFilter" }, "" ], width:70,  editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, },
               template: function(obj) {
-                return formatDateTime(parserDateTime(obj.date_sewing));
+                if (obj.$group) return "";
+                if (obj.BP == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.BP === null) ? "" : obj.BP;
               }
+            },
+            { id:"BW", header:[ "Крой", { content:"selectFilter" }, "" ], width:70,  editor:"text",
+              "css": {"color": "green", "text-align": "center",  "font-weight": 300, },
+              template: function(obj) {
+                if (obj.$group) return "";
+                if (obj.BW == 1) {
+                  return '<i class="mdi mdi-check-circle"></i>';
+                }
+                return  (obj.BW === null) ? "" : obj.BW;
+              }
+            },
+            { id:"time_sewing", header:[ "Вр.шв.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:90, editor:"text",
+              "css": {"text-align": "center",  "font-weight": 500}, batch:1,
+            },
+            { id:"time_sewing_fact", header:[ "Вр.шв.факт,ч", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:90, editor:"text",
+              "css": {"color": "green","text-align": "center",  "font-weight": 500}, batch:1,
             },
             {
               id:"date_sewing_plan",
@@ -399,41 +407,9 @@ export default class OrderSewingView extends JetView{
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1,
               hidden: false,
+              "css": {"text-align": "center"},
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_sewing_plan));
-              }
-            },
-            {
-              id:"date_sewing_plan_end",
-              header:[ "Дата Шв.план оконч.", { content:"selectFilter" }, "" ],
-              width:145,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
-              batch:1,
-              hidden: false,
-              template: function(obj) {
-                if (obj.$group) return '';
-                return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
-              }
-            },
-            { id:"BP", header:[ "Статус Пош.", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 500},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.BP == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
-                }
-                return  (obj.BP === null) ? "" : obj.BP;
-              }
-            },
-            { id:"BW", header:[ "Статус крой", { content:"selectFilter" }, "" ], width:100,  editor:"text",
-              "css": {"color": "green", "text-align": "center",  "font-weight": 500},
-              template: function(obj) {
-                if (obj.$group) return "";
-                if (obj.BW == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
-                }
-                return  (obj.BW === null) ? "" : obj.BW;
               }
             },
             {
@@ -444,26 +420,55 @@ export default class OrderSewingView extends JetView{
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1,
               hidden: false,
+              "css": {"color": "green","text-align": "center",  "font-weight": 500},
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.BT));
               }
             },
             {
-              id:"BU",
+              id:"date_sewing_plan_end",
+              header:[ "Дата Шв.план оконч.", { content:"selectFilter" }, "" ],
+              width:145,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
+              batch:1,
+              hidden: false,
+              "css": {"text-align": "center"},
+              template: function(obj) {
+                if (obj.$group) return '';
+                return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
+              }
+            },
+            {
+              id:"date_sewing",
               header:[ "Дата Шв.факт оконч.", { content:"selectFilter" }, "" ],
               width:145,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:1,
               hidden: false,
+              "css": {"color": "green","text-align": "center",  "font-weight": 500},
               template: function(obj) {
-                return formatDateTime(parserDateTime(obj.BU));
+                return formatDateTime(parserDateTime(obj.date_sewing));
               }
             },
 
-            { id:"BO", header:[ "ФИО пош.", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:1, editor:"text"},
+            // {
+            //   id:"BU",
+            //   header:[ "Дата Шв.факт оконч.", { content:"selectFilter" }, "" ],
+            //   width:145,
+            //   editor:"date",
+            //   //format:webix.Date.dateToStr("%d.%m.%y"),
+            //   batch:1,
+            //   hidden: false,
+            //   template: function(obj) {
+            //     return formatDateTime(parserDateTime(obj.BU));
+            //   }
+            // },
 
-            { id:"coef_sewing", header:[ "Коэф. Пош. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
+            { id:"BO", header:[ "ФИО шв.", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:1, editor:"text"},
+
+            { id:"coef_sewing", header:[ "Коэф.шв.факт", { content:"textFilter" }, { content:"totalColumn" } ],
               width:120,
               "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:1
             },
@@ -575,7 +580,12 @@ export default class OrderSewingView extends JetView{
                 return  (obj.W === null) ? "" : obj.W;
               }
             },
-            { id:"BX", header:[ "Дата Крой", { content:"selectFilter" }, "" ], width:100,  editor:"text" },
+            { id:"CA", header:[ "Время Крой", { content:"selectFilter" }, "" ], width:110,  editor:"date",
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.CA));
+              }
+
+            },
 
 
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50,  editor:"text",
@@ -1192,6 +1202,7 @@ export default class OrderSewingView extends JetView{
       coef_sewing:["coef_sewing", "median" ],
       time_sewing:["time_sewing", "median" ],
       date_sewing_plan_end:["date_sewing_plan_end", "median"],
+      time_sewing_fact:["time_sewing_fact", "median"],
       BO:["BO", "countSame" ],
       missing:false,
     };
