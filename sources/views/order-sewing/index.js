@@ -398,7 +398,7 @@ export default class OrderSewingView extends JetView{
               width:140,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:1,
+              //batch:1,
               hidden: false,
               "css": {"text-align": "center"},
               template: function(obj) {
