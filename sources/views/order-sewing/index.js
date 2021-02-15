@@ -157,10 +157,10 @@ webix.editors.$popup = {
   }
 };
 
-webix.Date.weekEnd = function(obj){
-  obj = webix.Date.weekStart(obj);
-  obj = webix.Date.add(obj, 1, "week");
-  obj = webix.Date.weekStart(obj);
+webix.Date.oneDayEnd = function(obj){
+  //obj = webix.Date.weekStart(obj);
+  obj = webix.Date.add(obj, 1, "day");
+  //obj = webix.Date.weekStart(obj);
   obj = webix.Date.add(obj, -1, "minute");
   return obj;
 }
@@ -221,7 +221,7 @@ export default class OrderSewingView extends JetView{
                   label: 'по',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.add(new Date(), +1, "day")
+                  value: webix.Date.oneDayEnd(new Date())
                 },
                 {}
 
@@ -476,6 +476,10 @@ export default class OrderSewingView extends JetView{
 
 
             //cut------------------------------
+            { id:"CI", header:[ "К.кр.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80, editor:"text",
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
             { id:"time_cut_plan", header:[ "Время.кр.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
               width:125, editor:"text",
               "css": {"text-align": "right",  "font-weight": 500}, batch:8,
