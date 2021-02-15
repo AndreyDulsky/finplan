@@ -478,7 +478,7 @@ export default class OrderSewingView extends JetView{
             //cut------------------------------
             { id:"CI", header:[ "К.кр.план", { content:"textFilter" }, { content:"totalColumn" } ],
               width:80, editor:"text",
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:8,
             },
             { id:"time_cut_plan", header:[ "Время.кр.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
               width:125, editor:"text",
