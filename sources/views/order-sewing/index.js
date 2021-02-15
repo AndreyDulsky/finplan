@@ -157,10 +157,10 @@ webix.editors.$popup = {
   }
 };
 
-webix.Date.monthEnd = function(obj){
-  obj = webix.Date.monthStart(obj);
-  obj = webix.Date.add(obj, 1, "month");
-  obj = webix.Date.monthStart(obj);
+webix.Date.weekEnd = function(obj){
+  obj = webix.Date.weekStart(obj);
+  obj = webix.Date.add(obj, 1, "week");
+  obj = webix.Date.weekStart(obj);
   obj = webix.Date.add(obj, -1, "minute");
   return obj;
 }
@@ -212,7 +212,7 @@ export default class OrderSewingView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.add(new Date(), -1, "day")
+                  value: new Date()
                 },
                 {
                   view:"datepicker",
@@ -221,7 +221,7 @@ export default class OrderSewingView extends JetView{
                   label: 'по',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.monthEnd(new Date())
+                  value: webix.Date.add(new Date(), +1, "day")
                 },
                 {}
 
@@ -570,8 +570,8 @@ export default class OrderSewingView extends JetView{
             // { id:"U", header:"U", width:100 },
 
             { id:"W", header:[ "Статус Об.", { content:"selectFilter" }, "" ], width:90, batch:1, editor:"text",
-              "css": {"color": "black", "text-align": "center",  "font-weight": 500},
-              batch:2,
+              "css": {"color": "green", "text-align": "center",  "font-weight": 500},
+              batch:1,
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.W == 1) {
