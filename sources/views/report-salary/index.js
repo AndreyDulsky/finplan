@@ -285,7 +285,15 @@ export default class OrderResultView extends JetView{
 
               ]
             },
+            {
+              view:"icon",
+              //type:"icon",
+              icon: 'mdi mdi-refresh',
+              autowidth:true,
+              value :true,
+              click: function() { scope.doRefresh() }
 
+            },
             { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
             { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
 
@@ -380,7 +388,7 @@ export default class OrderResultView extends JetView{
               tooltip:"#F# <br>#C#-#D# Дата клиента: #H# <br>#E#<br> #I#<br> #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
               template:function(obj, common){
 
-                if (obj.$level==1) return common.treetable(obj, common) + formatDate(obj.value);
+                if (obj.$level==1) return common.treetable(obj, common) + obj.value;
                 //if (obj.$level == 2) return common.treetable(obj, common) + obj.A;
                 //if (obj.$group) return common.treetable(obj,common) + (obj.value || obj.item);
                 return obj.A;
@@ -466,6 +474,36 @@ export default class OrderResultView extends JetView{
             { id:"cost_work_upholstery", header:[ "Раб. обивка", { content:"selectFilter" },  { content:"totalColumn" } ], width:110,  batch:1,
               "css": {"color": "green", "text-align": "right"}
             },
+
+
+
+            //status button
+            { id:"O", header:[ "Пугов.", { content:"selectFilter" }, "" ], width:50,  batch:1},
+            //status upholstery rubber_carcas
+            { id:"AU", header:[ "ФИО пор.царг", { content:"selectFilter" }, "" ], width:110,  batch:1},
+            { id:"AV", header:[ "Статус пор.царг", { content:"selectFilter" }, "" ], width:50,  batch:1},
+            { id:"AW", header:[ "Дата пор.царг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+            //status upholstery rubber_headboard
+            { id:"AP", header:[ "ФИО пор.изг", { content:"selectFilter" }, "" ], width:110,  batch:1},
+            { id:"AQ", header:[ "Статус пор.изг", { content:"selectFilter" }, "" ], width:50,  batch:1},
+            { id:"AR", header:[ "Дата пор.изг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+
+            //status upholstery upholstery_carcass
+            { id:"AK", header:[ "ФИО об.царг", { content:"selectFilter" }, "" ], width:110,  batch:1},
+            { id:"AL", header:[ "Статус об.царг", { content:"selectFilter" }, "" ], width:50,  batch:1},
+            { id:"AM", header:[ "Дата об.царг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+
+            //status upholstery upholstery_headboard
+            //{ id:"Z", header:[ "ФИО об.изг", { content:"selectFilter" }, "" ], width:110,  batch:1
+            //},
+            //{ id:"W", header:[ "Статус об.изг", { content:"selectFilter" }, "" ], width:110,  batch:1
+            //},
+            //{ id:"AE", header:[ "Дата об.изг", { content:"selectFilter" }, "" ], width:100,  batch:1
+            //},
+
+
+            // price upholstery
+
             { id:"cost_rubber_carcass", header:[ "Раб. пор. цар.", { content:"selectFilter" }, "" ], width:110,  batch:1,
               "css": {"color": "green", "text-align": "right"},
               "template" : function(data) {
@@ -600,14 +638,31 @@ export default class OrderResultView extends JetView{
   }
 
   init(view) {
+    let table = this.$$("report-salary-table");
+    let scope =this;
+    this.getDataGroup();
+    let dateFrom = this.$$("dateFrom");
+    let dateTo = this.$$("dateTo");
+    webix.extend(table, webix.ProgressBar);
+    dateFrom.attachEvent("onChange", function(id) {
+      scope.getDataGroup();
 
+    });
+
+    dateTo.attachEvent("onChange", function(id) {
+
+      scope.getDataGroup();
+    });
+  }
+
+  getDataGroup() {
     let table = this.$$("report-salary-table");
     let format = webix.Date.dateToStr("%d.%m.%y");
     let dateFrom = this.$$("dateFrom");
     let dateTo = this.$$("dateTo");
-    let dateFromValue = format(this.$$("dateFrom").getValue());
-    let dateToValue = format(this.$$("dateTo").getValue());
-    let typeSelect = this.$$("select-type");
+    let dateFromValue = format(dateFrom.getValue());
+    let dateToValue = format(dateTo.getValue());
+    //let typeSelect = this.$$("select-type");
     let type = this.$$("select-type").getValue();
     let selectDate = 'AE';
     if (type == 2) {
@@ -661,124 +716,18 @@ export default class OrderResultView extends JetView{
 
         }
       });
+      table.enable();
     });
+  }
 
-    dateFrom.attachEvent("onChange", function(id) {
-      dateFromValue = format(dateFrom.getValue());
-      dateToValue = format(dateTo.getValue());
-      let type = scope.$$("select-type").getValue();
-      let selectDate = 'AE';
-      if (type == 2) {
-        selectDate = 'date_carpenter';
-      }
-      if (type == 3) {
-        selectDate = 'date_sewing';
-      }
-      if (type == 4) {
-        selectDate = 'date_cut';
-      }
-
-      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
-        "expand" : 'productWorkSalary, cloth, product',
-        "per-page": "1000",
-        sort: '[{"property":"'+selectDate+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"'+selectDate+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
-        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
-      });
-
-
-
-      webix.ajax().get(tableUrl).then(function(data){
-        table.clearAll();
-        table.parse(data.json().items);
-        table.group({
-          by: function(obj){  return obj[selectDate]},
-          map:{
-            G:["G","median"],
-            V:["V","median"],
-            AO:["AO","median"],
-            AA:["AA","median"],
-            AB:["AB","median"],
-            AG:["AG","median"],
-            AJ:["AJ","median"],
-            J:["J","countValue"],
-            coef_sewing:["coef_sewing", "median" ],
-            value:[selectDate],
-            date_sewing:["date_sewing"],
-            profit:["profit", "sum"],
-            expense:["expense", "sum"],
-            net_cost:["net_cost", "sum"],
-            cost_work:["cost_work", "sum"],
-            cloth_sum:["cloth_sum", "sum"],
-            expense_cloth:["expense_cloth", "sum"],
-            coef_mat:["coef_mat", "middleCoefMat"],
-            cost_cut:["cost_cut", "sum"],
-            cost_sewing:["cost_sewing", "sum"],
-            cost_work_upholstery:["cost_work_upholstery", "sum"],
-          }
-        });
-      });
-
+  doRefresh() {
+    let table = this.$$("report-salary-table");
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
     });
-
-    dateTo.attachEvent("onChange", function(id) {
-
-      dateFromValue = format(dateFrom.getValue());
-      dateToValue = format(dateTo.getValue());
-
-      let type = scope.$$("select-type").getValue();
-      let selectDate = 'AE';
-      if (type == 2) {
-        selectDate = 'date_carpenter';
-      }
-      if (type == 3) {
-        selectDate = 'date_sewing';
-      }
-      if (type == 4) {
-        selectDate = 'date_cut';
-      }
-
-      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
-        "expand" : 'productWorkSalary, cloth, product',
-        "per-page": "1000",
-        sort: '[{"property":"'+selectDate+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"'+selectDate+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
-        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
-      });
-
-
-
-      webix.ajax().get(tableUrl).then(function(data){
-        table.clearAll();
-        table.parse(data.json().items);
-        table.group({
-          by: function(obj){  return obj[selectDate]},
-          map:{
-            G:["G","median"],
-            V:["V","median"],
-            AO:["AO","median"],
-            AA:["AA","median"],
-            AB:["AB","median"],
-            AG:["AG","median"],
-            AJ:["AJ","median"],
-            J:["J","countValue"],
-            coef_sewing:["coef_sewing", "median" ],
-            value:[selectDate],
-            date_sewing:["date_sewing"],
-            profit:["profit", "sum"],
-            expense:["expense", "sum"],
-            net_cost:["net_cost", "sum"],
-            cost_work:["cost_work", "sum"],
-            cloth_sum:["cloth_sum", "sum"],
-            expense_cloth:["expense_cloth", "sum"],
-            coef_mat:["coef_mat", "middleCoefMat"],
-            cost_cut:["cost_cut", "sum"],
-            cost_sewing:["cost_sewing", "sum"],
-            cost_work_upholstery:["cost_work_upholstery", "sum"],
-          }
-        });
-      });
-    });
+    this.getDataGroup();
   }
 
   doClickOpenAll() {

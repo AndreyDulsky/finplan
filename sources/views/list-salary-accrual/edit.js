@@ -70,7 +70,7 @@ export default class UpdateFormView extends JetView {
         cols:[
           {template:"Начисление зарплаты", type:"header", borderless:true},
           {view:"icon", icon:"mdi mdi-fullscreen", tooltip:"enable fullscreen mode", click: function(obj, obj1){
-            debugger;
+
             if(state.win.config.fullscreen) {
               webix.fullscreen.exit();
               this.define({icon:"mdi mdi-fullscreen", tooltip:"Enable fullscreen mode"});
