@@ -459,6 +459,21 @@ export default class OrderSewingView extends JetView{
               }
             },
 
+            {
+              id:"date_cut_plan_end",
+              header:[ "Дата кр.план оконч.", { content:"selectFilter" }, "" ],
+              width:145,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
+              //batch:8,
+              hidden: false,
+              "css": {"text-align": "center"},
+              template: function(obj) {
+                if (obj.$group) return '';
+                return formatDateTime(parserDateTime(obj.date_cut_plan_end));
+              }
+            },
+
 
             //upholstery ---------------------
 
@@ -627,20 +642,6 @@ export default class OrderSewingView extends JetView{
             },
 
             {
-              id:"date_cut_plan_end",
-              header:[ "Дата кр.план оконч.", { content:"selectFilter" }, "" ],
-              width:145,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
-              batch:8,
-              hidden: false,
-              "css": {"text-align": "center"},
-              template: function(obj) {
-                if (obj.$group) return '';
-                return formatDateTime(parserDateTime(obj.date_cut_plan_end));
-              }
-            },
-            {
               id:"date_cut_plan",
               header:[ "Дата кр.план старт", { content:"selectFilter" }, "" ],
               width:140,
@@ -653,6 +654,22 @@ export default class OrderSewingView extends JetView{
                 return formatDateTime(parserDateTime(obj.date_cut_plan));
               }
             },
+
+            // {
+            //   id:"date_cut_plan_end",
+            //   header:[ "Дата кр.план оконч.", { content:"selectFilter" }, "" ],
+            //   width:145,
+            //   editor:"date",
+            //   //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
+            //   batch:8,
+            //   hidden: false,
+            //   "css": {"text-align": "center"},
+            //   template: function(obj) {
+            //     if (obj.$group) return '';
+            //     return formatDateTime(parserDateTime(obj.date_cut_plan_end));
+            //   }
+            // },
+
 
             {
               id:"BZ",
@@ -674,7 +691,7 @@ export default class OrderSewingView extends JetView{
               width:145,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),
-              //batch:8,
+              batch:8,
               "css": {"text-align": "center", "color":"green", "font-weight": 500},
               hidden: false,
               template: function(obj) {
