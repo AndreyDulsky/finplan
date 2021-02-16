@@ -261,6 +261,22 @@ export default class OrderSewingView extends JetView{
 
             },
             { view:"select",
+              localId: "batch-plan",
+              value:1, labelWidth:100, options:[
+              { id:1, value:"Швейка" },
+              { id:4, value:"Обивка" },
+              { id:6, value:"Распил." },
+              { id:8, value:"Крой" },
+
+            ],
+              width: 250,
+              on:{
+                onChange:function(newv){
+                  scope.showBatch(newv);
+                }
+              }
+            },
+            { view:"select",
               localId: "toggle-plan",
                 value:1, labelWidth:100, options:[
                 { id:1, value:"По дате шв.факт(групировка)/Дата обивки (фильтер)" },
@@ -280,6 +296,19 @@ export default class OrderSewingView extends JetView{
               width: 250,
               on:{
                 onChange:function(newv){
+                  let batchSelect = scope.$$('batch-plan');
+                  if (newv == 1 || newv == 2 || newv == 3) {
+                    batchSelect.setValue(1);
+                  }
+                  if (newv == 4 || newv == 5) {
+                    batchSelect.setValue(4);
+                  }
+                  if (newv == 6 || newv == 7) {
+                    batchSelect.setValue(6);
+                  }
+                  if (newv == 8 || newv == 9) {
+                    batchSelect.setValue(8);
+                  }
                   scope.doPlanToggle(newv);
                 }
               }
@@ -388,6 +417,17 @@ export default class OrderSewingView extends JetView{
               width:80, editor:"text",
               "css": {"text-align": "right",  "font-weight": 500}, batch:1,
             },
+            { id:"G",
+              width:90,
+              header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
+              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text",  batch:4
+              //footer: {content: "summColumn", css: {"text-align": "right"}}
+
+            },
+            { id:"CI", header:[ "К.кр.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80, editor:"text",
+              "css": {"text-align": "right",  "font-weight": 500}, batch:8,
+            },
             { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:40, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
@@ -421,23 +461,17 @@ export default class OrderSewingView extends JetView{
 
 
             //upholstery ---------------------
-            { id:"G",
-              width:90,
-              header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
-              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text",  batch:4
-              //footer: {content: "summColumn", css: {"text-align": "right"}}
 
-            },
             // { id:"AA", header:[ "К.об.план", { content:"textFilter" }, { content:"totalColumn" } ],
             //   width:80, editor:"text",
             //   "css": {"text-align": "right",  "font-weight": 500}, batch:4,
             // },
-            { id:"time_upholstery_plan", header:[ "Время.об.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:125, editor:"text",
+            { id:"time_upholstery_plan", header:[ "Вр.об.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:90, editor:"text",
               "css": {"text-align": "right",  "font-weight": 500}, batch:4,
             },
-            { id:"time_upholstery_fact", header:[ "Время.об.факт,ч", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:125, editor:"text",
+            { id:"time_upholstery_fact", header:[ "Вр.об.факт", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:90, editor:"text",
               "css": {"text-align": "right", "color":"green", "font-weight": 500}, batch:4,
             },
             {
@@ -463,7 +497,7 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "center", "color":"green", "font-weight": 500},
               hidden: false,
               template: function(obj) {
-                return formatDateTime(parserDateTimeDayStart(obj.AI));
+                return formatDateTime(parserDateTime(obj.time_upholstery_start));
               }
             },
             {
@@ -489,41 +523,9 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "center", "color":"green", "font-weight": 500},
               hidden: false,
               template: function(obj) {
-                return formatDateTime(parserDateTimeDayStart(obj.AH));
+                return formatDateTime(parserDateTime(obj.time_upholstery_end));
               }
             },
-
-
-
-            {
-              id:"date_cut_plan",
-              header:[ "Дата кр.план старт", { content:"selectFilter" }, "" ],
-              width:140,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              //batch:1,
-              hidden: false,
-              "css": {"text-align": "center"},
-              template: function(obj) {
-                return formatDateTime(parserDateTime(obj.date_cut_plan));
-              }
-            },
-            {
-              id:"date_cut_plan_end",
-              header:[ "Дата кр.план оконч.", { content:"selectFilter" }, "" ],
-              width:145,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
-              //batch:8,
-              hidden: false,
-              "css": {"text-align": "center"},
-              template: function(obj) {
-                if (obj.$group) return '';
-                return formatDateTime(parserDateTime(obj.date_cut_plan_end));
-              }
-            },
-
-
 
 
             //sewing
@@ -612,10 +614,7 @@ export default class OrderSewingView extends JetView{
 
 
             //cut------------------------------
-            { id:"CI", header:[ "К.кр.план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:80, editor:"text",
-              "css": {"text-align": "right",  "font-weight": 500}, batch:8,
-            },
+
             { id:"time_cut_plan", header:[ "Время.кр.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
               width:125, editor:"text",
               "css": {"text-align": "right",  "font-weight": 500}, batch:8,
@@ -624,19 +623,19 @@ export default class OrderSewingView extends JetView{
               width:125, editor:"text",
               "css": {"text-align": "right", "color":"green", "font-weight": 500}, batch:8,
             },
-            // {
-            //   id:"date_cut_plan",
-            //   header:[ "Дата кр.план старт", { content:"selectFilter" }, "" ],
-            //   width:140,
-            //   editor:"date",
-            //   //format:webix.Date.dateToStr("%d.%m.%y"),
-            //   batch:1,
-            //   hidden: false,
-            //   "css": {"text-align": "center"},
-            //   template: function(obj) {
-            //     return formatDateTime(parserDateTime(obj.date_cut_plan));
-            //   }
-            // },
+            {
+              id:"date_cut_plan",
+              header:[ "Дата кр.план старт", { content:"selectFilter" }, "" ],
+              width:140,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:1,
+              hidden: false,
+              "css": {"text-align": "center"},
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.date_cut_plan));
+              }
+            },
             {
               id:"BZ",
               header:[ "Дата кр.факт старт", { content:"selectFilter" }, "" ],
@@ -650,21 +649,20 @@ export default class OrderSewingView extends JetView{
                 return formatDateTime(parserDateTime(obj.BZ));
               }
             },
-            // {
-            //   id:"date_cut_plan_end",
-            //   header:[ "Дата кр.план оконч.", { content:"selectFilter" }, "" ],
-            //   width:145,
-            //   editor:"date",
-            //   //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
-            //   batch:8,
-            //   hidden: false,
-            //   "css": {"text-align": "center"},
-            //   template: function(obj) {
-            //     if (obj.$group) return '';
-            //     return formatDateTime(parserDateTime(obj.date_cut_plan_end));
-            //   }
-            // },
-
+            {
+              id:"date_cut_plan_end",
+              header:[ "Дата кр.план оконч.", { content:"selectFilter" }, "" ],
+              width:145,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
+              batch:8,
+              hidden: false,
+              "css": {"text-align": "center"},
+              template: function(obj) {
+                if (obj.$group) return '';
+                return formatDateTime(parserDateTime(obj.date_cut_plan_end));
+              }
+            },
 
             {
               id:"date_cut",
@@ -1097,6 +1095,17 @@ export default class OrderSewingView extends JetView{
     // table.load(tableUrl,function(text, data, http_request){
     //   return  data.json().items;
     // });
+
+    table.attachEvent("onPaste", function(text) {
+      // define your pasting logic here
+      let sel = this.getSelectedId(true);
+      sel.forEach(item => {
+        this.getItem(item.row)[item.column] = text;
+        this.refresh(item.row);
+        table.updateItem(item.row, this.getItem(item.row))
+      });
+
+    });
 
     table.attachEvent("onBeforeEditStop", function(state, editor, ignoreUpdate){
       let record = {};

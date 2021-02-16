@@ -125,7 +125,8 @@ webix.editors.$popup = {
       timepicker:true,
       weekNumber:true,
       width: 220,
-      height:200
+      height:200,
+      icons:true
     }
   }
 };
