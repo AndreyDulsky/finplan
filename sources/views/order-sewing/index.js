@@ -185,6 +185,8 @@ let parserDate = webix.Date.strToDate("%Y-%m-%d");
 let parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
 let parserDateHour = webix.Date.strToDate("%Y-%m-%d %H");
 
+let parserDateTimeDayStart = webix.Date.strToDate("%d-%m-%Y %H:%i");
+
 let formatDateHour =  webix.Date.dateToStr("%d.%m.%y %H");
 let formaHour = webix.Date.dateToStr("%H:%i");
 
@@ -349,13 +351,7 @@ export default class OrderSewingView extends JetView{
             { id:"H", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:70,  editor:"text" },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text", batch:2  },
             { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:150, editor:"text", batch:2 },
-            { id:"G",
-              width:90,
-              header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
-              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text",  batch:2
-              //footer: {content: "summColumn", css: {"text-align": "right"}}
 
-            },
 
             // { id:"coefMoney", header:[ "Коэф. ден. план", { content:"textFilter" }, { content:"totalColumn" } ],
             //   width:120,
@@ -425,6 +421,13 @@ export default class OrderSewingView extends JetView{
 
 
             //upholstery ---------------------
+            { id:"G",
+              width:90,
+              header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
+              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text",  batch:4
+              //footer: {content: "summColumn", css: {"text-align": "right"}}
+
+            },
             // { id:"AA", header:[ "К.об.план", { content:"textFilter" }, { content:"totalColumn" } ],
             //   width:80, editor:"text",
             //   "css": {"text-align": "right",  "font-weight": 500}, batch:4,
@@ -451,7 +454,7 @@ export default class OrderSewingView extends JetView{
               }
             },
             {
-              id:"AN",
+              id:"time_upholstery_start",
               header:[ "Дата об.факт старт", { content:"selectFilter" }, "" ],
               width:140,
               editor:"date",
@@ -460,7 +463,7 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "center", "color":"green", "font-weight": 500},
               hidden: false,
               template: function(obj) {
-                return formatDateTime(parserDateTime(obj.AN));
+                return formatDateTime(parserDateTimeDayStart(obj.AI));
               }
             },
             {
@@ -477,7 +480,7 @@ export default class OrderSewingView extends JetView{
               }
             },
             {
-              id:"AM",
+              id:"time_upholstery_end",
               header:[ "Дата об.факт окон.", { content:"selectFilter" }, "" ],
               width:140,
               editor:"date",
@@ -486,7 +489,7 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "center", "color":"green", "font-weight": 500},
               hidden: false,
               template: function(obj) {
-                return formatDateTime(parserDateTime(obj.AN));
+                return formatDateTime(parserDateTimeDayStart(obj.AH));
               }
             },
 
@@ -754,7 +757,7 @@ export default class OrderSewingView extends JetView{
               width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:2,
             },
-            { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text", batch:2 },
+            { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" },
             { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, "" ],
               width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:2,
