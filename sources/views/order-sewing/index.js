@@ -181,6 +181,7 @@ let formatDateGant = webix.Date.dateToStr("%d-%m-%Y");
 
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
+let formatDateTimeDb = webix.Date.dateToStr("%Y-%m-%d %H:%i");
 let parserDate = webix.Date.strToDate("%Y-%m-%d");
 let parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
 let parserDateHour = webix.Date.strToDate("%Y-%m-%d %H");
@@ -332,6 +333,7 @@ export default class OrderSewingView extends JetView{
           visibleBatch:1,
           editaction: "dblclick",
           tooltip:true,
+          clipboard:"selection",
           columns:[
 
             // {
@@ -1212,14 +1214,25 @@ export default class OrderSewingView extends JetView{
   }
 
   beforeDropChangeData(record, date) {
+    //debugger;
+    let table = this.$$("sewing-table");
+    let field = this.getSortFieldByTypeGroup();
 
-    let data = {'date_sewing':date};
-    let tableUrl = this.app.config.apiRest.getUrl('put',"accounting/orders", {}, record.id);
-    record.date_sewing = date;
+    //let data = {field: formatDateTimeDb(date)};
+    //let tableUrl = this.app.config.apiRest.getUrl('put',"accounting/orders", {}, record.id);
 
-    webix.ajax().put(tableUrl, data).then(function(data){
+    let sel = table.getSelectedId(true);
+    sel.forEach(item => {
+      table.getItem(item.row)[field] = formatDateTimeDb(date);
+      table.refresh(item.row);
       webix.message('Данные сохранены!');
+      table.updateItem(item.row, table.getItem(item.row))
     });
+
+
+    // webix.ajax().put(tableUrl, data).then(function(data){
+    //   webix.message('Данные сохранены!');
+    // });
 
   }
 
