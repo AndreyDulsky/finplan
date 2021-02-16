@@ -287,7 +287,7 @@ export default class OrderSewingView extends JetView{
         /*wjet::Settings*/
         {
           view:"treetable",
-          css:"webix_header_border webix_data_border",
+          css:"webix_header_border webix_data_border my_style",
           leftSplit:2,
           //rightSplit:2,
           select: "row",
@@ -316,28 +316,29 @@ export default class OrderSewingView extends JetView{
                 return obj.A;
               },
               //format:formatDateHour,
-              "css": {"color": "black", "text-align": "left", "font-weight": 500},
+              "css": {"color": "black", "text-align": "right", "font-weight": 500},
               //"sort" : "date"
             },
+
+
+            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
             {
-              id:"date", header:[ "# заказа", { content:"textFilter" },"" ],
+              id:"date", header:[ "# заказа", { content:"textFilter" },"" ], width: 250,
               batch:10,
               template:function(obj, common){
 
-                if (obj.$level == 1) return  common.folder(obj, common)+formaHour(obj.value);
-                return '      '+obj.A;
+                if (obj.$level == 1) return  common.folder(obj, common)+'<div style="font-weight:700;" >'+formaHour(obj.value)+'</div>';
+                return obj.A+'- '+obj.I;
               },
               //format:formatDateHour,
-              "css": {"color": "black", "text-align": "right", "font-weight": 700},
+              "css": {"color": "black", "text-align": "left"},
               //"sort" : "date"
             },
             //print
-            { id:"plan", header:"План", width:60 , batch:10, editor:"text"},
-            { id:"fact", header:"Факт", width:60 , batch:10, editor:"text"},
-            { id:"fact1", header:"Факт", width:60 , batch:10, editor:"text"},
-            { id:"comment", header:"Коментарий", width:250, batch:10, editor:"text"},
-
-            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
+            //{ id:"plan", header:"План", width:60 , batch:10, editor:"text"},
+            { id:"fact", header:"Факт н.", width:120 , batch:10, editor:"text"},
+            { id:"fact1", header:"Факт к.", width:120 , batch:10, editor:"text"},
+            { id:"comment", header:"Коментарий", width:350, batch:10, editor:"text"},
 
             // { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:70, batch:2, editor:"select",
             //   options:[{"id": 1, "value": "1"}, {"id": 3, "value": "3"}, {"id": 4, "value": "4"},
@@ -1399,6 +1400,7 @@ export default class OrderSewingView extends JetView{
   doClickPrint() {
     let table = this.$$("sewing-table");
     let scope = this;
+    //table.css = 'my_style';
     table.showColumnBatch(10);
     table.hideColumn('A');
     // table.config.columns.forEach((element, index) => {
@@ -1425,6 +1427,10 @@ export default class OrderSewingView extends JetView{
 
   doClickToExcel() {
     let table = this.$$("sewing-table");
+    table.showColumnBatch(10);
+    table.hideColumn('A');
     webix.toExcel(table);
+    table.showColumnBatch(1);
+    table.showColumn('A');
   }
 }
