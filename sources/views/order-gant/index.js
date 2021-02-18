@@ -1211,13 +1211,13 @@ export default class OrderGantView extends JetView{
   getFieldsTime(fieldGroup) {
     let fields;
     fields  = {
-      'date_sewing' : {'start' : 'date_sewing', 'end' : 'date_sewing_end', 'time' : 'time_sewing_fact', 'name' : 'Швека факт'},
-      'date_sewing_plan' :  {'start' : 'date_sewing_plan', 'end' : 'date_sewing_plan_end', 'time' : 'time_sewing', 'name' : 'Швека план'},
-      'date_cut' : {'start' : 'date_cut', 'end' : 'date_cut_end', 'time' : 'time_cut_fact', 'name' : 'Крой факт'},
-      'date_cut_plan' : {'start' : 'date_cut_plan', 'end' : 'date_cut_plan_end', 'time' : 'time_cut_plan', 'name' : 'Крой план'},
-      'date_upholstery_plan' : {'start' : 'date_obivka', 'end' : 'date_upholstery_plan_end', 'time' : 'time_upholstery_plan', 'name' : 'Обивка факт'},
-      'AE' : {'start' : 'time_upholstery_start', 'end' : 'time_upholstery_end', 'time' : 'time_upholstery_fact', 'name' : 'Обивка факт'},
-      'date_cloth' : {'start' : 'C', 'end' : 'K', 'time' : '', 'name' : 'Заказ ткани'}
+      'date_sewing' : {'start' : 'date_sewing', 'end' : 'date_sewing_end', 'time' : 'time_sewing_fact', 'name' : 'Швека факт', 'fio' : 'BO'},
+      'date_sewing_plan' :  {'start' : 'date_sewing_plan', 'end' : 'date_sewing_plan_end', 'time' : 'time_sewing', 'name' : 'Швека план', 'fio' : 'BO'},
+      'date_cut' : {'start' : 'date_cut', 'end' : 'date_cut_end', 'time' : 'time_cut_fact', 'name' : 'Крой факт', 'fio' : 'BV'},
+      'date_cut_plan' : {'start' : 'date_cut_plan', 'end' : 'date_cut_plan_end', 'time' : 'time_cut_plan', 'name' : 'Крой план', 'fio' : 'BV'},
+      'date_upholstery_plan' : {'start' : 'date_obivka', 'end' : 'date_upholstery_plan_end', 'time' : 'time_upholstery_plan', 'name' : 'Обивка факт', 'fio' : 'Z'},
+      'AE' : {'start' : 'time_upholstery_start', 'end' : 'time_upholstery_end', 'time' : 'time_upholstery_fact', 'name' : 'Обивка факт', 'fio' : 'Z'},
+      'date_cloth' : {'start' : 'C', 'end' : 'K', 'time' : '', 'name' : 'Заказ ткани', 'fio' : ''}
     };
     return fields[fieldGroup];
   }
@@ -1235,14 +1235,12 @@ export default class OrderGantView extends JetView{
       progress:0,  open: true, color: color};
   }
   getItem(field, item, index, parent, color) {
-    if (field == 'date_cloth') {
-      debugger;
-    }
+
     let times = this.getFieldsTime(field);
     let duration = Math.round(parseFloat(item[times.time].replace(',','.'))*60);
     let timeStart = formatDateGant(item[times.start]);
 
-    return {id:item.A+item.id+field, text:times.name, start_date: timeStart, duration: duration, order:10,
+    return {id:item.A+item.id+field, text:times.name+' ('+item[times.fio]+')', start_date: timeStart, duration: duration, order:10,
       progress:0,  parent: parent, color: color};
   }
   getItemCloth(field, item, index, parent, color) {
