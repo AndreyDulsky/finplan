@@ -1213,12 +1213,16 @@ export default class OrderGantView extends JetView{
         groupSub = fieldSubGroup;
         tasks.data.push(scope.getItemModel(item, fieldTimeStart, 480,index, fieldGroup, '#625E93'));
         //tasks.data.push(scope.getItemCloth('date_cloth', item, index, groupSub, '#3498db'));
+
         tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'#3db9d3'));
         tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#3db9d3'));
+        tasks.data.push(scope.getItem('date_carpenter_plan', item, index, groupSub, '#3db9d3'));
         tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, '#3db9d3'));
+
 
         tasks.data.push(scope.getItem('date_cut', item, index, groupSub, '#65c16f'));
         tasks.data.push(scope.getItem('date_sewing', item, index, groupSub, '#65c16f'));
+        tasks.data.push(scope.getItem('date_carpenter', item, index, groupSub, '#65c16f'));
         tasks.data.push(scope.getItem('AE', item, index, groupSub, '#65c16f'));
         tasks.data.push(scope.getItem('date_obivka', item, index, groupSub, '#d33daf'));
       } //else {
@@ -1258,8 +1262,10 @@ export default class OrderGantView extends JetView{
 
       tasks.links.push({ "id":scope.getId(item)+'date_cut_plan', "source":scope.getId(item)+'date_cut_plan', "target":scope.getId(item)+'date_sewing_plan', "type":"0"});
       tasks.links.push({ "id":scope.getId(item)+'date_sewing_plan', "source":scope.getId(item)+'date_sewing_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"0"});
+      tasks.links.push({ "id":scope.getId(item)+'date_carpenter_plan', "source":scope.getId(item)+'date_carpenter_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"0"});
       tasks.links.push({ "id":scope.getId(item)+'date_upholstery_plan', "source":scope.getId(item)+'date_upholstery_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"2"});
 
+      tasks.links.push({ "id":scope.getId(item)+'date_carpenter', "source":scope.getId(item)+'date_carpenter', "target":scope.getId(item)+'AE', "type":"0"});
       tasks.links.push({ "id":scope.getId(item)+'date_cut', "source":scope.getId(item)+'date_cut', "target":scope.getId(item)+'date_sewing', "type":"0"});
       tasks.links.push({ "id":scope.getId(item)+'date_sewing', "source":scope.getId(item)+'date_sewing', "target":scope.getId(item)+'AE', "type":"0"});
       tasks.links.push({ "id":scope.getId(item)+'AE', "source":scope.getId(item)+'AE', "target":scope.getId(item)+'AE', "type":"2"});
@@ -1286,6 +1292,8 @@ export default class OrderGantView extends JetView{
   getFieldsTime(fieldGroup) {
     let fields;
     fields  = {
+      'date_carpenter' : {'start' : 'date_carpenter', 'end' : 'date_carpenter_end', 'time' : 'time_carpenter_fact', 'name' : 'Столярка факт', 'fio' : 'AZ'},
+      'date_carpenter_plan' :  {'start' : 'date_carpenter_plan', 'end' : 'date_carpenter_plan_end', 'time' : 'time_carpenter_plan', 'name' : 'Столярка план', 'fio' : 'AZ'},
       'date_sewing' : {'start' : 'date_sewing', 'end' : 'date_sewing_end', 'time' : 'time_sewing_fact', 'name' : 'Швека факт', 'fio' : 'BO'},
       'date_sewing_plan' :  {'start' : 'date_sewing_plan', 'end' : 'date_sewing_plan_end', 'time' : 'time_sewing', 'name' : 'Швека план', 'fio' : 'BO'},
       'date_cut' : {'start' : 'date_cut', 'end' : 'date_cut_end', 'time' : 'time_cut_fact', 'name' : 'Крой факт', 'fio' : 'BV'},
