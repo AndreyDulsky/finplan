@@ -1082,6 +1082,7 @@ export default class OrderGantView extends JetView{
     gantt.config.work_time = true;
     gantt.config.skip_off_time = true;
     gantt.config.min_column_width = 35;
+    gantt.config.row_height =  40;
     gantt.config.duration_unit = 'minute';
     gantt.config.round_dnd_dates = false;
     //gantt.config.fit_tasks = true;
