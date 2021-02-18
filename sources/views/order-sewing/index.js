@@ -475,6 +475,20 @@ export default class OrderSewingView extends JetView{
                 return formatDateTime(parserDateTime(obj.date_cut_plan_end));
               }
             },
+            {
+              id:"date_sewing_plan_end",
+              header:[ "Дата Шв.план оконч.", { content:"selectFilter" }, "" ],
+              width:145,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
+              //batch:1,
+              hidden: false,
+              "css": {"text-align": "center"},
+              template: function(obj) {
+                if (obj.$group) return '';
+                return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
+              }
+            },
 
 
             //upholstery ---------------------
@@ -567,20 +581,20 @@ export default class OrderSewingView extends JetView{
                 return formatDateTime(parserDateTime(obj.date_sewing_plan));
               }
             },
-            {
-              id:"date_sewing_plan_end",
-              header:[ "Дата Шв.план оконч.", { content:"selectFilter" }, "" ],
-              width:145,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
-              batch:1,
-              hidden: false,
-              "css": {"text-align": "center"},
-              template: function(obj) {
-                if (obj.$group) return '';
-                return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
-              }
-            },
+            // {
+            //   id:"date_sewing_plan_end",
+            //   header:[ "Дата Шв.план оконч.", { content:"selectFilter" }, "" ],
+            //   width:145,
+            //   editor:"date",
+            //   //format:webix.Date.dateToStr("%d.%m.%y %H:%i"),
+            //   batch:1,
+            //   hidden: false,
+            //   "css": {"text-align": "center"},
+            //   template: function(obj) {
+            //     if (obj.$group) return '';
+            //     return formatDateTime(parserDateTime(obj.date_sewing_plan_end));
+            //   }
+            // },
 
             {
               id:"BT",
