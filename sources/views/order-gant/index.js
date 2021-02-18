@@ -199,7 +199,7 @@ export default class OrderGantView extends JetView{
 
   config(){
     let scope = this;
-
+    this.apiRest = this.app.config.apiRest;
 
     return {
 
@@ -292,6 +292,11 @@ export default class OrderGantView extends JetView{
               value :true,
               click: function() { scope.doClickOpenAll() }
 
+            },
+            {
+              view: "combo",
+              localId: "employee",
+              value: 1, labelWidth: 100, options: {data : scope.apiRest.getCollection('accounting/employees')},
             },
             { view:"select",
               localId: "batch-plan",
@@ -1035,7 +1040,7 @@ export default class OrderGantView extends JetView{
     // gantt.config.scale_unit = "hour";
     // gantt.config.date_scale = "%H";
     gantt.config.duration_unit = 'minute';
-    // gantt.config.round_dnd_dates = false;
+    gantt.config.round_dnd_dates = false;
     // gantt.config.duration_step = 1;
     // gantt.config.scale_height = 27;
 
@@ -1063,7 +1068,7 @@ export default class OrderGantView extends JetView{
         ]
       ]
     }
-    //gantt.setWorkTime({hours : ["7:00-19:00"]});
+    gantt.setWorkTime({hours : ["7:00-20:00"]});
     gantt.config.start_date = new Date();
     gantt.config.work_time = true;
     gantt.config.skip_off_time = true;
@@ -1154,7 +1159,9 @@ export default class OrderGantView extends JetView{
         //tasks.data.push(scope.getItemCloth('date_cloth', item, index, groupSub, '#3498db'));
         tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'#3db9d3'));
         tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#65c16f'));
+
         tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, '#d33daf'));
+        //tasks.data.push(scope.getItem('date_obivka', item, index, groupSub, '#d33daf'));
       } //else {
       //   tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'#3db9d3'));
       //   tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#65c16f'));
@@ -1215,8 +1222,8 @@ export default class OrderGantView extends JetView{
       'date_sewing_plan' :  {'start' : 'date_sewing_plan', 'end' : 'date_sewing_plan_end', 'time' : 'time_sewing', 'name' : 'Швека план', 'fio' : 'BO'},
       'date_cut' : {'start' : 'date_cut', 'end' : 'date_cut_end', 'time' : 'time_cut_fact', 'name' : 'Крой факт', 'fio' : 'BV'},
       'date_cut_plan' : {'start' : 'date_cut_plan', 'end' : 'date_cut_plan_end', 'time' : 'time_cut_plan', 'name' : 'Крой план', 'fio' : 'BV'},
-      'date_upholstery_plan' : {'start' : 'date_obivka', 'end' : 'date_upholstery_plan_end', 'time' : 'time_upholstery_plan', 'name' : 'Обивка факт', 'fio' : 'Z'},
-      'AE' : {'start' : 'time_upholstery_start', 'end' : 'time_upholstery_end', 'time' : 'time_upholstery_fact', 'name' : 'Обивка факт', 'fio' : 'Z'},
+      'date_upholstery_plan' : {'start' : 'date_upholstery_plan', 'end' : 'date_upholstery_plan_end', 'time' : 'time_upholstery_plan', 'name' : 'Обивка план', 'fio' : 'Z'},
+      'date_obivka' : {'start' : 'time_upholstery_start', 'end' : 'time_upholstery_end', 'time' : 'time_upholstery_fact', 'name' : 'Обивка факт', 'fio' : 'Z'},
       'date_cloth' : {'start' : 'C', 'end' : 'K', 'time' : '', 'name' : 'Заказ ткани', 'fio' : ''}
     };
     return fields[fieldGroup];
@@ -1262,6 +1269,7 @@ export default class OrderGantView extends JetView{
   init(view) {
 
     let table = this.$$("gant-table");
+    let employeeCombo = this.$$("employee");
     // let timeline = this.$$("timeline");
     // let timelinePlan = this.$$("timeline-plan");
     //let gant = this.$$("gant");
@@ -1277,6 +1285,8 @@ export default class OrderGantView extends JetView{
     let dateTo = this.$$("dateTo");
     let dateFromValue = format(this.$$("dateFrom").getValue());
     let dateToValue = format(this.$$("dateTo").getValue());
+    let employeeComboValue = employeeCombo.getText();
+
 
     webix.extend(table, webix.ProgressBar);
 
@@ -1390,6 +1400,40 @@ export default class OrderGantView extends JetView{
         "per-page": "500",
         sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+        //filter: '{"AE":{">=":"01.02.20"}}'
+      });
+
+      webix.ajax().get(tableUrl).then(function(data){
+        table.clearAll();
+        table.parse(data.json().items);
+        scope.doTableGroup();
+        let tasks = scope.getDataGantt(data.json().items);
+        scope.addGanttChart( tasks);
+        // timeline.clearAll();
+        // timeline.parse(data.json().items);
+        // timelinePlan.clearAll();
+        // timelinePlan.parse(data.json().items);
+
+
+      });
+    });
+
+    employeeCombo.attachEvent("onChange", function(id) {
+
+      dateFromValue = format(dateFrom.getValue());
+      dateToValue = formatDate(dateTo.getValue());//+' 23:59';
+      employeeComboValue = employeeCombo.getText();
+      let employeeComboValueArray = employeeComboValue.split(' ');
+      employeeComboValue = employeeComboValueArray[0];
+      debugger;
+
+      let filedFilter = scope.getFilterFieldByTypeGroup();
+      let filedSort = scope.getSortFieldByTypeGroup();
+
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
+        "per-page": "500",
+        sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
+        filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"},"Z":"'+employeeComboValue+'"}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
 
