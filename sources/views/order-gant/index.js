@@ -1,4 +1,5 @@
 import {JetView} from "webix-jet";
+import "components/comboClose";
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -294,9 +295,10 @@ export default class OrderGantView extends JetView{
 
             },
             {
-              view: "combo",
+              view: "combo-close",
               localId: "employee",
-              value: 1, labelWidth: 100, options: {data : scope.apiRest.getCollection('accounting/employees')},
+              labelWidth: 100,
+              options: {data : scope.apiRest.getCollection('accounting/employees')}
             },
             { view:"select",
               localId: "batch-plan",
@@ -1425,19 +1427,47 @@ export default class OrderGantView extends JetView{
       employeeComboValue = employeeCombo.getText();
       let employeeComboValueArray = employeeComboValue.split(' ');
       employeeComboValue = employeeComboValueArray[0];
-      debugger;
+
+
 
       let filedFilter = scope.getFilterFieldByTypeGroup();
       let filedSort = scope.getSortFieldByTypeGroup();
 
+      let filter = {
+        filter: {}
+      };
+
+      filter['filter'][filedFilter] = {
+        ">=": dateFromValue,
+        "<=": dateToValue
+      };
+      let fieldEmployee = 'Z';
+      if (employeeComboValue != '') {
+        let record = employeeCombo.getPopup().getList().getItem(employeeCombo.getValue());
+        if (record.department_id == 1) {
+          fieldEmployee = 'Z';
+        }
+        if (record.department_id == 2) {
+          fieldEmployee = 'AZ';
+        }
+        if (record.department_id == 3) {
+          fieldEmployee = 'BO';
+        }
+
+
+        filter['filter'][fieldEmployee] = employeeComboValue;
+      }
+
+
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
         "per-page": "500",
         sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-        filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"},"Z":"'+employeeComboValue+'"}',
+        //filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"},"Z":"'+employeeComboValue+'"}',
         //filter: '{"AE":{">=":"01.02.20"}}'
       });
 
-      webix.ajax().get(tableUrl).then(function(data){
+
+      webix.ajax().get(tableUrl, filter).then(function(data){
         table.clearAll();
         table.parse(data.json().items);
         scope.doTableGroup();
