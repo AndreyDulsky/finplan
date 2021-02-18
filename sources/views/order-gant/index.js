@@ -1035,18 +1035,17 @@ export default class OrderGantView extends JetView{
     //
     //   }]
     // };
-    var hourToStr = gantt.date.date_to_str("%H:%i");
+    var hourToStr = gantt.date.date_to_str("%H");
     var hourRangeFormat = function(step){
       return function(date){
         var intervalEnd = new Date(gantt.date.add(date, step, "hour") - 1)
-        return hourToStr(date) + " - " + hourToStr(intervalEnd);
+        return hourToStr(date) + "-" + hourToStr(intervalEnd);
       };
     };
 
     // gantt.config.scale_unit = "hour";
     // gantt.config.date_scale = "%H";
-    gantt.config.duration_unit = 'minute';
-    gantt.config.round_dnd_dates = false;
+
     // gantt.config.duration_step = 1;
     // gantt.config.scale_height = 27;
 
@@ -1055,18 +1054,18 @@ export default class OrderGantView extends JetView{
         // [
         //   { unit: "month", format: "%M %Y", step: 1},
         // ],
-        [
-          { unit: "month", format: "%M %Y", step: 1},
-          { unit: "day", format: "%d %M", step: 1}
-        ],
-        [
-          { unit: "day", format: "%d %M", step: 1},
-          { unit: "hour", format: hourRangeFormat(12), step: 12}
-        ],
-        [
-          { unit: "day", format: "%d %M", step: 1},
-          { unit: "hour", format: hourRangeFormat(6), step: 6}
-        ],
+        // [
+        //   { unit: "month", format: "%M %Y", step: 1},
+        //   { unit: "day", format: "%d %M", step: 1}
+        // ],
+        // [
+        //   { unit: "day", format: "%d %M", step: 1},
+        //   { unit: "hour", format: hourRangeFormat(12), step: 12}
+        // ],
+        // [
+        //   { unit: "day", format: "%d %M", step: 1},
+        //   { unit: "hour", format: hourRangeFormat(6), step: 6}
+        // ],
         [
           {unit: "day", format: "%d %M",step: 1},
           {unit: "hour",format: hourRangeFormat(3),step: 3}
@@ -1074,7 +1073,7 @@ export default class OrderGantView extends JetView{
 
         [
           { unit: "day", format: "%d %M", step: 1 },
-          { unit: "hour", format: "%H:%i", step: 1}
+          { unit: "hour", format: "%H", step: 1}
         ]
       ]
     }
@@ -1082,6 +1081,12 @@ export default class OrderGantView extends JetView{
     gantt.config.start_date = new Date();
     gantt.config.work_time = true;
     gantt.config.skip_off_time = true;
+    gantt.config.min_column_width = 35;
+    gantt.config.duration_unit = 'minute';
+    gantt.config.round_dnd_dates = false;
+    //gantt.config.fit_tasks = true;
+
+
     gantt.config.columns = [
       {name:"text",       label:"Модель",  width:"250", tree:true },
       {name:"start_date", label:"Старт", align:"center", width:"120", },
