@@ -298,10 +298,13 @@ export default class OrderGantView extends JetView{
               view: "combo-close",
               localId: "employee",
               labelWidth: 100,
+              width: 350,
+
               options: {data : scope.apiRest.getCollection('accounting/employees')}
             },
             { view:"select",
               localId: "batch-plan",
+              hidden: true,
               value:1, labelWidth:100, options:[
               { id:1, value:"Швейка" },
               { id:4, value:"Обивка" },
@@ -318,7 +321,8 @@ export default class OrderGantView extends JetView{
             },
             { view:"select",
               localId: "toggle-plan",
-              value:1, labelWidth:100, options:[
+              hidden: true,
+              value:4, labelWidth:100, options:[
               { id:1, value:"По дате шв.факт(групировка)/Дата обивки (фильтер)" },
               { id:2, value:"По дате шв.план" },
               { id:3, value:"По дате окончания шв.план" },
@@ -1312,7 +1316,7 @@ export default class OrderGantView extends JetView{
     let duration = Math.round(parseFloat(item[times.time].replace(',','.'))*60);
     let timeStart = formatDateGant(item[times.start]);
 
-    return {id:this.getId(item)+field, text:times.name+' ('+item[times.fio]+')', start_date: timeStart, duration: duration, order:10,
+    return {id:this.getId(item)+field, text:times.name+'('+item.W+')'+' ('+item[times.fio]+')', start_date: timeStart, duration: duration, order:10,
       progress:0,  parent: parent, color: color, db_id: item.id};
   }
   getItemCloth(field, item, index, parent, color) {
