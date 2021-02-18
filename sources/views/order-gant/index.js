@@ -1139,8 +1139,8 @@ export default class OrderGantView extends JetView{
       // taskItem[item[field]].push({id:item.id, text:item.A+' '+item.I, start_date:item[fieldsCut.start], duration:item[fieldsCut.time]*60,order:index,
       //   progress:0});
       fieldGroup = formatDate(item[field]);
-      //fieldTimeStart = formatDateGant(item['date_cut_plan']);
-      fieldTimeStart = formatDateGant(parserDateAEGant(item.C));
+      fieldTimeStart = formatDateGant(item['date_cut_plan']);
+      //fieldTimeStart = formatDateGant(parserDateAEGant(item.C));
       if (field == 'AE') {
         fieldGroup = formatDate(parserDateAEGant(item[field]));
         //fieldTimeStart = formatDateAEGant(parserDateAEGant(item[field]))+' 8:00';
@@ -1151,7 +1151,7 @@ export default class OrderGantView extends JetView{
       if (fieldSubGroup != groupSub) {
         groupSub = fieldSubGroup;
         tasks.data.push(scope.getItemModel(item, fieldTimeStart, 480,index, fieldGroup, '#625E93'));
-        tasks.data.push(scope.getItemCloth('date_cloth', item, index, groupSub, '#3498db'));
+        //tasks.data.push(scope.getItemCloth('date_cloth', item, index, groupSub, '#3498db'));
         tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'#3db9d3'));
         tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#65c16f'));
         tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, '#d33daf'));
