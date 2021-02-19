@@ -1077,23 +1077,27 @@ export default class OrderGantView extends JetView{
         ]
       ]
     }
+    gantt.config.duration_unit = 'minute';
+    gantt.config.round_dnd_dates = true;
     gantt.setWorkTime({hours : ["7:00-20:00"]});
     gantt.config.start_date = new Date();
     gantt.config.work_time = true;
     gantt.config.skip_off_time = true;
     gantt.config.min_column_width = 35;
     gantt.config.row_height =  40;
-    gantt.config.duration_unit = 'minute';
-    gantt.config.round_dnd_dates = false;
+
     //gantt.config.fit_tasks = true;
 
 
-    gantt.config.columns = [
-      {name:"text",       label:"Модель",  width:"250", tree:true },
-      {name:"start_date", label:"Старт", align:"center", width:"120", },
-      {name:"duration",   label:"Длительность, мин",   align:"center",  width:44 },
-      // {name:"add",        label:"",           width:44 }
-    ];
+
+
+
+    // gantt.config.columns = [
+    //   {name:"text",       label:"Модель",  width:"250", tree:true },
+    //   {name:"start_date", label:"Старт", align:"center", width:"120", },
+    //   {name:"duration",   label:"Длительность, мин",   align:"center",  width:44 },
+    //   // {name:"add",        label:"",           width:44 }
+    // ];
     gantt.templates.scale_cell_class = function(date){
       if(date.getDay()==0||date.getDay()==6){
         return "weekend";
@@ -1104,7 +1108,7 @@ export default class OrderGantView extends JetView{
         return "weekend" ;
       }
     };
-    gantt.config.fit_tasks = true;
+    //gantt.config.fit_tasks = true;
     //gantt.config.duration_unit = "hour";
     var formatter = gantt.ext.formatters.durationFormatter({
       enter: "day",
@@ -1151,6 +1155,7 @@ export default class OrderGantView extends JetView{
     gantt.templates.time_picker = function(date){
       return gantt.date.date_to_str(gantt.config.time_picker)(date);
     };
+
 
 
 
@@ -1323,6 +1328,7 @@ export default class OrderGantView extends JetView{
     duration = parseFloat(item['time_upholstery_plan'].replace(',','.'))*60;
     return {id:item.A, text:item.A+' '+item.I, start_date: timeStart,order:10,
       progress:0,  open: true, color: color};
+    //type: "project", render:"split"
   }
   getItem(field, item, index, parent, color) {
 
