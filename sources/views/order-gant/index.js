@@ -179,6 +179,8 @@ webix.ui.datafilter.mySummColumn = webix.extend({
 }, webix.ui.datafilter.summColumn);
 
 let formatDateGant = webix.Date.dateToStr("%d-%m-%Y %H:%i");
+let formatDateGantDay = webix.Date.dateToStr("%d-%m-%Y");
+
 let formatDateAEGant = webix.Date.dateToStr("%d-%m-%Y");
 let parserDateAEGant = webix.Date.strToDate("%d.%m.%y");
 
@@ -294,50 +296,70 @@ export default class OrderGantView extends JetView{
               click: function() { scope.doClickOpenAll() }
 
             },
-            {
-              view: "combo-close",
-              localId: "employee",
-              labelWidth: 100,
-              width: 350,
-
-              options: {data : scope.apiRest.getCollection('accounting/employees')}
-            },
-            { view:"select",
+            { view:"combo-close",
               localId: "batch-plan",
               hidden: true,
-              value:1, labelWidth:100, options:[
+              labelWidth:100, options:[
               { id:1, value:"Швейка" },
-              { id:4, value:"Обивка" },
-              { id:6, value:"Распил." },
               { id:8, value:"Крой" },
-
+              { id:4, value:"Обивка" },
+              { id:10, value:"Столярка" },
+              //{ id:6, value:"Распил." },
             ],
-              width: 250,
+              width: 150,
               on:{
                 onChange:function(newv){
                   scope.showBatch(newv);
                 }
               }
             },
+            {
+              view:"checkbox", label:"Обивка", value:1,
+              localId: 'check-upholstery',
+              "labelPosition": "top",
+            },
+            {
+              view:"checkbox", label:"Швейка", value:1,
+              localId: 'check-sewing',
+              "labelPosition": "top",
+            },
+            {
+              view:"checkbox", label:"Крой", value:1,
+              localId: 'check-cut',
+              "labelPosition": "top",
+            },
+            {
+              view:"checkbox", label:"Столярка", value:1,
+              localId: 'check-carpenter',
+              "labelPosition": "top",
+            },
+            {
+              view: "combo-close",
+              localId: "employee",
+              //labelWidth: 100,
+              width: 150,
+
+              options: {data : scope.apiRest.getCollection('accounting/employees')}
+            },
+
+
             { view:"select",
               localId: "toggle-plan",
-              hidden: true,
+              hidden: false,
               value:4, labelWidth:100, options:[
-              { id:1, value:"По дате шв.факт(групировка)/Дата обивки (фильтер)" },
-              { id:2, value:"По дате шв.план" },
-              { id:3, value:"По дате окончания шв.план" },
-              { id:4, value:"По дате обивки факт" },
-              { id:5, value:"По дате обивки план" },
-              { id:6, value:"По дате распил.факт/Дата обивки" },
-              { id:7, value:"По дате распил.план" },
-              { id:8, value:"По дате крой факт/Дата обивки" },
-              { id:9, value:"По дате крой план" },
-
-
-
-
-            ],
-              width: 250,
+                { id:1, value:"По дате шв.факт" },
+                { id:2, value:"По дате шв.план" },
+                //{ id:3, value:"По дате окончания шв.план" },
+                { id:4, value:"По дате обивки факт" },
+                { id:5, value:"По дате обивки план" },
+                //{ id:6, value:"По дате распил.факт/Дата обивки" },
+                //{ id:7, value:"По дате распил.план" },
+                { id:8, value:"По дате крой факт" },
+                { id:9, value:"По дате крой план" },
+                { id:10, value:"По дате столярка факт" },
+                { id:11, value:"По дате столярка план" },
+              ],
+              width: 150,
               on:{
                 onChange:function(newv){
                   let batchSelect = scope.$$('batch-plan');
@@ -357,6 +379,7 @@ export default class OrderGantView extends JetView{
                 }
               }
             },
+
           ]
         },
         /*wjet::Settings*/
@@ -1005,12 +1028,7 @@ export default class OrderGantView extends JetView{
   }
 
   addGanttChart( tasks) {
-    let gant = this.$$("gant-dhx");
 
-    let view = this.getRoot();
-    if (gant) {
-      view.removeView(gant);
-    }
 
     // let gantObj = {
     //   localId: 'gant-dhx',
@@ -1036,7 +1054,7 @@ export default class OrderGantView extends JetView{
     //   }]
     // };
     var hourToStr = gantt.date.date_to_str("%H");
-    var hourRangeFormat = function(step){
+    var hourRangeFormat = function(step) {
       return function(date){
         var intervalEnd = new Date(gantt.date.add(date, step, "hour") - 1)
         return hourToStr(date) + "-" + hourToStr(intervalEnd);
@@ -1079,16 +1097,19 @@ export default class OrderGantView extends JetView{
     }
     gantt.config.duration_unit = 'minute';
     gantt.config.round_dnd_dates = true;
-    gantt.setWorkTime({hours : ["7:00-20:00"]});
+    gantt.setWorkTime({hours : ["8:00-12:00", "13:00-17:00"]});
     gantt.config.start_date = new Date();
     gantt.config.work_time = true;
     gantt.config.skip_off_time = true;
-    gantt.config.min_column_width = 35;
-    gantt.config.row_height =  40;
+    //gantt.config.min_column_width = 50;
+    gantt.config.row_height =  30;
 
     //gantt.config.fit_tasks = true;
 
-
+    gantt.ignore_time = function(date){
+      if(!gantt.isWorkTime(date))
+        return true;
+    };
 
 
 
@@ -1102,10 +1123,16 @@ export default class OrderGantView extends JetView{
       if(date.getDay()==0||date.getDay()==6){
         return "weekend";
       }
+      if(!gantt.isWorkTime(date)){
+        return "weekend";
+      }
     };
     gantt.templates.timeline_cell_class = function(task,date){
       if(date.getDay()==0||date.getDay()==6){
         return "weekend" ;
+      }
+      if(!gantt.isWorkTime(date)){
+        return "weekend";
       }
     };
     //gantt.config.fit_tasks = true;
@@ -1125,7 +1152,7 @@ export default class OrderGantView extends JetView{
       min:0, max:1000
     };
     gantt.config.columns = [
-      {name: "text", tree: true, width: 220, resize: true},
+      {name: "text", tree: true, width: 320, resize: true},
       {name: "start_date", width: 100, align: "center", resize: true,
         template: function(task) {
           return formatDateTime(task.start_date);
@@ -1135,7 +1162,7 @@ export default class OrderGantView extends JetView{
         template: function(task) {
           return formatter.format(task.duration);
         }, width: 70},
-     // {name:"details",     height:38, map_to:"text", type:"textarea", hidden: true},
+      //{name:"progress",   label:"Progress",   align:"center" },
       //{name: "add", width: 44}
     ];
     // gantt.config.lightbox.sections = [
@@ -1147,7 +1174,8 @@ export default class OrderGantView extends JetView{
     gantt.config.lightbox.sections = [
       {name:"description", height:38, map_to:"text", type:"textarea", focus:true},
      // {name:"details",     height:38, map_to:"text", type:"textarea"},
-      {name:"time",type:"duration", map_to:"auto",time_format:["%d","%m","%Y","%H:%i"]}
+      {name:"time",type:"duration", map_to:"auto",time_format:["%d","%m","%Y","%H:%i"]},
+
     ];
 
 
@@ -1158,12 +1186,11 @@ export default class OrderGantView extends JetView{
 
 
 
-
+    gantt.clearAll();
     gantt.ext.zoom.init(zoomConfig);
+
     gantt.init("dhx-gantt");
 
-
-    gantt.clearAll();
     gantt.parse(tasks);
     //view.addView(gantObj);
 
@@ -1172,6 +1199,10 @@ export default class OrderGantView extends JetView{
   }
 
   getDataGantt(data) {
+    let checkUpholstery = this.$$('check-upholstery').getValue();
+    let checkSewing = this.$$('check-sewing').getValue();
+    let checkCut = this.$$('check-cut').getValue();
+    let checkCarpenter = this.$$('check-carpenter').getValue();
     let tasks = {
       data:[
       ],
@@ -1180,19 +1211,10 @@ export default class OrderGantView extends JetView{
       ]
     };
     let field = this.getSortFieldByTypeGroup();
-    let taskItem = {};
-    let fieldsSewing = {};
-    let fieldsCut = {};
+
     let scope = this;
 
-    fieldsSewing['date_sewing'] = {'start' : 'date_sewing', 'end' : 'date_sewing_end', 'time' : 'time_sewing_fact'};
-    fieldsSewing['date_sewing_plan'] = {'start' : 'date_sewing_plan', 'end' : 'date_sewing_plan_end', 'time' : 'time_sewing'};
-    fieldsCut['date_cut'] = {'start' : 'date_sewing', 'end' : 'date_sewing_end', 'time' : 'time_sewing_fact'};
-    fieldsCut['date_cut_plan'] = {'start' : 'date_cut_plan', 'end' : 'date_cut_plan_end', 'time' : 'time_cut'};
-    // data.forEach(item => {
-    //   taskItem[item[field]].push({id:item.id, text:item.A+' '+item.I, start_date:item[fieldsCut.start], duration:item[fieldsCut.time]*60,order:10,
-    //     progress:0});
-    // });
+
     let group = '';
     let groupSub = '';
     let parent = 0;
@@ -1200,86 +1222,116 @@ export default class OrderGantView extends JetView{
     let fieldSubGroup = '';
     let fieldTimeStart = '';
 
+
+    let times = this.getFieldsTime(field);
+
     data.forEach(function callback(item, index, array) {
 
       if (item[field] == null) return;
       //if (index > 3) return;
-      //let times = this.getFieldsTime(field);
 
 
+      let changeParams = {
+        'fieldGroupTimeStart' : formatDateGantDay(item[field])+' 08:00',
+        'fieldGroup' : item['BO'],
+        //'durationModel' : '',
+        //'filterByDateFact' : 'date_sewing' // 'AE' in getFilterFieldByTypeGroup
+      }
 
       // taskItem[item[field]].push({id:item.id, text:item.A+' '+item.I, start_date:item[fieldsCut.start], duration:item[fieldsCut.time]*60,order:index,
       //   progress:0});
       fieldGroup = formatDate(item[field]);
-      fieldTimeStart = formatDateGant(item['date_cut_plan']);
+      //4_edit
+      let fieldGroupTimeStart = formatDateGantDay(item[field])+' 08:00';
+      fieldTimeStart = formatDateGant(item[field]);
       //fieldTimeStart = formatDateGant(parserDateAEGant(item.C));
       if (field == 'AE') {
         fieldGroup = formatDate(parserDateAEGant(item[field]));
-        //fieldTimeStart = formatDateAEGant(parserDateAEGant(item[field]))+' 8:00';
+        fieldTimeStart = formatDateAEGant(parserDateAEGant(item[field]))+' 8:00';
+        fieldGroupTimeStart = formatDateAEGant(parserDateAEGant(item[field]))+' 08:00';
 
       }
       fieldSubGroup = item.A;
-      //debugger;
-      if (fieldSubGroup != groupSub) {
-        groupSub = fieldSubGroup;
-        tasks.data.push(scope.getItemModel(item, fieldTimeStart, 480,index, fieldGroup, '#625E93'));
-        //tasks.data.push(scope.getItemCloth('date_cloth', item, index, groupSub, '#3498db'));
 
-        tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'#3db9d3'));
-        tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#3db9d3'));
-        tasks.data.push(scope.getItem('date_carpenter_plan', item, index, groupSub, '#3db9d3'));
-        tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, '#3db9d3'));
+      fieldGroup = times.fio+'_'+item[times['fio']];//item['BO']; //2_edit
 
 
-        tasks.data.push(scope.getItem('date_cut', item, index, groupSub, '#65c16f'));
-        tasks.data.push(scope.getItem('date_sewing', item, index, groupSub, '#65c16f'));
-        tasks.data.push(scope.getItem('date_carpenter', item, index, groupSub, '#65c16f'));
-        tasks.data.push(scope.getItem('AE', item, index, groupSub, '#65c16f'));
-        tasks.data.push(scope.getItem('date_obivka', item, index, groupSub, '#d33daf'));
-      } //else {
-      //   tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'#3db9d3'));
-      //   tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#65c16f'));
-      //   tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub,'#d33daf'));
-      // }
 
-      // if (fieldGroup != group) {
-      //   group = fieldGroup;
-      //   parent = fieldGroup;
-      //   groupSub = fieldSubGroup;
-      //
-      //
-      //   tasks.data.push(scope.getItemDay(fieldGroup, fieldTimeStart, 480, index));
-      //   tasks.data.push(scope.getItemModel(item, fieldTimeStart, 480,index, fieldGroup));
-      //   tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub, 'blue'));
-      //   tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, 'grey'));
-      //   tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, 'red'));
-      //
-      //
-      // } else {
-      //   //tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub));
-      //   if (fieldGroup == group && fieldSubGroup != groupSub) {
-      //     groupSub = fieldSubGroup;
-      //     tasks.data.push(scope.getItemModel(item, fieldTimeStart, 480,index, fieldGroup));
-      //     tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'blue'));
-      //     tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, 'grey'));
-      //     tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, 'red'));
-      //   } else {
-      //     tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'blue'));
-      //     tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, 'grey'));
-      //     tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, 'red'));
-      //   }
-      // }
-      //tasks.links.push({ "id":item.A+'_'+item.id+'_'+'date_cloth', "source":item.A+item.id+'date_cloth', "target":item.A+item.id+'date_cut_plan', "type":"0"});
+        group = fieldGroup;
+        tasks.data.push(scope.getItemGroup(field, item, fieldGroupTimeStart, 480, index, 0, '#625E93'));
 
-      tasks.links.push({ "id":scope.getId(item)+'date_cut_plan', "source":scope.getId(item)+'date_cut_plan', "target":scope.getId(item)+'date_sewing_plan', "type":"0"});
-      tasks.links.push({ "id":scope.getId(item)+'date_sewing_plan', "source":scope.getId(item)+'date_sewing_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"0"});
-      tasks.links.push({ "id":scope.getId(item)+'date_carpenter_plan', "source":scope.getId(item)+'date_carpenter_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"0"});
-      tasks.links.push({ "id":scope.getId(item)+'date_upholstery_plan', "source":scope.getId(item)+'date_upholstery_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"2"});
+          groupSub = fieldSubGroup;
+          // if (scope.batchIndex == 4) {
+          //   tasks.data.push(scope.getItem('AE', item, index, 0, '#65c16f'));
+          //   return;
+          // }
+          // if (scope.batchIndex == 1) {
+          //   tasks.data.push(scope.getItem('date_sewing', item, index, 0, '#65c16f'));
+          //   return;
+          // }
+          // if (scope.batchIndex == 8) {
+          //   tasks.data.push(scope.getItem('date_cut', item, index, 0, '#65c16f'));
+          //   return;
+          // }
+          // if (scope.batchIndex == 10) {
+          //   tasks.data.push(scope.getItem('date_carpenter', item, index, 0, '#65c16f'));
+          //   return;
+          // }
 
-      tasks.links.push({ "id":scope.getId(item)+'date_carpenter', "source":scope.getId(item)+'date_carpenter', "target":scope.getId(item)+'AE', "type":"0"});
-      tasks.links.push({ "id":scope.getId(item)+'date_cut', "source":scope.getId(item)+'date_cut', "target":scope.getId(item)+'date_sewing', "type":"0"});
-      tasks.links.push({ "id":scope.getId(item)+'date_sewing', "source":scope.getId(item)+'date_sewing', "target":scope.getId(item)+'AE', "type":"0"});
-      tasks.links.push({ "id":scope.getId(item)+'AE', "source":scope.getId(item)+'AE', "target":scope.getId(item)+'AE', "type":"2"});
+          tasks.data.push(scope.getItemModel(field, item, fieldTimeStart, 480, index, fieldGroup, '#625E93'));
+          //tasks.data.push(scope.getItemCloth('date_cloth', item, index, groupSub, '#3498db'));
+          //
+          // tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub,'#3db9d3'));
+          // tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#3db9d3'));
+          // tasks.data.push(scope.getItem('date_carpenter_plan', item, index, groupSub, '#3db9d3'));
+          // tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, '#3db9d3'));
+
+
+          // tasks.data.push(scope.getItem('date_cut', item, index, groupSub, '#65c16f'));
+          // tasks.data.push(scope.getItem('date_sewing', item, index, groupSub, '#65c16f'));
+          // tasks.data.push(scope.getItem('date_carpenter', item, index, groupSub, '#65c16f'));
+          // tasks.data.push(scope.getItem('AE', item, index, groupSub, '#65c16f'));
+          // tasks.data.push(scope.getItem('date_obivka', item, index, groupSub, '#d33daf'));
+
+          // tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub, '#3db9d3'));
+          // tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#65c16f'));
+          // //tasks.data.push(scope.getItem('date_carpenter_plan', item, index, 0, '#3498db'));
+          // tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, '#d33daf'));
+          // tasks.data.push(scope.getItem('date_carpenter', item, index, 0, '#3498db'));
+          //tasks.data.push(scope.getItem('date_carpenter', item, index, groupSub, '#3498db'));
+          //tasks.data.push(scope.getItem('date_cut', item, index, groupSub, '#3db9d3'));
+          //tasks.data.push(scope.getItem('BU', item, index, groupSub, '#65c16f'));
+
+          //tasks.data.push(scope.getItem(field, item, index, groupSub, '#d33daf'));
+          if (field == 'date_upholstery_plan' || field == 'date_sewing_plan' || field == 'date_carpenter_plan' || field == 'date_cut_plan') {
+            if (checkUpholstery) tasks.data.push(scope.getItem('date_upholstery_plan', item, index, groupSub, '#d33daf'));
+            if (checkSewing) tasks.data.push(scope.getItem('date_sewing_plan', item, index, groupSub, '#65c16f'));
+            if (checkCut) tasks.data.push(scope.getItem('date_cut_plan', item, index, groupSub, '#3db9d3'));
+            if (checkCarpenter) tasks.data.push(scope.getItem('date_carpenter_plan', item, index, groupSub, 'yellow'));
+          }
+          if (field == 'AE' || field == 'date_sewing' || field == 'date_carpenter' || field == 'date_cut') {
+            if (checkUpholstery) tasks.data.push(scope.getItem('AE', item, index, groupSub, '#d33daf'));
+            if (checkSewing) tasks.data.push(scope.getItem('date_sewing', item, index, groupSub, '#65c16f'));
+            if (checkCut) tasks.data.push(scope.getItem('date_cut', item, index, groupSub, '#3db9d3'));
+            if (checkCarpenter) tasks.data.push(scope.getItem('date_carpenter', item, index, groupSub, 'yellow'));
+          }
+
+          //tasks.data.push(scope.getItem(field, item, index, groupSub, '#d33daf'));
+
+
+
+
+
+      // tasks.links.push({ "id":scope.getId(item)+'date_cut_plan', "source":scope.getId(item)+'date_cut_plan', "target":scope.getId(item)+'date_sewing_plan', "type":"1"});
+      // tasks.links.push({ "id":scope.getId(item)+'date_sewing_plan', "source":scope.getId(item)+'date_sewing_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"1"});
+      // //tasks.links.push({ "id":scope.getId(item)+'date_carpenter_plan', "source":scope.getId(item)+'date_carpenter_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"1"});
+      // tasks.links.push({ "id":scope.getId(item)+'date_upholstery_plan', "source":scope.getId(item)+'date_upholstery_plan', "target":scope.getId(item)+'date_upholstery_plan', "type":"2"});
+
+
+      // tasks.links.push({ "id":scope.getId(item)+'date_cut', "source":scope.getId(item)+'date_cut', "target":scope.getId(item)+'date_sewing', "type":"1"});
+      // tasks.links.push({ "id":scope.getId(item)+'date_sewing', "source":scope.getId(item)+'date_sewing', "target":scope.getId(item)+'AE', "type":"1"});
+      // tasks.links.push({ "id":scope.getId(item)+'date_carpenter', "source":scope.getId(item)+'date_carpenter', "target":scope.getId(item)+'AE', "type":"1"});
+      // tasks.links.push({ "id":scope.getId(item)+'AE', "source":scope.getId(item)+'AE', "target":scope.getId(item)+'AE', "type":"2"});
 
 
       //your iterator
@@ -1292,7 +1344,7 @@ export default class OrderGantView extends JetView{
         { "id":4, "source":2, "target":5, "type":"2"}
     ]
      */
-   //debugger;
+
     return tasks;
   }
 
@@ -1303,15 +1355,26 @@ export default class OrderGantView extends JetView{
   getFieldsTime(fieldGroup) {
     let fields;
     fields  = {
-      'date_carpenter' : {'start' : 'date_carpenter', 'end' : 'date_carpenter_end', 'time' : 'time_carpenter_fact', 'name' : 'Столярка факт', 'fio' : 'AZ'},
-      'date_carpenter_plan' :  {'start' : 'date_carpenter_plan', 'end' : 'date_carpenter_plan_end', 'time' : 'time_carpenter_plan', 'name' : 'Столярка план', 'fio' : 'AZ'},
-      'date_sewing' : {'start' : 'date_sewing', 'end' : 'date_sewing_end', 'time' : 'time_sewing_fact', 'name' : 'Швека факт', 'fio' : 'BO'},
-      'date_sewing_plan' :  {'start' : 'date_sewing_plan', 'end' : 'date_sewing_plan_end', 'time' : 'time_sewing', 'name' : 'Швека план', 'fio' : 'BO'},
-      'date_cut' : {'start' : 'date_cut', 'end' : 'date_cut_end', 'time' : 'time_cut_fact', 'name' : 'Крой факт', 'fio' : 'BV'},
-      'date_cut_plan' : {'start' : 'date_cut_plan', 'end' : 'date_cut_plan_end', 'time' : 'time_cut_plan', 'name' : 'Крой план', 'fio' : 'BV'},
-      'date_upholstery_plan' : {'start' : 'date_upholstery_plan', 'end' : 'date_upholstery_plan_end', 'time' : 'time_upholstery_plan', 'name' : 'Обивка план', 'fio' : 'Z'},
-      'AE' : {'start' : 'time_upholstery_start', 'end' : 'time_upholstery_end', 'time' : 'time_upholstery_fact', 'name' : 'Обивка факт', 'fio' : 'Z'},
-      'date_obivka' : {'start' : 'date_obivka', 'end' : 'date_upholstery_plan_end', 'time' : 'time_upholstery_plan', 'name' : 'Обивка Excel', 'fio' : 'Z'},
+      'date_carpenter' : {'start' : 'BC', 'end' : 'BD', 'time' : 'time_carpenter_fact', 'name' : 'Столярка факт', 'fio' : 'AZ',
+        'plan' : 'date_carpenter_plan', 'status' : 'BA'
+      },
+      'date_carpenter_plan' :  {'start' : 'date_carpenter_plan', 'end' : 'date_carpenter_plan_end', 'time' : 'time_carpenter_plan', 'name' : 'Столярка план', 'fio' : 'AZ',
+        'fact' : 'date_carpenter', 'status' : 'BA'
+      },
+      'date_sewing' : {'start' : 'BT', 'end' : 'BU', 'time' : 'time_sewing_fact', 'name' : 'Швека факт', 'fio' : 'BO',
+        'plan' : 'date_sewing_plan',  'status' : 'BP'},
+      'date_sewing_plan' :  {'start' : 'date_sewing_plan', 'end' : 'date_sewing_plan_end', 'time' : 'time_sewing', 'name' : 'Швека план', 'fio' : 'BO',
+        'fact' : 'date_sewing',  'status' : 'BP'},
+      'date_cut' : {'start' : 'BZ', 'end' : 'CA', 'time' : 'time_cut_fact', 'name' : 'Крой факт', 'fio' : 'BV',
+        'plan' : 'date_cut_plan', 'status' : 'BW' },
+      'date_cut_plan' : {'start' : 'date_cut_plan', 'end' : 'date_cut_plan_end', 'time' : 'time_cut_plan', 'name' : 'Крой план', 'fio' : 'BV',
+        'fact' : 'date_cut', 'status' : 'BW' },
+      'date_upholstery_plan' : {'start' : 'date_upholstery_plan', 'end' : 'date_upholstery_plan_end', 'time' : 'time_upholstery_plan', 'name' : 'Обивка план',
+        'fio' : 'Z', 'fact' : 'AE', 'status' : 'W'},
+      'AE' : {'start' : 'time_upholstery_start', 'end' : 'time_upholstery_end', 'time' : 'time_upholstery_fact', 'name' : 'Обивка факт', 'fio' : 'Z',
+        'plan' : 'date_upholstery_plan', 'status' : 'W' },
+      'date_obivka' : {'start' : 'date_obivka', 'end' : 'date_upholstery_plan_end', 'time' : 'time_upholstery_plan', 'name' : 'Обивка Excel', 'fio' : 'Z',
+        'plan' : 'date_upholstery_plan', 'status' : 'W' },
       'date_cloth' : {'start' : 'C', 'end' : 'K', 'time' : '', 'name' : 'Заказ ткани', 'fio' : ''}
     };
     return fields[fieldGroup];
@@ -1322,22 +1385,88 @@ export default class OrderGantView extends JetView{
     return {id:fieldGroup, text:fieldGroup, start_date:timeStart, duration: duration,order:10,
       progress:0, open: true};
   }
-  getItemModel(item, timeStart, duration, index, parent, color) {
-    //let times = this.getFieldsTime(field);
+  getItemGroup(field, item, timeStart, duration, index, parent, color) {
+    let times = this.getFieldsTime(field);
     //let timeStart = formatDateGant(item[times.start]);
-    duration = parseFloat(item['time_upholstery_plan'].replace(',','.'))*60;
-    return {id:item.A, text:item.A+' '+item.I, start_date: timeStart,order:10,
+    //duration = parseFloat(item['time_upholstery_plan'].replace(',','.'))*60;
+    return {id:times.fio+'_'+item[times.fio], text:item[times.fio], start_date: timeStart,order:10, duration: duration,
       progress:0,  open: true, color: color};
+    //type: "project", render:"split"
+  }
+
+  getItemModel(field, item, timeStart, duration, index, parent, color) {
+    let times = this.getFieldsTime(field);
+    timeStart = formatDateGant(item[times.start]);
+    let timeEnds = formatDateGant(item[times.end]);
+    //duration = parseFloat(item['time_upholstery_plan'].replace(',','.'))*60;
+    //3_edit
+    return {id:item.A, text:item.A+' '+item.I +'('+item[times.status]+')', start_date: timeStart, end_date: timeEnds,order:10,
+      progress:0,  open: true, color: color,  parent: parent,
+      render:"split",
+    };
     //type: "project", render:"split"
   }
   getItem(field, item, index, parent, color) {
 
     let times = this.getFieldsTime(field);
-    let duration = Math.round(parseFloat(item[times.time].replace(',','.'))*60);
+    let duration = null;//Math.round(parseFloat(item[times.time].replace(',','.'))*60);
     let timeStart = formatDateGant(item[times.start]);
+    let timeEnd = formatDateGant(item[times.end]);
+    let progress = 0;
+    let name = times.name;
+    if (item.A == 16136) {
+      //debugger;
+    }
+    if (typeof(times.plan) != "undefined" && times.plan !== null) {
+      let timesPlan = this.getFieldsTime(times.plan);
+      if (!timeStart) {
+        //debugger;
+        timeStart = formatDateGant(item[field]);
+        if (field == 'AE') {
+          timeStart = formatDateAEGant(parserDateAEGant(item[field]))+' 8:00';
+        }
 
-    return {id:this.getId(item)+field, text:times.name+'('+item.W+')'+' ('+item[times.fio]+')', start_date: timeStart, duration: duration, order:10,
-      progress:0,  parent: parent, color: color, db_id: item.id};
+      } else {
+        progress = 0.3;
+      }
+      if (!timeEnd) {
+        duration = Math.round(parseFloat(item[timesPlan.time].replace(',', '.')) * 60);
+
+      }
+    }
+    if (item[times.status] == 1) progress = 1;
+
+
+
+    if (typeof(times.fact) != "undefined" && times.fact !== null) {
+
+      let timesFact = this.getFieldsTime(times.fact);
+      let start = formatDateGant(item[timesFact.start]);
+      let end = formatDateGant(item[timesFact.end]);
+      name = timesFact.name;
+
+      if (start) {
+        timeStart = start;
+        if (end) {
+          timeEnd = end;
+          progress = 1;
+        } else {
+          duration = Math.round(parseFloat(item[times.time].replace(',','.'))*60);
+          progress = 0.3;
+        }
+
+      }
+
+    }
+
+    let result = {id:this.getId(item)+field, text:name+'('+item[times.status]+')'+' ('+item[times.fio]+')', start_date: timeStart,  order:10,
+      progress:progress,  parent: parent, color: color, db_id: item.id};
+    if (duration) {
+      result['duration'] = duration;
+    } else {
+      result['end_date'] = timeEnd;
+    }
+    return result;
   }
   getItemCloth(field, item, index, parent, color) {
     if (field == 'date_cloth') {
@@ -1358,7 +1487,9 @@ export default class OrderGantView extends JetView{
   init(view) {
 
     let table = this.$$("gant-table");
+    let batchPlanCombo = this.$$("batch-plan");
     let employeeCombo = this.$$("employee");
+    this.batchIndex = 0;
     // let timeline = this.$$("timeline");
     // let timelinePlan = this.$$("timeline-plan");
     //let gant = this.$$("gant");
@@ -1366,13 +1497,15 @@ export default class OrderGantView extends JetView{
 
     //gantt.ext.zoom.init(zoomConfig);
 
+
+
     gantt.attachEvent("onLightboxSave", function(id,item){
       //any custom logic here
 
       let ids = id.split('-');
       let data = {};
 
-      if (ids[2] == 'date_sewing' || ids[2] == 'date_cut' || ids[2] == 'AE' || ids[2] == 'date_obivka') return;
+      if (ids[2] == 'date_sewing' || ids[2] == 'date_cut' || ids[2] == 'AE' || ids[2] == 'date_obivka' || ids[2] == 'date_carpenter') return;
 
       data[ids[2]] = formatDateTimeDb(item.start_date);
 
@@ -1390,7 +1523,7 @@ export default class OrderGantView extends JetView{
         let item = gantt.getTask(id);
         let ids = id.split('-');
 
-        if (ids[2] == 'date_sewing' || ids[2] == 'date_cut' || ids[2] == 'AE' || ids[2] == 'date_obivka') return;
+        if (ids[2] == 'date_sewing' || ids[2] == 'date_cut' || ids[2] == 'AE' || ids[2] == 'date_obivka' || ids[2] == 'date_carpenter') return;
 
         data[ids[2]] = formatDateTimeDb(item.start_date);
 
@@ -1433,33 +1566,21 @@ export default class OrderGantView extends JetView{
       scope.doTableGroup();
       let tasks = scope.getDataGantt(data.json().items);
       scope.addGanttChart( tasks);
-
-
-      // timeline.clearAll();
-      // timeline.parse(data.json().items);
-      // timelinePlan.clearAll();
-      // timelinePlan.parse(data.json().items);
-      //gant.clearAll();
-
-      // let gantData = {};
-      // gantData['data'] = [];
-      // data.json().items.forEach(function(obj, i) {
-      //   //debugger;
-      //   //let gantt_obj = {};
-      //   gantt_obj.text = obj.I;
-      //   gantt_obj.start_date = formatDateGant(parserDateTime(obj.date_sewing));
-      //   gantt_obj.duration = 2;
-      //   gantt_obj.order = 10;
-      //   gantt_obj.progress = 10;
-      //   gantt_obj.open = true;
-      //   gantt_obj.parent = 0;
-      //   //debugger;
-      //   if (i==0) { gantData['data'][i] = gantt_obj };
-      // });
     });
     // table.load(tableUrl,function(text, data, http_request){
     //   return  data.json().items;
     // });
+
+    batchPlanCombo.attachEvent("onChange", function(value,item){
+      webix.ajax().get(tableUrl).then(function(data){
+        table.clearAll();
+        table.parse(data.json().items);
+        scope.doTableGroup();
+        scope.batchIndex = value;
+        let tasks = scope.getDataGantt(data.json().items);
+        scope.addGanttChart( tasks);
+      });
+    });
 
     table.attachEvent("onPaste", function(text) {
       // define your pasting logic here
@@ -1664,8 +1785,10 @@ export default class OrderGantView extends JetView{
     });
     this.restApi.getLoad(tableUrl).then(function(data){
       table.clearAll();
-      table.parse(data.json().items);
+      //table.parse(data.json().items);
       scope.doTableGroup();
+      let tasks = scope.getDataGantt(data.json().items);
+      scope.addGanttChart( tasks);
       table.enable();
 
     });
@@ -1715,7 +1838,7 @@ export default class OrderGantView extends JetView{
     let toggle = this.$$("toggle-plan");
     let field = 'AE';
     if (toggle.getValue() == 1) {
-      field = 'AE';
+      field = 'date_sewing'; //1_edit
     }
     if (toggle.getValue() == 2) {
       field = 'date_sewing_plan';
@@ -1730,16 +1853,22 @@ export default class OrderGantView extends JetView{
       field = 'date_upholstery_plan';
     }
     if (toggle.getValue() == 6) {
-      field = 'AE';
+      field = 'date_sawcut';
     }
     if (toggle.getValue() == 7) {
       field = 'date_sawcut_plan';
     }
     if (toggle.getValue() == 8) {
-      field = 'AE';
+      field = 'date_cut';
     }
     if (toggle.getValue() == 9) {
       field = 'date_cut_plan';
+    }
+    if (toggle.getValue() == 10) {
+      field = 'date_carpenter';
+    }
+    if (toggle.getValue() == 11) {
+      field = 'date_carpenter_plan';
     }
     return field;
   }
@@ -1773,6 +1902,12 @@ export default class OrderGantView extends JetView{
     }
     if (toggle.getValue() == 9) {
       field = 'date_cut_plan';
+    }
+    if (toggle.getValue() == 10) {
+      field = 'date_carpenter';
+    }
+    if (toggle.getValue() == 11) {
+      field = 'date_carpenter_plan';
     }
     return field;
   }
@@ -1920,6 +2055,32 @@ export default class OrderGantView extends JetView{
       };
       map['value'] = [function (obj) {
         return parserDateHour(obj.date_cut_plan);
+      }];
+      table.group({
+        by: by,
+        map: map,
+      });
+    }
+    if (toggle.getValue() == 10) {
+      this.showBatch(8);
+      by = function (obj) {
+        return parserDateHour(obj.date_carpenter);
+      };
+      map['value'] = [function (obj) {
+        return parserDateHour(obj.date_carpenter);
+      }];
+      table.group({
+        by: by,
+        map: map,
+      });
+    }
+    if (toggle.getValue() == 11) {
+      this.showBatch(8);
+      by = function (obj) {
+        return parserDateHour(obj.date_carpenter_plan);
+      };
+      map['value'] = [function (obj) {
+        return parserDateHour(obj.date_carpenter_plan);
       }];
       table.group({
         by: by,

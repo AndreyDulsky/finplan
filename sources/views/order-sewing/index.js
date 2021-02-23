@@ -240,6 +240,8 @@ export default class OrderSewingView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
+            { view:"icon", icon: 'mdi mdi-clear', autowidth:true, click: () =>  this.doClickClearPlan()},
+            { view:"icon", icon: 'mdi mdi-calculator', autowidth:true, click: () =>  this.doClickCalculator()},
             { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
             { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
             // {
@@ -291,7 +293,7 @@ export default class OrderSewingView extends JetView{
                 { id:8, value:"По дате крой факт/Дата обивки" },
                 { id:9, value:"По дате крой план" },
                 { id:'10', value:"По дате столярка факт/Дата обивки" },
-                { id:11, value:"По дате столярка" },
+                { id:11, value:"По дате столярка план" },
 
 
 
@@ -362,7 +364,7 @@ export default class OrderSewingView extends JetView{
 
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
             {
-              id:"date", header:[ "# заказа", { content:"textFilter" },"" ], width: 250,
+              id:"date", header:[ "# заказа", { content:"textFilter" },"" ], width: 180,
               batch:2,
               template:function(obj, common){
 
@@ -375,9 +377,9 @@ export default class OrderSewingView extends JetView{
             },
             //print
             //{ id:"plan", header:"План", width:60 , batch:10, editor:"text"},
-            { id:"fact", header:"Факт н.", width:120 , batch:2, editor:"text"},
-            { id:"fact1", header:"Факт к.", width:120 , batch:2, editor:"text"},
-            { id:"comment", header:"Коментарий", width:350, batch:2, editor:"text"},
+            { id:"fact", header:"Факт н.", width:100 , batch:2, editor:"text"},
+            { id:"fact1", header:"Факт к.", width:100 , batch:2, editor:"text"},
+            { id:"comment", header:"Коментарий", width:250, batch:2, editor:"text"},
 
             // { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:70, batch:2, editor:"select",
             //   options:[{"id": 1, "value": "1"}, {"id": 3, "value": "3"}, {"id": 4, "value": "4"},
@@ -642,7 +644,7 @@ export default class OrderSewingView extends JetView{
             },
 
             {
-              id:"date_sewing",
+              id:"BU",
               header:[ "Дата Шв.факт оконч.", { content:"selectFilter" }, "" ],
               width:145,
               editor:"date",
@@ -651,7 +653,7 @@ export default class OrderSewingView extends JetView{
               hidden: false,
               "css": {"color": "green","text-align": "center",  "font-weight": 500},
               template: function(obj) {
-                return formatDateTime(parserDateTime(obj.date_sewing));
+                return formatDateTime(parserDateTime(obj.BU));
               }
             },
 
@@ -733,7 +735,7 @@ export default class OrderSewingView extends JetView{
             },
 
             {
-              id:"date_cut",
+              id:"CA",
               header:[ "Дата кр.факт оконч.", { content:"selectFilter" }, "" ],
               width:145,
               editor:"date",
@@ -742,7 +744,7 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "center", "color":"green", "font-weight": 500},
               hidden: false,
               template: function(obj) {
-                return formatDateTime(parserDateTime(obj.date_cut));
+                return formatDateTime(parserDateTime(obj.CA));
               }
             },
             { id:"BV", header:[ "ФИО крой.", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:8, editor:"text"},
@@ -1378,8 +1380,12 @@ export default class OrderSewingView extends JetView{
       date_sewing_plan_end:["date_sewing_plan_end", "median"],
       time_sewing_fact:["time_sewing_fact", "median"],
       //time_carpenter_fact:["time_carpenter_fact", "median"],
+      time_upholstery_plan:["time_upholstery_plan", "median" ],
+      time_upholstery_fact:["time_upholstery_fact", "median"],
 
       BO:["BO", "countSame" ],
+      Z:["Z", "countSame" ],
+
       missing:false,
     };
 
@@ -1543,6 +1549,7 @@ export default class OrderSewingView extends JetView{
     //table.css = 'my_style';
     table.showColumnBatch(2);
     table.hideColumn('A');
+    table.hideColumn('I');
     // table.config.columns.forEach((element, index) => {
     //   console.log(element.id);
     //   scope.toggleColumn(table, element.id);
@@ -1554,6 +1561,7 @@ export default class OrderSewingView extends JetView{
     webix.print(table, { fit:"data"});
     table.showColumnBatch(1);
     table.showColumn('A');
+    table.showColumn('I');
   }
 
 
@@ -1569,8 +1577,64 @@ export default class OrderSewingView extends JetView{
     let table = this.$$("sewing-table");
     table.showColumnBatch(2);
     table.hideColumn('A');
+    table.hideColumn('I');
     webix.toExcel(table);
     table.showColumnBatch(1);
     table.showColumn('A');
+    table.showColumn('I');
+  }
+
+  doClickCalculator() {
+    let table = this.$$("sewing-table");
+    let format = webix.Date.dateToStr("%Y-%m-%d");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+    this.restApi = this.app.config.apiRest;
+    let filedFilter = this.getFilterFieldByTypeGroup();
+    let filedSort = this.getSortFieldByTypeGroup();
+    let tableUrl = this.restApi.getUrl('get',"accounting/order/get-plan", {
+      //"per-page": "500",
+      'dateFrom' : dateFromValue,
+      'dateTo' : dateToValue
+      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+    });
+    let scope =this;
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
+    this.restApi.getLoad(tableUrl).then(function(data){
+      //table.clearAll();
+      //table.parse(data.json().items);
+      //scope.doTableGroup();
+      table.enable();
+      table.hideProgress();
+
+    });
+  }
+
+  doClickClearPlan() {
+    let table = this.$$("sewing-table");
+    let format = webix.Date.dateToStr("%Y-%m-%d");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+    this.restApi = this.app.config.apiRest;
+    let scope =this;
+
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
+    let tableUrl = this.restApi.getUrl('get',"accounting/order/clear-plan", {
+      'dateFrom' : dateFromValue,
+      'dateTo' : dateToValue
+    });
+    this.restApi.getLoad(tableUrl).then(function(data){
+      table.enable();
+      table.hideProgress();
+
+    });
   }
 }

@@ -345,7 +345,7 @@ export default class OrderResultView extends JetView{
           css:"webix_header_border webix_data_border",
           leftSplit:1,
           //rightSplit:2,
-          select: "row",
+          select: "cell",
           resizeColumn: { headerOnly:true },
           localId: 'order-result-table',
           //subrow:"#N#",
@@ -360,6 +360,7 @@ export default class OrderResultView extends JetView{
           headermenu:true,
           //autoConfig:true,
           tooltip:true,
+          clipboard:"selection",
 
           columns:[
 
