@@ -1593,7 +1593,7 @@ export default class OrderSewingView extends JetView{
     let filedFilter = this.getFilterFieldByTypeGroup();
     let filedSort = this.getSortFieldByTypeGroup();
     let tableUrl = this.restApi.getUrl('get',"accounting/order/get-plan", {
-      //"per-page": "500",
+      "per-page": "500",
       'dateFrom' : dateFromValue,
       'dateTo' : dateToValue
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
