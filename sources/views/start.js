@@ -424,7 +424,7 @@ export default class StartView extends JetView{
               }
             },
 
-            { id:"CF", header:[ "Уп.", { content:"selectFilter" }, "" ], width:50, batch:1, editor:"text",
+            { id:"CF", header:[ "Уп.", { content:"numberFilter" }, "" ], width:50, batch:1, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300, "font-size": "14px"},
               template: function(obj) {
                 if (obj.$group) return "";
