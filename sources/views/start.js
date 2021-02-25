@@ -360,7 +360,7 @@ export default class StartView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.W == 1) {
-                  return '<i class="mdi mdi-marker-check"></i>';
+                  return '<i class="mdi mdi-marker-check"></i><span style="display:none;">1</span>';
                 }
                 return  (obj.W === null) ? "" : obj.W;
               }
@@ -379,7 +379,7 @@ export default class StartView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BP == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
+                  return '<i class="mdi mdi-check-circle"></i><span style="display:none;">1</span>';
                 }
                 return  (obj.BP === null) ? "" : obj.BP;
               }
@@ -400,7 +400,7 @@ export default class StartView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BW == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
+                  return '<i class="mdi mdi-check-circle"></i><span style="display:none;">1</span>';
                 }
                 return  (obj.BW === null) ? "" : obj.BW;
               }
@@ -418,7 +418,7 @@ export default class StartView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BA == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
+                  return '<i class="mdi mdi-check-circle"></i><span style="display:none;">1</span>';
                 }
                 return  (obj.BA === null) ? "" : obj.BA;
               }
@@ -429,7 +429,7 @@ export default class StartView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.CF == 1) {
-                  return '<i class="mdi mdi-check-circle"></i>';
+                  return '<i class="mdi mdi-check-circle"></i><span style="display:none;">1</span>';
                 }
                 return  (obj.CF === null) ? "" : obj.CF;
               }
@@ -451,7 +451,7 @@ export default class StartView extends JetView{
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.B == 4) {
-                  return '<i class="mdi mdi-check-circle"></i>';
+                  return '<i class="mdi mdi-check-circle"></i><span style="display:none;">отг.</span>';
                 }
                 return  (obj.B === null) ? "" : obj.B;
               }
