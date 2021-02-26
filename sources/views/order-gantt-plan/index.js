@@ -1319,7 +1319,7 @@ export default class OrderGanttPlanView extends JetView{
     //let timeEnds = formatDateGant(item[times.end]);
     duration = parseFloat(item[times.time].replace(',','.'))*60;
     //3_edit
-    return {id:item.product_order_id, text:item.product_order_id+' '+'('+item[times.status]+')', start_date: timeStart, order:10,
+    return {id:item.product_order_id, text:item.product_order_id+' '+item.name+'('+item[times.status]+')', start_date: timeStart, order:10,
       progress:0,  open: true, color: color,  parent: parent, duration: duration,
       render:"split",
     };

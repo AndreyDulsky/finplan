@@ -185,6 +185,7 @@ let formatDateTimeDb = webix.Date.dateToStr("%Y-%m-%d %H:%i");
 let parserDate = webix.Date.strToDate("%Y-%m-%d");
 let parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
 let parserDateHour = webix.Date.strToDate("%Y-%m-%d %H");
+let parserDateCloth = webix.Date.strToDate("%d.%m.%y");
 
 let parserDateTimeDayStart = webix.Date.strToDate("%d-%m-%Y %H:%i");
 
@@ -488,7 +489,14 @@ export default class OrderSewingView extends JetView{
               //format:webix.Date.dateToStr("%d.%m.%y"),
               //batch:8,
               hidden: false,
-              "css": {"text-align": "center"},
+              css:{"text-align": "center" },
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 8)
+                  return {"text-align": "center", "background-color": '#ddFFdd'};
+              },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_cut_plan));
               }
@@ -516,6 +524,13 @@ export default class OrderSewingView extends JetView{
               //batch:1,
               hidden: false,
               "css": {"text-align": "center"},
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 1)
+                  return {"text-align": "center", "background-color": '#ddFFdd'};
+              },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_sewing_plan));
               }
@@ -543,6 +558,13 @@ export default class OrderSewingView extends JetView{
               //batch:10,
               hidden: false,
               "css": {"text-align": "center"},
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 10)
+                  return {"text-align": "center", "background-color": '#ddFFdd'};
+              },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_carpenter_plan));
               }
@@ -577,6 +599,7 @@ export default class OrderSewingView extends JetView{
               width:90, editor:"text",
               "css": {"text-align": "right", "color":"green", "font-weight": 500}, batch:4,
             },
+
             {
               id:"date_upholstery_plan",
               header:[ "Дата об.план старт", { content:"selectFilter" }, "" ],
@@ -585,22 +608,16 @@ export default class OrderSewingView extends JetView{
               //format:webix.Date.dateToStr("%d.%m.%y"),
               batch:4,
               hidden: false,
-              "css": {"text-align": "center"},
+              css:{"text-align": "center" },
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 4)
+                  return {"text-align": "center", "background-color": '#ddFFdd'};
+              },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_upholstery_plan));
-              }
-            },
-            {
-              id:"time_upholstery_start",
-              header:[ "Дата об.факт старт", { content:"selectFilter" }, "" ],
-              width:140,
-              editor:"date",
-              //format:webix.Date.dateToStr("%d.%m.%y"),
-              batch:4,
-              "css": {"text-align": "center", "color":"green", "font-weight": 500},
-              hidden: false,
-              template: function(obj) {
-                return formatDateTime(parserDateTime(obj.time_upholstery_start));
               }
             },
             {
@@ -616,6 +633,7 @@ export default class OrderSewingView extends JetView{
                 return formatDateTime(parserDateTime(obj.date_upholstery_plan_end));
               }
             },
+
             {
               id:"time_upholstery_end",
               header:[ "Дата об.факт окон.", { content:"selectFilter" }, "" ],
@@ -1051,12 +1069,28 @@ export default class OrderSewingView extends JetView{
 
 
             $init:function(item) {
-              if (item.B == 4)
+              //debugger;
+
+              if (item.M == 'заказано') {
                 item.$css = "highlight";
-              if (item.B == 3)
-                item.$css = "highlight-blue";
-              if (item.B == 2)
-                item.$css = "highlight-green";
+
+                if (item.K) {
+                  let formatYear =  webix.Date.dateToStr("%y");
+                  let parseAE = webix.Date.strToDate("%d.%m.%y");
+                  let year =formatYear(new Date());
+                  let dateCloth = parserDateCloth(item.K+'.'+year);
+                  let dateAE = parseAE(item.AE);
+                  if (dateCloth > dateAE) {
+                    item.$css = "highlight-red";
+                  }
+                }
+
+
+              }
+              // if (item.B == 3)
+              //   item.$css = "highlight-blue";
+              // if (item.B == 2)
+              //   item.$css = "highlight-green";
             }
           },
           ready:function(){
