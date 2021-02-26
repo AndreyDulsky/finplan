@@ -639,12 +639,7 @@ export default class StartView extends JetView{
 
 
             $init:function(item) {
-              if (item.B == 4)
-                item.$css = "highlight";
-              if (item.B == 3)
-                item.$css = "highlight-blue";
-              if (item.B == 2)
-                item.$css = "highlight-green";
+
             }
           },
           ready:function(){
