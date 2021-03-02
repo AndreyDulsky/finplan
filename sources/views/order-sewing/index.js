@@ -241,7 +241,7 @@ export default class OrderSewingView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
-            { view:"icon", icon: 'mdi mdi-clear', autowidth:true, click: () =>  this.doClickClearPlan()},
+            // { view:"icon", icon: 'mdi mdi-clear', autowidth:true, click: () =>  this.doClickClearPlan()},
             { view:"icon", icon: 'mdi mdi-calculator', autowidth:true, click: () =>  this.doClickCalculator()},
             { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
             { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
