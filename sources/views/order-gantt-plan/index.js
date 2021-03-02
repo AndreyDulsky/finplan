@@ -1149,15 +1149,18 @@ export default class OrderGanttPlanView extends JetView{
     };
     gantt.config.columns = [
       {name: "text", tree: true, width: 320, resize: true},
-      {name: "start_date", width: 100, align: "center", resize: true,
-        template: function(task) {
-          return formatDateTime(task.start_date);
-        },
-      },
-      {name: "duration", label:"Duration", resize: true, align: "center",
-        template: function(task) {
-          return formatter.format(task.duration);
-        }, width: 70},
+      // {name: "start_date", width: 100, align: "center", resize: true,
+      //   template: function(task) {
+      //     return formatDateTime(task.start_date);
+      //   },
+      // },
+      //{name: "status_carpenter", width: 44},
+      //{name: "status_cut", width: 44},
+
+      // {name: "duration", label:"Duration", resize: true, align: "center",
+      //   template: function(task) {
+      //     return formatter.format(task.duration);
+      //   }, width: 70},
       //{name:"progress",   label:"Progress",   align:"center" },
       //{name: "add", width: 44}
     ];
@@ -1319,9 +1322,11 @@ export default class OrderGanttPlanView extends JetView{
     //let timeEnds = formatDateGant(item[times.end]);
     duration = parseFloat(item[times.time].replace(',','.'))*60;
     //3_edit
+
+
     return {id:item.product_order_id, text:item.product_order_id+' '+item.name+'('+item[times.status]+')', start_date: timeStart, order:10,
       progress:0,  open: true, color: color,  parent: parent, duration: duration,
-      render:"split",
+      //render:"split",
     };
     //type: "project", render:"split"
   }
@@ -1332,7 +1337,8 @@ export default class OrderGanttPlanView extends JetView{
     let timeStart = formatDateGant(item[times.start]);
     //let timeEnd = formatDateGant(item[times.end]);
     let progress = 0;
-    let name = times.name;
+    let status = 'Ст:'+item['status_carpenter']+' Кр:'+ item['status_cut']+' Шв:'+item['status_sewing']+' Об:'+item['status_upholstery'];
+    let name = times.name + ' ('+status+')';
 
     // if (typeof(times.plan) != "undefined" && times.plan !== null) {
     //   let timesPlan = this.getFieldsTime(times.plan);
@@ -1360,7 +1366,7 @@ export default class OrderGanttPlanView extends JetView{
 
     let start = formatDateGant(item[times.start]);
     //let end = formatDateGant(item[times.end]);
-    name = times.name;
+    name = times.name + ' ('+status+')';
 
 
 

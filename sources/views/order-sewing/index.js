@@ -329,7 +329,7 @@ export default class OrderSewingView extends JetView{
         {
           view:"treetable",
           css:"webix_header_border webix_data_border my_style",
-          leftSplit:2,
+          leftSplit:8,
           //rightSplit:2,
           select: "row",
           resizeColumn: { headerOnly:true },
@@ -364,23 +364,10 @@ export default class OrderSewingView extends JetView{
 
 
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
-            {
-              id:"date", header:[ "# заказа", { content:"textFilter" },"" ], width: 180,
-              batch:2,
-              template:function(obj, common){
 
-                if (obj.$level == 1) return  common.folder(obj, common)+'<div style="font-weight:700;" >'+formaHour(obj.value)+'</div>';
-                return obj.A+'- '+obj.I;
-              },
-              //format:formatDateHour,
-              "css": {"color": "black", "text-align": "left"},
-              //"sort" : "date"
-            },
             //print
             //{ id:"plan", header:"План", width:60 , batch:10, editor:"text"},
-            { id:"fact", header:"Факт н.", width:100 , batch:2, editor:"text"},
-            { id:"fact1", header:"Факт к.", width:100 , batch:2, editor:"text"},
-            { id:"comment", header:"Коментарий", width:250, batch:2, editor:"text"},
+
 
             // { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:70, batch:2, editor:"select",
             //   options:[{"id": 1, "value": "1"}, {"id": 3, "value": "3"}, {"id": 4, "value": "4"},
@@ -419,26 +406,6 @@ export default class OrderSewingView extends JetView{
               }
 
             },
-            { id:"AA", header:[ "К.об.план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:80,
-              "css": {"text-align": "right",  "font-weight": 500}
-
-            },
-            { id:"CH", header:[ "К.шв.план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:80, editor:"text",
-              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
-            },
-            { id:"G",
-              width:90,
-              header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
-              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text",  batch:4
-              //footer: {content: "summColumn", css: {"text-align": "right"}}
-
-            },
-            { id:"CI", header:[ "К.кр.план", { content:"textFilter" }, { content:"totalColumn" } ],
-              width:80, editor:"text",
-              "css": {"text-align": "right",  "font-weight": 500}, batch:8,
-            },
             { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:40, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
@@ -469,7 +436,6 @@ export default class OrderSewingView extends JetView{
                 return  (obj.BW === null) ? "" : obj.BW;
               }
             },
-
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
               template: function(obj) {
@@ -480,6 +446,45 @@ export default class OrderSewingView extends JetView{
                 return  (obj.BA === null) ? "" : obj.BA;
               }
             },
+            {
+              id:"date", header:[ "# заказа", { content:"textFilter" },"" ], width: 180,
+              batch:2,
+              template:function(obj, common){
+
+                if (obj.$level == 1) return  common.folder(obj, common)+'<div style="font-weight:700;" >'+formaHour(obj.value)+'</div>';
+                return obj.A+'- '+obj.I;
+              },
+              //format:formatDateHour,
+              "css": {"color": "black", "text-align": "left"},
+              //"sort" : "date"
+            },
+            { id:"fact", header:"Факт н.", width:100 , batch:2, editor:"text"},
+            { id:"fact1", header:"Факт к.", width:100 , batch:2, editor:"text"},
+            { id:"comment", header:"Коментарий", width:250, batch:2, editor:"text"},
+
+
+
+            { id:"AA", header:[ "К.об.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80,
+              "css": {"text-align": "right",  "font-weight": 500}
+
+            },
+            { id:"CH", header:[ "К.шв.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80, editor:"text",
+              "css": {"text-align": "right",  "font-weight": 500}, batch:1,
+            },
+            { id:"G",
+              width:90,
+              header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" }],
+              "css": {"color": "black", "text-align": "right",  "font-weight": 500}, editor:"text",  batch:4
+              //footer: {content: "summColumn", css: {"text-align": "right"}}
+
+            },
+            { id:"CI", header:[ "К.кр.план", { content:"textFilter" }, { content:"totalColumn" } ],
+              width:80, editor:"text",
+              "css": {"text-align": "right",  "font-weight": 500}, batch:8,
+            },
+
 
             {
               id:"date_cut_plan",
