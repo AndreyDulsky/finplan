@@ -241,7 +241,8 @@ export default class OrderSewingView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
-            // { view:"icon", icon: 'mdi mdi-clear', autowidth:true, click: () =>  this.doClickClearPlan()},
+            { view:"icon", icon: 'mdi mdi-account-reactivate', autowidth:true, click: () =>  this.doClickSetSewingPlan()},
+            { view:"icon", icon: 'mdi mdi-account-supervisor-circle-outline', autowidth:true, click: () =>  this.doClickSetUpholsteryPlan()},
             { view:"icon", icon: 'mdi mdi-calculator', autowidth:true, click: () =>  this.doClickCalculator()},
             { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
             { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
@@ -1712,6 +1713,57 @@ export default class OrderSewingView extends JetView{
     this.restApi.getLoad(tableUrl).then(function(data){
       table.enable();
       table.hideProgress();
+
+    });
+  }
+
+  doClickSetSewingPlan() {
+    let table = this.$$("sewing-table");
+    let format = webix.Date.dateToStr("%Y-%m-%d");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+    this.restApi = this.app.config.apiRest;
+    let scope =this;
+
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
+    let tableUrl = this.restApi.getUrl('get',"accounting/order/set-order-sewing-after-cut", {
+      'dateFrom' : dateFromValue,
+      'dateTo' : dateToValue
+    });
+    this.restApi.getLoad(tableUrl).then(function(data){
+      scope.doRefresh();
+      table.enable();
+      table.hideProgress();
+
+    });
+  }
+
+  doClickSetUpholsteryPlan() {
+    let table = this.$$("sewing-table");
+    let format = webix.Date.dateToStr("%Y-%m-%d");
+    let dateFromValue = format(this.$$("dateFrom").getValue());
+    let dateToValue = format(this.$$("dateTo").getValue());
+    this.restApi = this.app.config.apiRest;
+    let scope =this;
+
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
+    let tableUrl = this.restApi.getUrl('get',"accounting/order/set-order-upholstery-after-sewing", {
+      'dateFrom' : dateFromValue,
+      'dateTo' : dateToValue
+    });
+    this.restApi.getLoad(tableUrl).then(function(data){
+      scope.doRefresh();
+      table.enable();
+      table.hideProgress();
+
 
     });
   }
