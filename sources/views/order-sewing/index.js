@@ -640,7 +640,19 @@ export default class OrderSewingView extends JetView{
                 return formatDateTime(parserDateTime(obj.date_upholstery_plan_end));
               }
             },
-
+            {
+              id:"time_upholstery_start",
+              header:[ "Дата об.факт старт.", { content:"selectFilter" }, "" ],
+              width:140,
+              editor:"date",
+              //format:webix.Date.dateToStr("%d.%m.%y"),
+              batch:4,
+              "css": {"text-align": "center", "color":"green", "font-weight": 500},
+              hidden: false,
+              template: function(obj) {
+                return formatDateTime(parserDateTime(obj.time_upholstery_start));
+              }
+            },
             {
               id:"time_upholstery_end",
               header:[ "Дата об.факт окон.", { content:"selectFilter" }, "" ],
