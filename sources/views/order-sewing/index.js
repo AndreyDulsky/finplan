@@ -330,7 +330,7 @@ export default class OrderSewingView extends JetView{
         {
           view:"treetable",
           css:"webix_header_border webix_data_border my_style",
-          leftSplit:8,
+          leftSplit:9,
           //rightSplit:2,
           select: "row",
           resizeColumn: { headerOnly:true },
@@ -362,7 +362,8 @@ export default class OrderSewingView extends JetView{
               "css": {"color": "black", "text-align": "right", "font-weight": 500},
               //"sort" : "date"
             },
-
+            { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 ,  editor:"text"},
+            { id:"H", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, editor:"text" },
 
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200, editor:"text" },
 
@@ -375,7 +376,7 @@ export default class OrderSewingView extends JetView{
             //     {"id": 5, "value": "5"}, {"id": 6, "value": "6"}
             //   ] },
             // { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
-            // { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 ,  editor:"text"},
+
             // { id:"H", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:70,  editor:"text" },
             // { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, editor:"text", batch:2  },
             // { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:150, editor:"text", batch:2 },
@@ -1092,6 +1093,22 @@ export default class OrderSewingView extends JetView{
                 }
 
 
+              }
+
+              if (item.date_client) {
+                let formatDay =  webix.Date.dateToStr("%d");
+                let formatM =  webix.Date.dateToStr("%m");
+                let parseAE = webix.Date.strToDate("%d.%m.%y");
+                let dateAE = parseAE(item.AE);
+                let dayClient =formatDay(item.date_client);
+                let dayObiv =formatDay(dateAE);
+                let monthClient =formatM(item.date_client);
+                let monthObiv =formatM(dateAE);
+
+                let between = dayClient - dayObiv;
+                if (between < 3 && (monthClient == monthObiv)) {
+                  item.$css = "highlight-bold";
+                }
               }
               // if (item.B == 3)
               //   item.$css = "highlight-blue";

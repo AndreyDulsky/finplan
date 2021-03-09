@@ -79,6 +79,11 @@
     cursor: pointer;
 }
 
+.highlight-bold {
+
+    font-weight: 800;
+}
+
 .webix_column div[aria-expanded] {
     background: #F4F5F9;
 }
