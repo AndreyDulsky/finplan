@@ -145,6 +145,9 @@ let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
 var parserDate = webix.Date.strToDate("%Y-%m-%d");
 var parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
+
+let parserDateCloth = webix.Date.strToDate("%d.%m.%y");
+
 export default class StartView extends JetView{
 
 
@@ -282,7 +285,7 @@ export default class StartView extends JetView{
           view:"treetable",
 
           css:"webix_header_border webix_data_border",
-          leftSplit:2,
+          leftSplit:3,
           //rightSplit:2,
           select: "row",
           resizeColumn: { headerOnly:true },
@@ -322,7 +325,7 @@ export default class StartView extends JetView{
             {
               id:"AE", header:"Дата", width:120, editor: 'date',
               template:function(obj, common) {
-                return formatDateTime(parserDateTime(obj.AE));
+                return formatDateTime(obj.date_obivka);
               }
 
             },
@@ -342,8 +345,9 @@ export default class StartView extends JetView{
             },
 
 
-            { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
-            { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, editor:"text"},
+            { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70,  editor:"text" },
+            { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 ,  editor:"text"},
+            { id:"H", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:70,  editor:"text" },
 
 
             { id:"AA", header:[ "К.об.план", { content:"textFilter" }, { content:"totalColumn" } ],
@@ -466,7 +470,7 @@ export default class StartView extends JetView{
               width:70,
               "css": {"text-align": "center"},
               batch:1, editor:"text" },
-            { id:"H", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, batch:2, editor:"text" },
+
 
 
 
@@ -639,6 +643,38 @@ export default class StartView extends JetView{
 
 
             $init:function(item) {
+              if (item.M == 'заказано') {
+                item.$css = "highlight";
+
+                if (item.K) {
+                  let formatYear = webix.Date.dateToStr("%y");
+                  let parseAE = webix.Date.strToDate("%d.%m.%y");
+                  let year = formatYear(new Date());
+                  let dateCloth = parserDateCloth(item.K + '.' + year);
+                  let dateAE = parseAE(item.AE);
+                  if (dateCloth > dateAE) {
+                    item.$css = "highlight-red";
+                  }
+                }
+              }
+
+
+
+              if (item.date_client) {
+                let formatDay =  webix.Date.dateToStr("%d");
+                let formatM =  webix.Date.dateToStr("%m");
+                let parseAE = webix.Date.strToDate("%d.%m.%y");
+                let dateAE = parseAE(item.AE);
+                let dayClient =formatDay(item.date_client);
+                let dayObiv =formatDay(dateAE);
+                let monthClient =formatM(item.date_client);
+                let monthObiv =formatM(dateAE);
+
+                let between = dayClient - dayObiv;
+                if (between < 3 && (monthClient == monthObiv)) {
+                  item.$css = "highlight-bold";
+                }
+              }
 
             }
           },
