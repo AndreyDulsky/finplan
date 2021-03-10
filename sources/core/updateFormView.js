@@ -54,10 +54,13 @@ export default class UpdateFormView extends JetView {
   }
 
   showForm(table) {
+
     let scope = this;
     let state  = this.state;
     let api = this.apiRest;
     let record = table.getSelectedItem();
+    if (!record && table.getFirstId()) record = table.getItem(table.getFirstId());
+
     let isUpdate = (record);
     state.tableId = table.config.urlEdit;
     state.table = table;
@@ -85,6 +88,7 @@ export default class UpdateFormView extends JetView {
     state.formData = result;
     //set elements form
     scope.renderForm(elementsCount);
+
 
     //loading
     state.formEdit.clear();
@@ -129,6 +133,7 @@ export default class UpdateFormView extends JetView {
         state.formConfig,
         state.formEdit
       );
+
       //this.attachFormParamsElements();
 
       //atach events for first render
@@ -159,6 +164,7 @@ export default class UpdateFormView extends JetView {
         loadedCount++;
         list.sync(dataCollection);
         if (loadedCount === collectionsCount) {
+
           state.formEdit.setValues(scope.getRecord());
           state.formEdit.enable();
           state.formEdit.hideProgress();
