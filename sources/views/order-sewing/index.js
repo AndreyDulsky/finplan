@@ -427,6 +427,13 @@ export default class OrderSewingView extends JetView{
             },
             { id:"CF", header:[ "Уп.", { content:"selectFilter" }, "" ], width:40, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 12)
+                  return {"text-align": "center", "background-color": '#C4F5F9'};
+              },
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.CF == 1) {
@@ -437,6 +444,13 @@ export default class OrderSewingView extends JetView{
             },
             { id:"W", header:[ "Об.", { content:"selectFilter" }, "" ], width:40, editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 500},
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 4)
+                  return {"text-align": "center", "background-color": '#ddFFdd'};
+              },
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.W == 1) {
@@ -447,6 +461,13 @@ export default class OrderSewingView extends JetView{
             },
             { id:"BP", header:[ "Шв.", { content:"selectFilter" }, "" ], width:40,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300, },
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 1)
+                  return {"text-align": "center", "background-color": '#C4F5F9'};
+              },
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BP == 1) {
@@ -457,6 +478,13 @@ export default class OrderSewingView extends JetView{
             },
             { id:"BW", header:[ "Крой", { content:"selectFilter" }, "" ], width:40,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300, },
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 8)
+                  return {"text-align": "center", "background-color": '#fff5e6'};
+              },
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BW == 1) {
@@ -467,6 +495,13 @@ export default class OrderSewingView extends JetView{
             },
             { id:"BA", header:[ "Ст.", { content:"selectFilter" }, "" ], width:50,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300},
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 10)
+                  return {"text-align": "center", "background-color": '#ffe4dd'};
+              },
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.BA == 1) {
@@ -477,6 +512,13 @@ export default class OrderSewingView extends JetView{
             },
             { id:"status_sawcut", header:[ "Расп.", { content:"selectFilter" },""], width:50,  editor:"text",
               "css": {"color": "green", "text-align": "center",  "font-weight": 300},
+              cssFormat: function(value, config) {
+                let comboBatch = scope.$$('batch-plan');
+                let comboBathValue = comboBatch.getValue();
+
+                if (comboBathValue == 6)
+                  return {"text-align": "center", "background-color": '#C4F5F9'};
+              },
               template: function(obj) {
                 if (obj.$group) return "";
                 if (obj.status_sawcut == 1) {
@@ -539,7 +581,7 @@ export default class OrderSewingView extends JetView{
                 let comboBathValue = comboBatch.getValue();
 
                 if (comboBathValue == 8)
-                  return {"text-align": "center", "background-color": '#ddFFdd'};
+                  return {"text-align": "center", "background-color": '#fff5e6'};
               },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_cut_plan));
@@ -573,7 +615,7 @@ export default class OrderSewingView extends JetView{
                 let comboBathValue = comboBatch.getValue();
 
                 if (comboBathValue == 1)
-                  return {"text-align": "center", "background-color": '#ddFFdd'};
+                  return {"text-align": "center", "background-color": '#C4F5F9'};
               },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_sewing_plan));
@@ -607,7 +649,7 @@ export default class OrderSewingView extends JetView{
                 let comboBathValue = comboBatch.getValue();
 
                 if (comboBathValue == 10)
-                  return {"text-align": "center", "background-color": '#ddFFdd'};
+                  return {"text-align": "center", "background-color": '#ffe4dd'};
               },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_carpenter_plan));
@@ -634,7 +676,7 @@ export default class OrderSewingView extends JetView{
                 let comboBathValue = comboBatch.getValue();
 
                 if (comboBathValue == 6)
-                  return {"text-align": "center", "background-color": '#ddFFdd'};
+                  return {"text-align": "center", "background-color": '#C4F5F9'};
               },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_sawcut_plan));
@@ -1086,7 +1128,7 @@ export default class OrderSewingView extends JetView{
                 let comboBathValue = comboBatch.getValue();
 
                 if (comboBathValue == 12)
-                  return {"text-align": "center", "background-color": '#ddFFdd'};
+                  return {"text-align": "center", "background-color": '#C4F5F9'};
               },
               template: function(obj) {
                 return formatDateTime(parserDateTime(obj.date_packaging_plan));
