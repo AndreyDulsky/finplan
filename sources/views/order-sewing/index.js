@@ -1,6 +1,8 @@
 import {JetView} from "webix-jet";
 import UpdateFormModelView from "core/updateFormView";
 import ProductWorkSalaryView from "views/product-work-salary/index";
+import PowerFormView from "views/order-sewing/power-form";
+
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -250,6 +252,7 @@ export default class OrderSewingView extends JetView{
               click: function() { scope.doRefresh() }
 
             },
+            { view:"icon", icon: 'mdi mdi-power-plug', autowidth:true, click: () =>  this.doClickGetPower()},
             { view:"icon", icon: 'mdi mdi-account-reactivate', autowidth:true, click: () =>  this.doClickSetSewingPlan()},
             { view:"icon", icon: 'mdi mdi-account-supervisor-circle-outline', autowidth:true, click: () =>  this.doClickSetUpholsteryPlan()},
             { view:"icon", icon: 'mdi mdi-calculator', autowidth:true, click: () =>  this.doClickCalculator()},
@@ -1995,5 +1998,43 @@ export default class OrderSewingView extends JetView{
 
 
     });
+  }
+
+  doClickGetPower() {
+    this.powerForm = this.ui(PowerFormView);
+    this.powerForm.showWindow()
+    let winTable;
+    winTable = {
+      localId: "winTable",
+      view: "window",
+      scope: this,
+      height:500,
+      width:600,
+      position:"center",
+      head:{
+        cols:[
+          {template:"Мощность в часах", type:"header", borderless:true},
+          {view:"icon", icon:"mdi mdi-fullscreen", tooltip:"enable fullscreen mode", click: function(){
+            if(winTable.config.fullscreen){
+              webix.fullscreen.exit();
+              this.define({icon:"mdi mdi-fullscreen", tooltip:"Enable fullscreen mode"});
+            }
+            else{
+              webix.fullscreen.set(winTable);
+              this.define({icon:"mdi mdi-fullscreen-exit", tooltip:"Disable fullscreen mode"});
+            }
+            this.refresh();
+          }},
+          {view:"icon", icon:"wxi-close", tooltip:"Close window", click: function(){
+            winTable.close();
+          }}
+        ]
+      },
+      close: true,
+      modal: true,
+      body: PowerFormView
+    };
+    //this.winTablePower =  this.ui(winTable);
+    //this.winTablePower.show();
   }
 }
