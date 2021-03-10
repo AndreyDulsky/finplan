@@ -39,7 +39,9 @@ webix.GroupMethods.medianEmpty = function(prop, data){
 };
 
 export default class PowerFormView extends JetView{
+
   config(){
+
     let scope = this;
     return {
       view: 'window',
@@ -96,7 +98,7 @@ export default class PowerFormView extends JetView{
                   // { id:"power", header:"Мощность, ч", width: 150}
                 ],
                 //url: this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/visits?dateFrom=2021-03-10&dateTo=2021-03-11", {'sort':'name'}),//"api->accounting/contragents",
-                save: "api->accounting/employees",
+                //save: "api->accounting/employees",
                 scheme: {
                   $init:function(obj){ obj.index = this.count()+1; },
                   // $group: {
@@ -149,10 +151,11 @@ export default class PowerFormView extends JetView{
 
     let table = this.$$("power-table");
     this.table = table;
-    let dateFromValue = '2021-03-10';
-    let dateToValue = '2021-03-10';
+
+    let dateFromValue = this._parent.dateFrom;
+    let dateToValue = this._parent.dateFrom;
     let scope = this.table;
-    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/visits",
+    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/powers",
       {"dateFrom": dateFromValue, "dateTo": dateToValue, 'expand' : 'department,employee','filter': {'status' : 1} });
 
     this.changeColumns(dateFromValue, dateToValue);
