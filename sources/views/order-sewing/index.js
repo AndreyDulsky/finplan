@@ -1388,16 +1388,16 @@ export default class OrderSewingView extends JetView{
 
     table.attachEvent("onBeforeEditStop", function(state, editor, ignoreUpdate){
       let record = {};
-      if(editor.column === "date_sewing_plan"){
-         record = table.getItem(editor.row);
-         record['date_sewing'] = state.value;
-         table.refresh(editor.row);
-      }
-      if(editor.column === "date_sawcut_plan"){
-        record = table.getItem(editor.row);
-        record['date_sawcut'] = state.value;
-        table.refresh(editor.row);
-      }
+      // if(editor.column === "date_sewing_plan"){
+      //    record = table.getItem(editor.row);
+      //    record['date_sewing'] = state.value;
+      //    table.refresh(editor.row);
+      // }
+      // if(editor.column === "date_sawcut_plan"){
+      //   record = table.getItem(editor.row);
+      //   record['date_sawcut'] = state.value;
+      //   table.refresh(editor.row);
+      // }
 
     });
 
