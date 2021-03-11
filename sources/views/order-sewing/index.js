@@ -1418,6 +1418,7 @@ export default class OrderSewingView extends JetView{
         table.clearAll();
         table.parse(data.json().items);
         scope.doTableGroup();
+        table.openAll();
         // timeline.clearAll();
         // timeline.parse(data.json().items);
         // timelinePlan.clearAll();
@@ -1446,6 +1447,7 @@ export default class OrderSewingView extends JetView{
         table.clearAll();
         table.parse(data.json().items);
         scope.doTableGroup();
+        table.openAll();
         // timeline.clearAll();
         // timeline.parse(data.json().items);
         // timelinePlan.clearAll();
@@ -1530,6 +1532,7 @@ export default class OrderSewingView extends JetView{
       table.parse(data.json().items);
       scope.doTableGroup();
       table.enable();
+      table.openAll();
 
     });
 
@@ -1567,6 +1570,7 @@ export default class OrderSewingView extends JetView{
       table.parse(data.json().items);
       scope.doTableGroup();
       table.enable();
+      table.openAll();
     });
   }
 
