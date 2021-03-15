@@ -137,7 +137,7 @@ export default class EmployeeMonthHoursView extends JetView{
                 },
                 ready:function() {
 
-                  this.open();
+
                 },
                 on:{
                   onBeforeLoad:function() {
@@ -160,14 +160,18 @@ export default class EmployeeMonthHoursView extends JetView{
   }
 
   init(view){
-    let table = this.$$("card-employee-table");
+    let table = this.$$("calendar-employee-table");
     let scope = this;
   }
 
   showWindow(view) {
+    let table = this.$$("calendar-employee-table");
     let item = view.getSelectedItem();
     this.dateDocument = item.date_document;
+
+    //table.open(item.date_document);
     this.getRoot().show();
+    debugger;
   }
 
   doClickOpenAll() {

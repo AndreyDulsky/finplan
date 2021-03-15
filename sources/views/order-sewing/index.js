@@ -1152,6 +1152,10 @@ export default class OrderSewingView extends JetView{
               }
             },
 
+            { id:"desc_packaging", header:[ "Комментарий упак.", { content:"selectFilter" },""], width:250,  editor:"popup" , batch:12},
+            { id:"loss_packaging", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:12, editor:"text" },
+            { id:"time_loss_packaging", header:[ "Время потерь, мин", { content:"selectFilter" },""], width:110, batch:12, editor:"text" },
+
             { id:"AU", header:"Паралон царги", width:115 , batch:3, editor:"text"},
             { id:"AV", header:"Статус", width:60, batch:3 , editor:"text"},
             { id:"AW", header:"Дата", width:90, batch:3 , editor:"text"},
