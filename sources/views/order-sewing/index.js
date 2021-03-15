@@ -1034,7 +1034,7 @@ export default class OrderSewingView extends JetView{
             //{ id:"Q", header:"Q", width:100 },
             //{ id:"R", header:"R", width:100 },
             //{ id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:70, batch:2, editor:"text" },
-            //{ id:"T", header:"T", width:100 },
+
             // { id:"U", header:"U", width:100 },
 
 
@@ -1166,6 +1166,7 @@ export default class OrderSewingView extends JetView{
             //{ id:"BX", header:"Дата", width:90, batch:1, editor:"text" },
             //{ id:"CD", header:"Упаковка", width:80, batch:3, editor:"text" },
             { id:"CE", header:"Дата", width:90, batch:3, editor:"text" },
+            { id:"T", header:"Описание", width:100, editor:"popup" },
 
 
 

@@ -41,14 +41,10 @@ export default class EmployeeMonthHoursView extends JetView{
                 cols: [
                   {
                     "view": "label",
-                    "label": "Иванов Иван",
-                    "width": 150
+                    "label": scope.getParam('name'),
+                    "width": 250
                   },
-                  {
-                    "view": "label",
-                    "label": "Ведомость по часам",
-                    "width": 150
-                  },
+
 
                   {},
                   {
@@ -140,7 +136,8 @@ export default class EmployeeMonthHoursView extends JetView{
                   $sort:{ by:"date_work", dir:"asc", as:"date" },
                 },
                 ready:function() {
-                  //this.openAll();
+
+                  this.open();
                 },
                 on:{
                   onBeforeLoad:function() {
@@ -167,7 +164,9 @@ export default class EmployeeMonthHoursView extends JetView{
     let scope = this;
   }
 
-  showWindow() {
+  showWindow(view) {
+    let item = view.getSelectedItem();
+    this.dateDocument = item.date_document;
     this.getRoot().show();
   }
 

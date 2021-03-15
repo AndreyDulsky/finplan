@@ -34,9 +34,17 @@ export default class EmployeeSalaryView extends JetView{
               paddingY:2,
               cols: [
                 {
+                  view:"icon",
+                  icon:"mdi mdi-keyboard-backspace",
+                  width: 30,
+                  click: function() {
+                    scope.app.show("/top/employee-salary");
+                  }
+                },
+                {
                   "view": "label",
-                  "label": "Карта сотрудника",
-                  "width": 150
+                  "label": scope.getParam('name'),
+                  "width": 250
                 },
 
                 {},

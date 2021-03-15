@@ -144,8 +144,8 @@ export default class EmployeeSalaryView extends JetView{
 
                   } else {
                     //this.$scope.cashEdit.showForm(this);
-
-                    scope.app.show("/top/employee-details?id="+id.row)
+                    let item = this.getItem(id.row);
+                    scope.app.show("/top/employee-details?id="+id.row+'&name='+item.name);
                   }
                 },
                 onBeforeLoad:function(){
