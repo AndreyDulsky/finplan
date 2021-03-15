@@ -279,7 +279,7 @@ export default class OrderSewingView extends JetView{
             },
             { view:"select",
               localId: "batch-plan",
-              value:1, labelWidth:100, options:[
+              value:4, labelWidth:100, options:[
               { id:8, value:"Крой" },
               { id:1, value:"Швейка" },
               { id:4, value:"Обивка" },
@@ -297,7 +297,7 @@ export default class OrderSewingView extends JetView{
             },
             { view:"select",
               localId: "toggle-plan",
-                value:1, labelWidth:100, options:[
+                value:4, labelWidth:100, options:[
                 { id:4, value:"По дням обивки план" },
                 { id:9, value:"По часам крой план" },
                 //{ id:1, value:"По дате шв.факт(групировка)/Дата обивки (фильтер)" },
