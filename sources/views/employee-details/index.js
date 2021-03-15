@@ -1,5 +1,5 @@
 import {JetView} from "webix-jet";
-import UpdateFormView from "core/updateFormView";
+import EmployeeMonthHoursView from "views/employee-details/employee-month-hours";
 //import {departments} from "models/department/departments";
 import {typeSalary} from "models/department/type-salary";
 import "components/comboClose";
@@ -120,7 +120,8 @@ export default class EmployeeSalaryView extends JetView{
                 { id:"paid_out", header:"Выплачено", width: 100, sort: "string" },
                 { id:"paid_out_month", header:"Выпл-но за месяц", width: 100, sort: "string" },
                 { id:"debt_prev_month", header:"Долг с прош. месяца", width: 100, sort: "string" },
-                { id:"remainder", header:"Остаток", width: 80, sort: "string" }
+                { id:"remainder", header:"Остаток", width: 80, sort: "string" },
+                { id: "action-edit", "header": "", "width": 50, "template": "<i class='mdi mdi-eye'></i>"}
               ],
               url: this.app.config.apiRest.getUrl('get',"accounting/document-salary-accruals",  {'filter':'{"employee_id":"'+scope.getParam('id')+'"}', 'per-page':'-1'}),//"api->accounting/contragents",
               save: "api->accounting/employees",
@@ -141,7 +142,9 @@ export default class EmployeeSalaryView extends JetView{
                 //this.openAll();
               },
               on:{
-
+                onItemDblClick:function(id, e, trg) {
+                  this.$scope.showInfoMonthHours.showWindow(this);
+                },
 
                 onBeforeLoad:function() {
                   this.showOverlay("Loading...");
@@ -154,96 +157,7 @@ export default class EmployeeSalaryView extends JetView{
                 },
               }
             },
-            {
-              view: "treetable",
-              localId: "calendar-employee-table",
-              urlEdit: 'employee',
-              //autoConfig: true,
-              css:"webix_header_border webix_data_border",
-              leftSplit:1,
-              math: true,
-              select: true,
-              editable:true,
-              editaction: "dblclick",
-              resizeColumn: { headerOnly:true },
-              columns:[
-                { id:"date_work", header:[ "Дата",  "" ], width: 120, sort: "string",
-                  template:function(obj, common) {
-                    if (obj.$group) return common.treetable(obj, common) + formatMonthYear(obj.value);
-                    return common.treetable(obj, common)+formatDate(obj.date_work);
-                  },
-                },
 
-                { id:"day_week", header:[ "День нед.",  "" ], width: 70, sort: "string", hidden: false,
-                  cssFormat: function(value, obj) {
-
-                    if (obj.date_type == 0) {
-                      return {'background-color' : '#eee'};
-                    }
-                  },
-                  template: function(obj) {
-                    return formatDateDayWeek(obj.date_work);
-                  }
-                },
-                { id:"int_start", header:[ "Нач",  "" ], width: 60, sort: "string",
-                  css: {'text-align' : 'center'},
-                  template: function(obj) {
-                    if (obj.$group) return '';
-                    return (obj.int_start == 0) ? '' : obj.int_start;
-                  }
-                },
-                { id:"int_end", header:[ "Оконч.",  "" ], width: 60, sort: "string",
-                  css: {'text-align' : 'center'},
-                  template: function(obj) {
-                    if (obj.$group) return '';
-                    return (obj.int_end == 0) ? '' : obj.int_end;
-                  }
-                },
-                { id:"qty_hours", header:[ "К-во часов.",  "" ], width: 100, sort: "string",
-                  css: {'text-align' : 'center'},
-                  template: function(obj) {
-                    if (obj.$group) return '';
-                    if (obj.int_start == 0) return '';
-                    if (obj.int_end == 0) return '';
-                    return  obj.int_end- obj.int_start -1;
-                  }
-                },
-                { id:"pay_prepaid", header:[ "Аванс",  "" ], width: 100, sort: "string" },
-                { id:"pay", header:[ "Оплата",  "" ], width: 100, sort: "string" },
-                { id:"salary_day", header:[ "З.п/ч",  "" ], width: 100, sort: "string" },
-                { id:"description", header:[ "Описание",  "" ], width: 100, sort: "string" },
-                { id:"signature", header:[ "Подпись",  "" ], width: 100, sort: "string" },
-              ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/employee-time-works",  {'filter':'{"employee_id":'+scope.getParam('id')+'}', 'per-page':'-1'}),
-              save: "api->accounting/employee-time-works",
-
-              scheme: {
-                $group: {
-                  by: function(obj) {
-                    return formatMonthYear(obj.date_work);
-                  },
-                  map: {
-                    'value' : ['date_work']
-                  }
-                },
-
-                $sort:{ by:"date_work", dir:"asc", as:"date" },
-              },
-              ready:function() {
-                //this.openAll();
-              },
-              on:{
-                onBeforeLoad:function() {
-                  this.showOverlay("Loading...");
-                },
-                onAfterLoad:function() {
-                  if (!this.count())
-                    this.showOverlay("Sorry, there is no data");
-                  else
-                    this.hideOverlay();
-                },
-              }
-            }
           ]
         },
 
@@ -284,7 +198,7 @@ export default class EmployeeSalaryView extends JetView{
 
     });
 
-    this.cashEdit = this.ui(UpdateFormView);
+    this.showInfoMonthHours = this.ui(EmployeeMonthHoursView);
   }
 
   doAddClick() {

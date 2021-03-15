@@ -544,7 +544,7 @@ export default class OrderSewingView extends JetView{
             },
             { id:"fact", header:"Факт н.", width:100 , batch:2, editor:"text"},
             { id:"fact1", header:"Факт к.", width:100 , batch:2, editor:"text"},
-            { id:"comment", header:"Коментарий", width:250, batch:2, editor:"text"},
+            { id:"comment", header:"Комментарий", width:250, batch:2, editor:"text"},
 
 
 
@@ -925,7 +925,7 @@ export default class OrderSewingView extends JetView{
             },
             { id:"BV", header:[ "ФИО крой.", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:8, editor:"text"},
 
-            { id:"desc_cut", header:[ "Причина", { content:"selectFilter" },""], width:150,  editor:"popup" , batch:8},
+            { id:"desc_cut", header:[ "Комментарий крой", { content:"selectFilter" },""], width:250,  editor:"popup" , batch:8},
             //{ id:"W", header:"Статус", width:100, batch:3 },
             //{ id:"AH", header:"Дата", width:100, batch:3 },
             { id:"loss_cut", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:8, editor:"text" },
@@ -1007,7 +1007,7 @@ export default class OrderSewingView extends JetView{
             },
             { id:"AZ", header:[ "ФИО столярка", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:10, editor:"text"},
 
-            { id:"desc_carpenter", header:[ "Причина", { content:"selectFilter" },""], width:150,  editor:"popup" , batch:10},
+            { id:"desc_carpenter", header:[ "Комментарий столярка", { content:"selectFilter" },""], width:250,  editor:"popup" , batch:10},
             //{ id:"W", header:"Статус", width:100, batch:3 },
             //{ id:"AH", header:"Дата", width:100, batch:3 },
             { id:"loss_carpenter", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:10, editor:"text" },
@@ -1050,7 +1050,7 @@ export default class OrderSewingView extends JetView{
 
             //{ id:"BV", header:[ "Фио Крой", { content:"selectFilter" }, { content:"mySummColumn" } ], width:115 , batch:1, editor:"text"},
 
-            { id:"desc_sewing", header:[ "Причина", { content:"selectFilter" },""], width:150,  editor:"popup" , batch:1},
+            { id:"desc_sewing", header:[ "Комментарий швейка", { content:"selectFilter" },""], width:250,  editor:"popup" , batch:1},
             //{ id:"W", header:"Статус", width:100, batch:3 },
             //{ id:"AH", header:"Дата", width:100, batch:3 },
             { id:"loss_sewing", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:1, editor:"text" },
@@ -1112,7 +1112,7 @@ export default class OrderSewingView extends JetView{
                 return formatDateTime(parserDateTime(obj.time_sawcut_end));
               }
             },
-            { id:"desc_sawcut", header:[ "Причина", { content:"selectFilter" },""], width:150,  editor:"popup" , batch:6},
+            { id:"desc_sawcut", header:[ "Комментарий распил", { content:"selectFilter" },""], width:250,  editor:"popup" , batch:6},
             { id:"loss_sawcut", header:[ "Классификация потерь", { content:"selectFilter" },""], width:110, batch:6, editor:"text" },
             { id:"time_loss_sawcut", header:[ "Время потерь, мин", { content:"selectFilter" },""], width:110, batch:6, editor:"text" },
 
@@ -1865,6 +1865,7 @@ export default class OrderSewingView extends JetView{
     table.showColumnBatch(2);
     table.hideColumn('A');
     table.hideColumn('I');
+
     // table.config.columns.forEach((element, index) => {
     //   console.log(element.id);
     //   scope.toggleColumn(table, element.id);
@@ -1890,13 +1891,22 @@ export default class OrderSewingView extends JetView{
 
   doClickToExcel() {
     let table = this.$$("sewing-table");
-    table.showColumnBatch(2);
+    //table.showColumnBatch(2);
     table.hideColumn('A');
     table.hideColumn('I');
+    table.showColumn('fact');
+    table.showColumn('fact1');
+    table.showColumn('comment');
+
+
+
     webix.toExcel(table);
-    table.showColumnBatch(1);
+    //table.showColumnBatch(1);
     table.showColumn('A');
     table.showColumn('I');
+    table.hideColumn('fact');
+    table.hideColumn('fact1');
+    table.hideColumn('comment');
   }
 
   doClickCalculator() {
