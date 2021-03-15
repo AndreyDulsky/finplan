@@ -529,18 +529,18 @@ export default class OrderResultView extends JetView{
 
 
             //status upholstery rubber_carcas
-            { id:"AU", header:[ "ФИО пор.царг", { content:"selectFilter" }, "" ], width:110,  batch:1},
-            { id:"AV", header:[ "Статус пор.царг", { content:"selectFilter" }, "" ], width:50,  batch:1},
-            { id:"AW", header:[ "Дата пор.царг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+            { id:"AU", header:[ "ФИО пор.царг", { content:"selectFilter" }, "" ], width:110,  batch:1, editor:"text"},
+            { id:"AV", header:[ "Статус пор.царг", { content:"selectFilter" }, "" ], width:50,  batch:1, editor:"text"},
+            { id:"AW", header:[ "Дата пор.царг", { content:"selectFilter" }, "" ], width:100,  batch:1, editor:"text"},
             //status upholstery rubber_headboard
-            { id:"AP", header:[ "ФИО пор.изг", { content:"selectFilter" }, "" ], width:110,  batch:1},
-            { id:"AQ", header:[ "Статус пор.изг", { content:"selectFilter" }, "" ], width:50,  batch:1},
-            { id:"AR", header:[ "Дата пор.изг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+            { id:"AP", header:[ "ФИО пор.изг", { content:"selectFilter" }, "" ], width:110,  batch:1, editor:"text"},
+            { id:"AQ", header:[ "Статус пор.изг", { content:"selectFilter" }, "" ], width:50,  batch:1, editor:"text"},
+            { id:"AR", header:[ "Дата пор.изг", { content:"selectFilter" }, "" ], width:100,  batch:1, editor:"text"},
 
             //status upholstery upholstery_carcass
-            { id:"AK", header:[ "ФИО об.царг", { content:"selectFilter" }, "" ], width:110,  batch:1},
-            { id:"AL", header:[ "Статус об.царг", { content:"selectFilter" }, "" ], width:50,  batch:1},
-            { id:"AM", header:[ "Дата об.царг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+            { id:"AK", header:[ "ФИО об.царг", { content:"selectFilter" }, "" ], width:110,  batch:1, editor:"text"},
+            { id:"AL", header:[ "Статус об.царг", { content:"selectFilter" }, "" ], width:50,  batch:1, editor:"text"},
+            { id:"AM", header:[ "Дата об.царг", { content:"selectFilter" }, "" ], width:100,  batch:1, editor:"text"},
 
             //status upholstery upholstery_headboard
             //{ id:"Z", header:[ "ФИО об.изг", { content:"selectFilter" }, "" ], width:110,  batch:1

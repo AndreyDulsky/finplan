@@ -32,7 +32,7 @@ export default class DocumentSalaryAccrualView extends DocumentJetView{
         { id:"employee_id", header:[ "ID",  "" ], width: 30, sort: "string", hidden: true },
 
         { id:"is_piecework", header:[ "Тип",  "" ], width: 70, sort: "string", type:'select', collection: typeSalary },
-        { id:"rate", header:[ "Ставка.",  "" ], width: 80, sort: "string", editor:"text", format: webix.Number.format, "css": css },
+        { id:"rate", header:[ "Ставка",  "" ], width: 80, sort: "string", editor:"text", format: webix.Number.format, "css": css },
         { id:"rate_day", header:[ "Ставка за день",  "" ], width: 120, sort: "string",  format: webix.Number.format, "css": cssNumber
 
         },
