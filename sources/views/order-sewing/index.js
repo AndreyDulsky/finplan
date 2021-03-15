@@ -1899,9 +1899,12 @@ export default class OrderSewingView extends JetView{
     //table.showColumnBatch(2);
     //table.hideColumn('A');
     //table.hideColumn('I');
+
     table.showColumn('fact');
     table.showColumn('fact1');
     table.showColumn('comment');
+    table.showColumn('date');
+
 
 
 
@@ -1912,6 +1915,7 @@ export default class OrderSewingView extends JetView{
     table.hideColumn('fact');
     table.hideColumn('fact1');
     table.hideColumn('comment');
+    table.hideColumn('date');
   }
 
   doClickCalculator() {
