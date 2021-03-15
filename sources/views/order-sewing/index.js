@@ -1897,8 +1897,8 @@ export default class OrderSewingView extends JetView{
   doClickToExcel() {
     let table = this.$$("sewing-table");
     //table.showColumnBatch(2);
-    table.hideColumn('A');
-    table.hideColumn('I');
+    //table.hideColumn('A');
+    //table.hideColumn('I');
     table.showColumn('fact');
     table.showColumn('fact1');
     table.showColumn('comment');
@@ -1907,8 +1907,8 @@ export default class OrderSewingView extends JetView{
 
     webix.toExcel(table);
     //table.showColumnBatch(1);
-    table.showColumn('A');
-    table.showColumn('I');
+    //table.showColumn('A');
+    //table.showColumn('I');
     table.hideColumn('fact');
     table.hideColumn('fact1');
     table.hideColumn('comment');

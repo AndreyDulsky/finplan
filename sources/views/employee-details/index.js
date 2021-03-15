@@ -129,7 +129,7 @@ export default class EmployeeSalaryView extends JetView{
                 { id:"paid_out_month", header:"Выпл-но за месяц", width: 100, sort: "string" },
                 { id:"debt_prev_month", header:"Долг с прош. месяца", width: 100, sort: "string" },
                 { id:"remainder", header:"Остаток", width: 80, sort: "string" },
-                { id: "action-edit", "header": "", "width": 50, "template": "<i class='mdi mdi-eye'></i>"}
+                { id: "action-edit", "header": "", "width": 50, "template": "<i class='mdi mdi-eye hover'></i>"}
               ],
               url: this.app.config.apiRest.getUrl('get',"accounting/document-salary-accruals",  {'filter':'{"employee_id":"'+scope.getParam('id')+'"}', 'per-page':'-1'}),//"api->accounting/contragents",
               save: "api->accounting/employees",

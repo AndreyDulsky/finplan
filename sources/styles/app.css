@@ -113,6 +113,10 @@ div[column="2"] div[aria-level="2"] .subrowimage div {
     color: #1CA1C1;
     cursor: pointer;
 }
+i.mdi:hover{
+    color: #1CA1C1;
+    cursor: pointer;
+}
 
 .webix_form .webix_layout_line {
     margin-top: 0px;

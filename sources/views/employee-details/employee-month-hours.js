@@ -47,6 +47,8 @@ export default class EmployeeMonthHoursView extends JetView{
 
 
                   {},
+                  { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
+                  { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
                   {
                     view:"toggle",
                     type:"icon",
@@ -165,13 +167,19 @@ export default class EmployeeMonthHoursView extends JetView{
   }
 
   showWindow(view) {
+
     let table = this.$$("calendar-employee-table");
+    table.closeAll();
     let item = view.getSelectedItem();
     this.dateDocument = item.date_document;
+    let index = view.getIndexById(item.id);
+    let id = table.getIdByIndex(index);
 
-    //table.open(item.date_document);
+    table.open(id);
+
     this.getRoot().show();
-    debugger;
+    table.showItem(id);
+
   }
 
   doClickOpenAll() {
@@ -181,6 +189,18 @@ export default class EmployeeMonthHoursView extends JetView{
     } else {
       table.openAll();
     }
+  }
+
+  doClickPrint() {
+    let table = this.$$("calendar-employee-table");
+    webix.print(table, { fit:"data"});
+  }
+
+  doClickToExcel() {
+    let table = this.$$("calendar-employee-table");
+    webix.toExcel(table, {
+      plainOutput:true
+    });
   }
 
 }
