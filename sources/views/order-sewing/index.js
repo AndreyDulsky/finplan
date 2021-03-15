@@ -1166,7 +1166,7 @@ export default class OrderSewingView extends JetView{
             //{ id:"BX", header:"Дата", width:90, batch:1, editor:"text" },
             //{ id:"CD", header:"Упаковка", width:80, batch:3, editor:"text" },
             { id:"CE", header:"Дата", width:90, batch:3, editor:"text" },
-            { id:"T", header:"Описание", width:100, editor:"popup" },
+            { id:"T", header:[ "Описание", { content:"textFilter" }, "" ], width:200, editor:"popup" },
 
 
 
