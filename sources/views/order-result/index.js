@@ -343,7 +343,7 @@ export default class OrderResultView extends JetView{
         {
           view:"treetable",
           css:"webix_header_border webix_data_border",
-          leftSplit:1,
+          leftSplit:5,
           //rightSplit:2,
           select: "cell",
           resizeColumn: { headerOnly:true },
@@ -390,7 +390,7 @@ export default class OrderResultView extends JetView{
             { id:"product_id", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,
               editor: 'combo', options: productBed
             },
-            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text", "sort": "string", hidden: true},
+            { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text", "sort": "string", hidden: false},
             { id:"cloth_id", header:[ "Ткань", { content:"textFilter" }, "" ], width:200,
               editor: 'combo', options: cloths, "sort": "string",
             },

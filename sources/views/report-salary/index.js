@@ -314,7 +314,7 @@ export default class OrderResultView extends JetView{
               //labelWidth: 100,
               width: 250,
 
-              options: {data : scope.apiRest.getCollection('accounting/employees')}
+              options: {data : scope.apiRest.getCollection('accounting/employees',{'per-page': -1})}
             },
             { view:"select",  value:1, labelWidth:100,
               localId: "select-type",
@@ -454,63 +454,73 @@ export default class OrderResultView extends JetView{
               //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
               // }
             },
+            { id:"cost_cut_additionally", header:[ "Доп.крой.", { content:"numberFilter" }, "" ],  width:115 , editor:"text", batch:4},
+
+
             { id:"cost_sewing", header:[ "Раб. пошив", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:3,
               "css": {"color": "green", "text-align": "right"},
               // "template" : function(data) {
               //   return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
               // }
             },
-            { id:"cost_work_carpenter", header:[ "Раб. столярка", { content:"selectFilter" },  { content:"totalColumn" } ], width:110,  batch:2,
-              "css": {"color": "green", "text-align": "right"}
-            },
-            { id:"cost_carcass", header:[ "Раб. ст. цар.", { content:"selectFilter" }, "" ], width:100,  batch:2,
+            { id:"cost_sewing_additionally", header:[ "Доп.шв.", { content:"numberFilter" }, "" ],  width:115 , editor:"text", batch:3},
+
+            { id:"cost_work_carpenter_employee", header:[ "Итого ст.", { content:"numberFilter" },  { content:"totalColumn" } ], width:110,  batch:2,
               "css": {"color": "green", "text-align": "right"},
-              "template" : function(data) {
-                return  (data.productWorkSalary && data.productWorkSalary.cost_carcass != null) ? data.productWorkSalary.cost_carcass : '';
-              }
-            },
-            { id:"cost_headboard", header:[ "Раб. ст. изг.", { content:"selectFilter" }, "" ], width:100, batch:2,
+              //math:"[$r,cost_carpenter_carcass_employee]+[$r,cost_carpenter_headboard_employee]+[$r,cost_carpenter_grinding_employee]+[$r,cost_carpenter_additionally]"
+            }
+            ,
+            { id:"cost_carpenter_carcass_employee", header:[ "Ст.цар.", { content:"numberFilter" }, "" ], width:100,  batch:2,
               "css": {"color": "green", "text-align": "right"},
-              "template" : function(data) {
-                return  (data.productWorkSalary && data.productWorkSalary.cost_headboard != null) ? data.productWorkSalary.cost_headboard : '';
-              }
+
             },
-            { id:"cost_grinding", header:[ "Раб. ст. шлиф.", { content:"selectFilter" }, "" ], width:110, batch:2,
+            { id:"cost_carpenter_headboard_employee", header:[ "Ст.изг.", { content:"numberFilter" }, "" ], width:100, batch:2,
               "css": {"color": "green", "text-align": "right"},
-              "template" : function(data) {
-                return  (data.productWorkSalary && data.productWorkSalary.cost_grinding != null) ? data.productWorkSalary.cost_grinding : '';
-              }
+
+            },
+            { id:"cost_carpenter_grinding_employee", header:[ "Ст.шлиф.", { content:"numberFilter" }, "" ], width:110, batch:2,
+              "css": {"color": "green", "text-align": "right"},
+            },
+            { id:"cost_carpenter_not_standard_employee", header:[ "Ст.нест.", { content:"numberFilter" }, "" ], width:110, batch:2,
+              "css": {"color": "green", "text-align": "right"},
+            },
+            { id:"cost_carpenter_additionally", header:[ "Доп.ст.", { content:"numberFilter" }, "" ],  width:115 , editor:"text", batch:2,
+              "css": { "text-align": "right"}
             },
 
 
             //status button
             { id:"O", header:[ "Пугов.", { content:"selectFilter" }, "" ], width:80,  batch:1},
 
-            { id:"cost_work_upholstery_employee", header:[ "Итого об.", { content:"selectFilter" },  { content:"totalColumn" } ], width:100,  batch:1,
+            { id:"cost_work_upholstery_employee", header:[ "Итого об.", { content:"numberFilter" },  { content:"totalColumn" } ], width:100,  batch:1,
               "css": {"color": "green", "text-align": "right"}
             },
 
             // price upholstery
 
-            { id:"cost_rubber_carcass_employee", header:[ "Пор.цар.", { content:"selectFilter" }, "" ], width:40,  batch:1,
+            { id:"cost_rubber_carcass_employee", header:[ "Пор.цар.", { content:"numberFilter" }, "" ], width:40,  batch:1,
               "css": {"color": "green", "text-align": "right"},
 
             },
-            { id:"cost_rubber_headboard_employee", header:[ "Пор.изг.", { content:"selectFilter" }, "" ], width:40,  batch:1,
+            { id:"cost_rubber_headboard_employee", header:[ "Пор.изг.", { content:"numberFilter" }, "" ], width:40,  batch:1,
               "css": {"color": "green", "text-align": "right"},
 
             },
-            { id:"cost_upholstery_carcass_employee", header:[ "Об.цар.", { content:"selectFilter" }, "" ], width:40,  batch:1,
+            { id:"cost_upholstery_carcass_employee", header:[ "Об.цар.", { content:"numberFilter" }, "" ], width:40,  batch:1,
               "css": {"color": "green", "text-align": "right"},
 
             },
-            { id:"cost_upholstery_headboard_employee", header:[ "Об.изг.", { content:"selectFilter" }, "" ], width:40,  batch:1,
+            { id:"cost_upholstery_headboard_employee", header:[ "Об.изг.", { content:"numberFilter" }, "" ], width:40,  batch:1,
               "css": {"color": "green", "text-align": "right"},
 
             },
-            { id:"cost_buttons_employee", header:[ "Об.пуг.", { content:"selectFilter" }, "" ], width:40,  batch:1,
+            { id:"cost_buttons_employee", header:[ "Об.пуг.", { content:"numberFilter" }, "" ], width:40,  batch:1,
               "css": {"color": "green", "text-align": "right"},
 
+            },
+
+            { id:"cost_upholstery_additionally", header:[ "Доп.об.", { content:"numberFilter" }, "" ],  width:115 , editor:"text", batch:1,
+              "css": {"text-align": "right"}
             },
             // { id:"cost_matras_employee", header:[ "Раб. об. мат.", { content:"selectFilter" }, "" ], width:60,  batch:1,
             //   "css": {"color": "green", "text-align": "right"},
@@ -518,19 +528,19 @@ export default class OrderResultView extends JetView{
             // },
 
 
-            // //status upholstery rubber_carcas
-            // { id:"AU", header:[ "ФИО пор.царг", { content:"selectFilter" }, "" ], width:110,  batch:1},
-            // { id:"AV", header:[ "Статус пор.царг", { content:"selectFilter" }, "" ], width:50,  batch:1},
-            // { id:"AW", header:[ "Дата пор.царг", { content:"selectFilter" }, "" ], width:100,  batch:1},
-            // //status upholstery rubber_headboard
-            // { id:"AP", header:[ "ФИО пор.изг", { content:"selectFilter" }, "" ], width:110,  batch:1},
-            // { id:"AQ", header:[ "Статус пор.изг", { content:"selectFilter" }, "" ], width:50,  batch:1},
-            // { id:"AR", header:[ "Дата пор.изг", { content:"selectFilter" }, "" ], width:100,  batch:1},
-            //
-            // //status upholstery upholstery_carcass
-            // { id:"AK", header:[ "ФИО об.царг", { content:"selectFilter" }, "" ], width:110,  batch:1},
-            // { id:"AL", header:[ "Статус об.царг", { content:"selectFilter" }, "" ], width:50,  batch:1},
-            // { id:"AM", header:[ "Дата об.царг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+            //status upholstery rubber_carcas
+            { id:"AU", header:[ "ФИО пор.царг", { content:"selectFilter" }, "" ], width:110,  batch:1},
+            { id:"AV", header:[ "Статус пор.царг", { content:"selectFilter" }, "" ], width:50,  batch:1},
+            { id:"AW", header:[ "Дата пор.царг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+            //status upholstery rubber_headboard
+            { id:"AP", header:[ "ФИО пор.изг", { content:"selectFilter" }, "" ], width:110,  batch:1},
+            { id:"AQ", header:[ "Статус пор.изг", { content:"selectFilter" }, "" ], width:50,  batch:1},
+            { id:"AR", header:[ "Дата пор.изг", { content:"selectFilter" }, "" ], width:100,  batch:1},
+
+            //status upholstery upholstery_carcass
+            { id:"AK", header:[ "ФИО об.царг", { content:"selectFilter" }, "" ], width:110,  batch:1},
+            { id:"AL", header:[ "Статус об.царг", { content:"selectFilter" }, "" ], width:50,  batch:1},
+            { id:"AM", header:[ "Дата об.царг", { content:"selectFilter" }, "" ], width:100,  batch:1},
 
             //status upholstery upholstery_headboard
             //{ id:"Z", header:[ "ФИО об.изг", { content:"selectFilter" }, "" ], width:110,  batch:1
@@ -544,7 +554,9 @@ export default class OrderResultView extends JetView{
 
 
              { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" , batch:1},
-            // { id:"AZ", header:[ "Столярка ФИО", { content:"selectFilter" }, "" ],  width:115 , editor:"text", batch:2},
+
+
+             { id:"AZ", header:[ "Столярка ФИО", { content:"selectFilter" }, "" ],  width:115 , editor:"text", batch:2},
             // { id:"BO", header:[ "Пошив ФИО", { content:"selectFilter" }, "" ],  width:115 , batch:1, editor:"text", batch:3},
             // { id:"BV", header:[ "Крой ФИО", { content:"selectFilter" }, "" ], width:115 ,  editor:"text", batch:4},
             //
@@ -674,24 +686,83 @@ export default class OrderResultView extends JetView{
     //let typeSelect = this.$$("select-type");
     let type = this.$$("select-type").getValue();
     let selectDate = 'AE';
+    let filter = {
+      filter: {"AE":{">=":dateFromValue, '<=':dateToValue}}
+    };
     if (type == 2) {
       selectDate = 'date_carpenter';
+      filter = {
+        filter: {"date_carpenter":{">=":dateFromValue, '<=':dateToValue}}
+      };
+
     }
     if (type == 3) {
       selectDate = 'date_sewing';
+      filter = {
+        filter: {"date_sewing":{">=":dateFromValue, '<=':dateToValue}}
+      };
     }
     if (type == 4) {
       selectDate = 'date_cut';
+      filter = {
+        filter: {"date_cut":{">=":dateFromValue, '<=':dateToValue}}
+      };
+
     }
+
+
     let params = {
       //"fields" : 'I,product_id, A,G,V,AO,AA,AB,AG,J,AE,date_carpenter,date_sewing,date_cut,cost_work_upholstery_employee',
       "expand" : 'productWorkSalary, cloth, product',
       "per-page": "1000",
       sort: '[{"property":"'+selectDate+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"'+selectDate+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      //filter: '{"'+selectDate+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     };
     if (employee !== '') {
+      let employeeAr = employee.split(' ');
+      if (type == 2) {
+        filter = {
+          filter: {
+            "date_carpenter":{">=":dateFromValue, '<=':dateToValue},
+            "AZ":employeeAr[0]
+          }
+        };
+      }
+      if (type == 1) {
+        // filter = {
+        //   filter: {
+        //     "AE":{">=":dateFromValue, '<=':dateToValue},
+        //     "Z":employeeAr[0]
+        //   }
+        // };
+        filter = {
+          filter: {
+            "or":[
+              {"AE":{">=":dateFromValue, '<=':dateToValue}, "AU":employeeAr[0]},
+              {"AE":{">=":dateFromValue, '<=':dateToValue}, "AP":employeeAr[0]},
+              {"AE":{">=":dateFromValue, '<=':dateToValue}, "AK":employeeAr[0]},
+              {"AE":{">=":dateFromValue, '<=':dateToValue}, "Z":employeeAr[0]}
+            ]
+          }
+        };
+      }
+      if (type == 3) {
+        filter = {
+          filter: {
+            "date_sewing":{">=":dateFromValue, '<=':dateToValue},
+            "BO":employeeAr[0]
+          }
+        };
+      }
+      if (type == 4) {
+        filter = {
+          filter: {
+            "date_cut":{">=":dateFromValue, '<=':dateToValue},
+            "BV":employeeAr[0]
+          }
+        };
+      }
       params['employee'] = employee;
     }
 
@@ -699,38 +770,18 @@ export default class OrderResultView extends JetView{
 
 
     let scope =this;
-    webix.ajax().get(tableUrl).then(function(data){
+    webix.ajax().get(tableUrl, filter).then(function(data){
       table.clearAll();
       table.parse(data.json().items);
       table.sort([{by:selectDate, dir:"asc"}]);
       table.group({
         by: function(obj){  return obj[selectDate]},
         map:{
-          // G:["G","median"],
-          // V:["V","median"],
-          // AO:["AO","median"],
-          // AA:["AA","median"],
-          // AB:["AB","median"],
-          // AG:["AG","median"],
-          // AJ:["AJ","median"],
-          // J:["J","countValue"],
-          //coef_sewing:["coef_sewing", "median" ],
           value:[selectDate],
-          date_sewing:["date_sewing"],
-          //profit:["profit", "sum"],
-          //expense:["expense", "sum"],
-          //net_cost:["net_cost", "sum"],
-          //cost_work:["cost_work", "sum"],
-          //cloth_sum:["cloth_sum", "sum"],
-          //expense_cloth:["expense_cloth", "sum"],
-          //coef_mat:["coef_mat", "middleCoefMat"],
-          //cost_cut:["cost_cut", "sum"],
-          //cost_sewing:["cost_sewing", "sum"],
-          cost_work_upholstery_employee:["cost_work_upholstery_employee", "sum"],
-
         }
       });
       table.enable();
+      table.openAll();
     });
   }
 
@@ -742,6 +793,7 @@ export default class OrderResultView extends JetView{
       hide:false
     });
     this.getDataGroup();
+
   }
 
   doClickOpenAll() {
@@ -755,66 +807,16 @@ export default class OrderResultView extends JetView{
 
   showBatch(newv){
     webix.storage.local.remove("report-salary-table");
-    let table = this.$$("report-salary-table");
     this.$$("report-salary-table").showColumnBatch(newv);
-    let dateFrom = this.$$("dateFrom");
-    let dateTo = this.$$("dateTo");
-    let format = webix.Date.dateToStr("%d.%m.%y");
-    let dateFromValue = format(this.$$("dateFrom").getValue());
-    let dateToValue = format(this.$$("dateTo").getValue());
-
-
-    let type = this.$$("select-type").getValue();
-    let selectDate = 'AE';
-    if (type == 2) {
-      selectDate = 'date_carpenter';
-    }
-    if (type == 3) {
-      selectDate = 'date_sewing';
-    }
-    if (type == 4) {
-      selectDate = 'date_cut';
-    }
-
-    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
-      "expand" : 'productWorkSalary, cloth, product',
-      "per-page": "1000",
-      sort: '[{"property":"'+selectDate+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"'+selectDate+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
-      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+    let table = this.$$("report-salary-table");
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
     });
+    this.getDataGroup();
 
-    let scope =this;
-    webix.ajax().get(tableUrl).then(function(data){
-      table.clearAll();
-      table.parse(data.json().items);
-      table.group({
-        by: function(obj){  return obj[selectDate]},
-        map:{
-          G:["G","median"],
-          V:["V","median"],
-          AO:["AO","median"],
-          AA:["AA","median"],
-          AB:["AB","median"],
-          AG:["AG","median"],
-          AJ:["AJ","median"],
-          J:["J","countValue"],
-          coef_sewing:["coef_sewing", "median" ],
-          value:[selectDate],
-          date_sewing:["date_sewing"],
-          profit:["profit", "sum"],
-          expense:["expense", "sum"],
-          net_cost:["net_cost", "sum"],
-          cost_work:["cost_work", "sum"],
-          cloth_sum:["cloth_sum", "sum"],
-          expense_cloth:["expense_cloth", "sum"],
-          coef_mat:["coef_mat", "middleCoefMat"],
-          cost_cut:["cost_cut", "sum"],
-          cost_sewing:["cost_sewing", "sum"],
-          cost_work_upholstery:["cost_work_upholstery", "sum"],
-        }
-      });
-    });
+
 
   }
 

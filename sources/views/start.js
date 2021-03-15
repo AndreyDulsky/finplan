@@ -168,7 +168,7 @@ export default class StartView extends JetView{
 			rows:[
         {
           cols:[
-            {"view": "label", width: 200, height:30, template: "План производства", css: { 'font-size':'17px', 'padding': '10px 0px 10px 15px', 'font-weight': 600}},
+            {"view": "label", width: 200, height:30, template: "План (общий)", css: { 'font-size':'17px', 'padding': '10px 0px 10px 15px', 'font-weight': 600}},
             {
 
               cols: [

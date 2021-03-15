@@ -12,6 +12,7 @@ webix.UIManager.addHotKey("enter", function(view){
 
 export default class ProductWorkSalaryView extends JetView{
   config(){
+
     return {
       localId: "layout",
       type:"wide",
@@ -68,7 +69,7 @@ export default class ProductWorkSalaryView extends JetView{
               urlEdit: 'product-work-salary',
               //autoConfig: true,
               css:"webix_header_border webix_data_border",
-              //leftSplit:1,
+              leftSplit:2,
               //rightSplit:2,
               select: 'cell',
               multiselect:true,
@@ -88,25 +89,25 @@ export default class ProductWorkSalaryView extends JetView{
                 { id:"net_cost", header:"Себ-ть база", width: 120, sort: "string", editor: 'text' },
                 { id:"expense_cloth", header:"Расход ткани", width: 120, sort: "string", editor: 'text' },
 
-                { id:"coef_time_cut", header:"Коэф. крой",	width:100 },
-                { id:"coef_time_sewing", header:"Коэф. пош." },
-                { id:"coef_time_carpenter", header:"Коэф. стол." },
-                { id:"coef_time_upholstery", header:"Коэф. обив." },
-                { id:"cost_cut", header:"Цена. крой",	width:100 },
-                { id:"cost_sewing", header:"Цена. пош.",	width:100 },
-                { id:"cost_ot", header:"Цена. отст.",	width:100 },
+                { id:"coef_time_cut", header:"Коэф. крой",	width:100 , editor: 'text'},
+                { id:"coef_time_sewing", header:"Коэф. пош.", editor: 'text' },
+                { id:"coef_time_carpenter", header:"Коэф. стол." , editor: 'text'},
+                { id:"coef_time_upholstery", header:"Коэф. обив." , editor: 'text'},
+                { id:"cost_cut", header:"Цена. крой",	width:100, editor: 'text' },
+                { id:"cost_sewing", header:"Цена. пош.",	width:100, editor: 'text' },
+                { id:"cost_ot", header:"Цена. отст.",	width:100, editor: 'text' },
 
 
-                { id:"cost_carcass", header:"Цена ст. цар.",	width:110 },
-                { id:"cost_headboard", header:"Цена ст. изг.",	width:110 },
-                { id:"cost_grinding", header:"Цена ст.  шлиф.",	width:115 },
+                { id:"cost_carcass", header:"Цена ст. цар.",	width:110 , editor: 'text'},
+                { id:"cost_headboard", header:"Цена ст. изг.",	width:110 , editor: 'text'},
+                { id:"cost_grinding", header:"Цена ст.  шлиф.",	width:115 , editor: 'text'},
 
-                { id:"cost_rubber_carcass", header:"Цена пор. цар.",	width:111 },
-                { id:"cost_rubber_headboard", header:"Цена пор. изг.",	width:110 },
-                { id:"cost_upholstery_carcass", header:"Цена об. цар.",	width:110 },
-                { id:"cost_upholstery_headboard", header:"Цена об. изг.",	width:110 },
-                { id:"cost_buttons", header:"Цена пуг.",	width:100 },
-                { id:"cost_matras", header:"Цена мат.",	width:100 },
+                { id:"cost_rubber_carcass", header:"Цена пор. цар.",	width:111, editor: 'text' },
+                { id:"cost_rubber_headboard", header:"Цена пор. изг.",	width:110, editor: 'text' },
+                { id:"cost_upholstery_carcass", header:"Цена об. цар.",	width:110, editor: 'text' },
+                { id:"cost_upholstery_headboard", header:"Цена об. изг.",	width:110 , editor: 'text'},
+                { id:"cost_buttons", header:"Цена пуг.",	width:100 , editor: 'text'},
+                { id:"cost_matras", header:"Цена мат.",	width:100, editor: 'text' },
 
 
 
@@ -125,6 +126,13 @@ export default class ProductWorkSalaryView extends JetView{
               //   $sort:{ by:"name", dir:"asc" },
               //
               // },
+              ready:function(){
+                //if (!this.count()){ //if no data are available
+
+                  //this.showOverlay("<div style='...'>There is no data</div>");
+                //}
+              },
+
 
               on:{
                 onItemClick:function(id, e, trg) {
@@ -149,14 +157,23 @@ export default class ProductWorkSalaryView extends JetView{
                     this.$scope.cashEdit.showForm(this);
                   }
                 },
+                onItemDblClick: function() {
+                  this.$scope.cashEdit.showForm(this);
+                },
                 onBeforeLoad:function(){
-                  this.showOverlay("Loading...");
+                  //this.showOverlay("Loading...");
+                  webix.extend(this, webix.ProgressBar);
+                  this.disable();
+                  this.showProgress({
+                    delay:2000,
+                    hide:false
+                  });
                 },
                 onAfterLoad:function(){
                   if (!this.count())
                     this.showOverlay("Sorry, there is no data");
                   else
-                    this.hideOverlay();
+                    this.enable();
                 },
               }
             }
