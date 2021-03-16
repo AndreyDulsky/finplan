@@ -319,7 +319,7 @@ export default class CashesView extends JetView {
 
                         }
                       },
-                      {"id": "id", "hidden": true},
+                      {"id": "id", "hidden": false},
                       {
                         "id": "action-delete",
                         "header": "",
@@ -508,7 +508,10 @@ export default class CashesView extends JetView {
             //     delay:2000,
             //     hide:false
             // });
-            webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/transactions',{"expand":"contragent,category,project,account,data"}), obj).then(function(data) {
+            webix.ajax()
+              .get( scope.app.config.apiRest.getUrl('get','accounting/transactions',{"expand":"contragent,category,project,account,data"}), obj)
+              .then(function(data) {
+                table.clearAll();
                 table.parse(data);
             });
             let urlSummary = scope.app.config.apiRest.getUrl('get','accounting/transaction/summary')

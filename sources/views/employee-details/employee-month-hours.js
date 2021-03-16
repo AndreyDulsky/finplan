@@ -23,9 +23,16 @@ export default class EmployeeMonthHoursView extends JetView{
       view: "window",
       position: 'center',
       width: 1000,
-      height: 600,
+      height: 800,
+      position: function (state) {
+        state.left = 44;
+        state.top = 34;
+        state.width = state.maxWidth / 2;
+        state.height = state.maxHeight - 34;
+      },
       close: true,
       modal: true,
+      head:scope.getParam('name'),
       body:{
         localId: "layout",
         type:"wide",
@@ -39,16 +46,9 @@ export default class EmployeeMonthHoursView extends JetView{
                 height: 40,
                 paddingY:2,
                 cols: [
-                  {
-                    "view": "label",
-                    "label": scope.getParam('name'),
-                    "width": 250
-                  },
-
-
-                  {},
                   { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
                   { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
+                  {},
                   {
                     view:"toggle",
                     type:"icon",
@@ -73,16 +73,17 @@ export default class EmployeeMonthHoursView extends JetView{
                 select: true,
                 editable:true,
                 editaction: "dblclick",
+                header: '123',
                 resizeColumn: { headerOnly:true },
                 columns:[
-                  { id:"date_work", header:[ "Дата",  "" ], width: 120, sort: "string",
+                  { id:"date_work", header:[ scope.getParam('name'),  "" ], width: 120, sort: "string",
                     template:function(obj, common) {
                       if (obj.$group) return common.treetable(obj, common) + formatMonthYear(obj.value);
                       return common.treetable(obj, common)+formatDate(obj.date_work);
                     },
                   },
 
-                  { id:"day_week", header:[ "День нед.",  "" ], width: 70, sort: "string", hidden: false,
+                  { id:"day_week", header:["День нед.",  "" ], width: 70, sort: "string", hidden: false,
                     cssFormat: function(value, obj) {
 
                       if (obj.date_type == 0) {
@@ -117,10 +118,12 @@ export default class EmployeeMonthHoursView extends JetView{
                     }
                   },
                   { id:"pay_prepaid", header:[ "Аванс",  "" ], width: 100, sort: "string" },
-                  { id:"pay", header:[ "Оплата",  "" ], width: 100, sort: "string" },
+                  { id:"transaction_sum", header:[ "Оплата",  "" ], width: 100, sort: "string",
+                    css: {'text-align' : 'right'}
+                  },
                   { id:"salary_day", header:[ "З.п/ч",  "" ], width: 100, sort: "string" },
-                  { id:"description", header:[ "Описание",  "" ], width: 100, sort: "string" },
-                  { id:"signature", header:[ "Подпись",  "" ], width: 100, sort: "string" },
+                  { id:"description", header:[ "Примечание",  "" ], width: 100, sort: "string", fillspace:true },
+                  //{ id:"signature", header:[ "Подпись",  "" ], width: 100, sort: "string", fillspace:true },
                 ],
                 url: this.app.config.apiRest.getUrl('get',"accounting/employee-time-works",  {'filter':'{"employee_id":'+scope.getParam('id')+'}', 'per-page':'-1'}),
                 save: "api->accounting/employee-time-works",
@@ -131,7 +134,9 @@ export default class EmployeeMonthHoursView extends JetView{
                       return formatMonthYear(obj.date_work);
                     },
                     map: {
-                      'value' : ['date_work']
+                      'value' : ['date_work'],
+                      'transaction_sum' : ['transaction_sum', 'sum'],
+
                     }
                   },
 
@@ -199,8 +204,14 @@ export default class EmployeeMonthHoursView extends JetView{
   doClickToExcel() {
     let table = this.$$("calendar-employee-table");
     webix.toExcel(table, {
-      plainOutput:true
+      filename: "hours_"+this.getParam('name'),
+      styles:false,
+      filter:function(obj){
+        return table.isBranchOpen(table.getParentId(obj.id)) == 1;
+      }
+
     });
+
   }
 
 }

@@ -48,6 +48,8 @@ export default class EmployeeSalaryView extends JetView{
                 },
 
                 {},
+                { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
+                { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
                 { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
                 {
                   view:"icon",
@@ -64,17 +66,7 @@ export default class EmployeeSalaryView extends JetView{
               "height": 40,
               "paddingY":2,
               "cols": [
-                {
-                  "label": "Добавить",
-                  "type":"icon",
-                  "icon":"mdi mdi-plus",
-                  "view": "button",
-                  "height": 50,
-                  "css": "webix_primary",
-                  //"width": 120,
-                  autowidth:true,
-                  click: () => this.doAddClick()
-                },
+
                 {},
                 {
                   view:"toggle",
@@ -126,12 +118,17 @@ export default class EmployeeSalaryView extends JetView{
                   format: webix.Number.format, "css": cssNumber, header:[ "К выплате",  { content:"summColumn" } ]},
 
                 { id:"paid_out", header:"Выплачено", width: 100, sort: "string" },
-                { id:"paid_out_month", header:"Выпл-но за месяц", width: 100, sort: "string" },
-                { id:"debt_prev_month", header:"Долг с прош. месяца", width: 100, sort: "string" },
+                { id:"transaction_sum", header:"Выпл-но за месяц", width: 100, sort: "string" },
+                { id:"dept_start_month", header:"Долг с прош. месяца", width: 100, sort: "string" },
                 { id:"remainder", header:"Остаток", width: 80, sort: "string" },
                 { id: "action-edit", "header": "", "width": 50, "template": "<i class='mdi mdi-eye hover'></i>"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/document-salary-accruals",  {'filter':'{"employee_id":"'+scope.getParam('id')+'"}', 'per-page':'-1'}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/document-salary-accruals",
+                {
+                  'filter':'{"employee_id":"'+scope.getParam('id')+'"}',
+                  'per-page':'-1',
+                  'expand' : 'employee'
+                }),
               save: "api->accounting/employees",
 
               scheme: {
@@ -221,6 +218,20 @@ export default class EmployeeSalaryView extends JetView{
     } else {
       table.openAll();
     }
+  }
+
+  doClickPrint() {
+    let table = this.$$("card-employee-table");
+    webix.print(table, { fit:"data"});
+  }
+
+  doClickToExcel() {
+    let table = this.$$("card-employee-table");
+    webix.toExcel(table, {
+      filename: "months_"+this.getParam('name'),
+      styles:false
+    });
+
   }
 
 }

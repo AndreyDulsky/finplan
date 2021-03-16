@@ -31,14 +31,6 @@ export default class EmployeeSalaryView extends JetView{
 
                 {},
                 { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
-                {
-                  view:"icon",
-                  icon:"mdi mdi-fullscreen",
-                  width: 30,
-                  click: function() {
-                    webix.fullscreen.set(this.$scope.$$("employee-table"));
-                  }
-                },
               ]
             },
             {
@@ -46,17 +38,7 @@ export default class EmployeeSalaryView extends JetView{
               "height": 40,
               "paddingY":2,
               "cols": [
-                {
-                  "label": "Добавить",
-                  "type":"icon",
-                  "icon":"mdi mdi-plus",
-                  "view": "button",
-                  "height": 50,
-                  "css": "webix_primary",
-                  //"width": 120,
-                  autowidth:true,
-                  click: () => this.doAddClick()
-                },
+
                 {},
                 {
                   view:"toggle",
@@ -98,12 +80,7 @@ export default class EmployeeSalaryView extends JetView{
                 //{ id:"is_piecework", header:"Тип зарплаты", width: 180, sort: "string", type:'select',collection: typeSalary },
                 //{ id:"bitrix_id", header:"ID битрикс", width: 120, sort: "string", edit: 'text' },
                 //{ id:"category_id", header:"ID статьи выплат", width: 120, sort: "string", edit: 'text' },
-                {
-                  "id": "action-delete",
-                  "header": "",
-                  "width": 50,
-                  "template": "{common.trashIcon()}"
-                },
+
                 {"id": "action-edit", "header": "", "width": 50, "template": "<i class='mdi mdi-eye'></i>"}
               ],
               url: this.app.config.apiRest.getUrl('get',"accounting/employees", {'sort':'name', 'per-page': -1}),//"api->accounting/contragents",
