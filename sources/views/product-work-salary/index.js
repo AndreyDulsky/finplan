@@ -5,10 +5,10 @@ import "components/comboDateClose";
 import "components/searchClose";
 
 
-webix.UIManager.addHotKey("enter", function(view){
-  var pos = view.getSelectedId();
-  view.edit(pos);
-}, $$("work-salary-table"));
+// webix.UIManager.addHotKey("enter", function(view){
+//   var pos = view.getSelectedId();
+//   view.edit(pos);
+// }, $$("work-salary-table"));
 
 export default class ProductWorkSalaryView extends JetView{
   config(){

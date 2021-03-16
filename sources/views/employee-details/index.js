@@ -127,7 +127,7 @@ export default class EmployeeSalaryView extends JetView{
                 {
                   'filter':'{"employee_id":"'+scope.getParam('id')+'"}',
                   'per-page':'-1',
-                  'expand' : 'employee'
+                  'expand' : 'employee,transactionPart'
                 }),
               save: "api->accounting/employees",
 

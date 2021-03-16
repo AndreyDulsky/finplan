@@ -343,6 +343,7 @@ export default class OrderSewingView extends JetView{
                 }
               }
             },
+            { "label": "", "view": "search-close", "width": 150,  "align" :"right", localId: 'form-search'  }
           ]
         },
         /*wjet::Settings*/
@@ -1350,6 +1351,7 @@ export default class OrderSewingView extends JetView{
   init(view) {
 
     let table = this.$$("sewing-table");
+    let form = this.$$("form-search");
 
     let format = webix.Date.dateToStr("%d.%m.%y");
     let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
@@ -1461,6 +1463,11 @@ export default class OrderSewingView extends JetView{
 
       });
     });
+
+    form.attachEvent("onChange", function(obj){
+      scope.doRefresh();
+    });
+
     this.modelEdit = this.ui(UpdateFormModelView);
     let winTable = {
       localId: "winTable",
@@ -1485,7 +1492,7 @@ export default class OrderSewingView extends JetView{
     }
   }
 
-  showBatch(newv){
+  showBatch(newv) {
     this.$$("sewing-table").showColumnBatch(newv);
   }
 
@@ -1514,17 +1521,29 @@ export default class OrderSewingView extends JetView{
 
   doRefresh() {
     let table = this.$$("sewing-table");
+    let form = this.$$("form-search");
     let format = webix.Date.dateToStr("%d.%m.%y");
     let dateFromValue = format(this.$$("dateFrom").getValue());
     let dateToValue = format(this.$$("dateTo").getValue());
     this.restApi = this.app.config.apiRest;
     let filedFilter = this.getFilterFieldByTypeGroup();
     let filedSort = this.getSortFieldByTypeGroup();
+
+
+
+    let filter = {};
+    filter[filedFilter] = {'>=' : dateFromValue, '<=':dateToValue};
+
+    if (form.getValue() != "") {
+      filter = {'A':form.getValue()};
+    }
+
+    let objFilter = { filter: filter };
+
+
     let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
       "per-page": "500",
       sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
-      filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
-      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     });
     let scope =this;
     table.disable();
@@ -1532,7 +1551,7 @@ export default class OrderSewingView extends JetView{
       type:"icon",
       hide:false
     });
-    this.restApi.getLoad(tableUrl).then(function(data){
+    this.restApi.getLoad(tableUrl,objFilter).then(function(data){
       table.clearAll();
       table.parse(data.json().items);
       scope.doTableGroup();
