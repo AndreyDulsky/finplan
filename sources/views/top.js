@@ -107,7 +107,7 @@ export default class TopView extends JetView{
 		(menuPermissions) ? menu['data'] = menuPermissions :  menu['data'] = {};
 
 		menu['data'].push({ value:"Настройки", id:"settings",  icon:"mdi mdi-tools" },)
-    menu['data'].push({ value:"Открытые отчеты", id:"info", icon:"mdi mdi-database", data:[] })
+    menu['data'].push({ value:"Открытые отчеты", id:"info", icon:"mdi mdi-folder-open", data:[] })
 
 
 

@@ -117,12 +117,12 @@ export default class EmployeeMonthHoursView extends JetView{
                       return  obj.int_end- obj.int_start -1;
                     }
                   },
-                  { id:"pay_prepaid", header:[ "Аванс",  "" ], width: 100, sort: "string" },
+                  //{ id:"pay_prepaid", header:[ "Аванс",  "" ], width: 100, sort: "string" },
                   { id:"transaction_sum", header:[ "Оплата",  "" ], width: 100, sort: "string",
                     css: {'text-align' : 'right'}
                   },
                   { id:"salary_day", header:[ "З.п/ч",  "" ], width: 100, sort: "string" },
-                  { id:"description", header:[ "Примечание",  "" ], width: 100, sort: "string", fillspace:true },
+                  { id:"description", header:[ "Примечание",  "" ], width: 130, sort: "string", fillspace:true },
                   //{ id:"signature", header:[ "Подпись",  "" ], width: 100, sort: "string", fillspace:true },
                 ],
                 url: this.app.config.apiRest.getUrl('get',"accounting/employee-time-works",  {'filter':'{"employee_id":'+scope.getParam('id')+'}', 'per-page':'-1'}),

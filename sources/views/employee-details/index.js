@@ -19,7 +19,10 @@ export default class EmployeeSalaryView extends JetView{
   config(){
     let scope = this;
     let css = {"color": "green", "text-align": "right", "font-weight": 100};
+    let cssRed = {"color": "red", "text-align": "right", "font-weight": 100};
+
     let cssNumber = {"text-align": "right"};
+
     return {
       localId: "layout",
       type:"wide",
@@ -97,40 +100,54 @@ export default class EmployeeSalaryView extends JetView{
               resizeColumn: { headerOnly:true },
 
               columns:[
-                { id:"date_document", header:[ "Месяц",  "" ], width: 70, sort: "string", format: formatMonthYear },
+                { id:"date_salary", header:[ "Месяц" ], width: 70, sort: "string", format: formatMonthYear },
 
-                { id:"employee_id", header:[ "ID",  "" ], width: 30, sort: "string", hidden: true },
+                { id:"employee_id", header:[ "ID"], width: 30, sort: "string", hidden: true },
 
-                { id:"is_piecework", header:[ "Тип",  "" ], width: 70, sort: "string", type:'select', collection: typeSalary },
-                { id:"rate", header:[ "Ставка",  "" ], width: 80, sort: "string", editor:"text", format: webix.Number.format, "css": css },
-                { id:"rate_day", header:[ "Ставка за день",  "" ], width: 120, sort: "string",  format: webix.Number.format, "css": cssNumber
+                //{ id:"is_piecework", header:[ "Тип"], width: 70, sort: "string", type:'select', collection: typeSalary },
+                { id:"rate", header:[ "Ставка"], width: 80, sort: "string", editor:"text", format: webix.Number.format, "css": css },
+                { id:"rate_day", header:[ "Ставка за день" ], width: 115, sort: "string",  format: webix.Number.format, "css": cssNumber
 
                 },
-                { id:"all_time_days", header:[ "Рабочих дней",  { content:"summColumn" } ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber },
-                { id:"work_time_days", header:[ "Дни посещения",  { content:"summColumn" } ],  width: 120, sort: "string",  format: webix.Number.format, "css": cssNumber },
-                { id:"work_time_hours", header:[ "Дни по часам",  { content:"summColumn" } ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber },
-                { id:"salary_rate", header:[ "ЗП по ставке",  { content:"summColumn" } ], width: 100, sort: "string",   math:"[$r,work_time_hours]*[$r,rate_day]", format: webix.Number.format, "css": cssNumber },
-                { id:"salary_piecework", header:[ "ЗП по сдельно",  { content:"summColumn" } ], width: 110, sort: "string", editor:"text", format: webix.Number.format,"css": css },
-                { id:"award", header:[ "Премия",  { content:"summColumn" } ],  width: 100, sort: "string", editor:"text", format: webix.Number.format,"css": css },
-                { id:"surcharges", header:[ "Доп./Выч.",  { content:"summColumn" } ], width: 120, sort: "string",  editor:"text", format: webix.Number.format, "css": css },
-                { "fillspace": true},
-                { id:"salary",  width: 100, sort: "string", math:"[$r,salary_rate] + [$r,award]+ [$r,surcharges] +[$r,salary_piecework]" ,
-                  format: webix.Number.format, "css": cssNumber, header:[ "К выплате",  { content:"summColumn" } ]},
+                //{ id:"all_time_days", header:[ "Рабочих дней",  "" ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber },
+                { id:"work_time_days", header:[ "Дни посещ." ],  width: 95, sort: "string",  format: webix.Number.format, "css": cssNumber },
+                { id:"work_time_hours", header:[ "Дни по часам" ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber },
+                { id:"salary_rate", header:[ "ЗП по ставке" ], width: 100, sort: "string",   math:"[$r,work_time_hours]*[$r,rate_day]", format: webix.Number.format, "css": css },
+                { id:"salary_piecework", header:[ "ЗП по сдельно" ], width: 110, sort: "string",  format: webix.Number.format,"css": css },
+                { id:"award", header:[ "Премия" ],  width: 80, sort: "string",  format: webix.Number.format,"css": css },
+                { id:"surcharges", header:[ "Доп./Выч." ], width: 90, sort: "string",   format: webix.Number.format, "css": css },
 
-                { id:"paid_out", header:"Выплачено", width: 100, sort: "string" },
-                { id:"transaction_sum", header:"Выпл-но за месяц", width: 100, sort: "string" },
-                { id:"dept_start_month", header:"Долг с прош. месяца", width: 100, sort: "string" },
-                { id:"remainder", header:"Остаток", width: 80, sort: "string" },
-                { id: "action-edit", "header": "", "width": 50, "template": "<i class='mdi mdi-eye hover'></i>"}
+                //{ "fillspace": false},
+                { id:"salary",  width: 90, sort: "string", math:"[$r,salary_rate] + [$r,award]+ [$r,surcharges] +[$r,salary_piecework]" ,
+                  cssFormat: function() { return {'font-weight' : 500}; },
+                  format: webix.Number.format, "css": cssNumber, header:[ "К выплате" ]},
+
+               //{ id:"paid_out", header:"Выплачено", width: 100, sort: "string" },
+                { id:"dept_start_month", header:"Долг с прош. месяца", width: 100, sort: "string", "css": cssNumber },
+                { id:"transaction_sum", header:"Выпл.", width: 80, sort: "string", "css": cssRed, format: webix.Number.format },
+
+                { id:"remainder", header:"Остаток", width: 80, sort: "string", "css": cssNumber,
+                  cssFormat: function() { return {'font-weight' : 500}; },
+                  format: webix.Number.format
+                },
+                { id: "action-edit", "header": "", "width": 50, "template": "<i class='mdi mdi-eye hover'></i>", "fillspace": true}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/document-salary-accruals",
+              url: this.app.config.apiRest.getUrl('get',"accounting/employee-salaries",
                 {
                   'filter':'{"employee_id":"'+scope.getParam('id')+'"}',
+                  'sort': 'date_salary',
                   'per-page':'-1',
-                  'expand' : 'employee,transactionPart'
+                  'expand' : 'documentSalaryAccrual, employee,transactionPart'
                 }),
               save: "api->accounting/employees",
-
+              on:{
+                "onresize":webix.once(function(){
+                  // adjust by "title" column
+                  //this.adjustRowHeight("is_piecework", true);
+                  // or, adjust by any column
+                  this.adjustRowHeight(null, true);
+                })
+              },
               scheme: {
                 // $group: {
                 //   by: 'department_name',
@@ -147,8 +164,10 @@ export default class EmployeeSalaryView extends JetView{
                 //this.openAll();
               },
               on:{
-                onItemDblClick:function(id, e, trg) {
-                  this.$scope.showInfoMonthHours.showWindow(this);
+                onItemClick:function(id, e, trg) {
+                  if (id.column == 'action-edit') {
+                    this.$scope.showInfoMonthHours.showWindow(this);
+                  }
                 },
 
                 onBeforeLoad:function() {

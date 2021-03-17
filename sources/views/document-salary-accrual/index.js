@@ -38,7 +38,7 @@ export default class DocumentSalaryAccrualView extends DocumentJetView{
         },
         { id:"all_time_days", header:[ "Рабочих дней",  { content:"summColumn" } ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber },
         { id:"work_time_days", header:[ "Дни посещения",  { content:"summColumn" } ],  width: 120, sort: "string",  format: webix.Number.format, "css": cssNumber },
-        { id:"work_time_hours", header:[ "Дни по часам",  { content:"summColumn" } ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber },
+        { id:"work_time_hours", header:[ "Дни по часам",  { content:"summColumn" } ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber, editor:"text" },
         { id:"salary_rate", header:[ "ЗП по ставке",  { content:"summColumn" } ], width: 100, sort: "string",   math:"[$r,work_time_hours]*[$r,rate_day]", format: webix.Number.format, "css": cssNumber },
         { id:"salary_piecework", header:[ "ЗП по сдельно",  { content:"summColumn" } ], width: 110, sort: "string", editor:"text", format: webix.Number.format,"css": css },
         { id:"award", header:[ "Премия",  { content:"summColumn" } ],  width: 100, sort: "string", editor:"text", format: webix.Number.format,"css": css },
