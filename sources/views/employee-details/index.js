@@ -100,7 +100,7 @@ export default class EmployeeSalaryView extends JetView{
               resizeColumn: { headerOnly:true },
 
               columns:[
-                { id:"date_salary", header:[ "Месяц" ], width: 70, sort: "string", format: formatMonthYear },
+                { id:"date_salary", header:[ "Месяц" ], width: 70, sort: "date", format: formatMonthYear },
 
                 { id:"employee_id", header:[ "ID"], width: 30, sort: "string", hidden: true },
 

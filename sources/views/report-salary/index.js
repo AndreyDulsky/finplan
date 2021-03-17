@@ -231,13 +231,15 @@ webix.Date.monthEnd = function(obj){
   return obj;
 }
 
-let formatDate = webix.Date.dateToStr("%d.%m.%y");
-var parserDate = webix.Date.strToDate("%Y-%m-%d");
+//let formatDate = webix.Date.dateToStr("%d.%m.%y");
+//var parserDate = webix.Date.strToDate("%Y-%m-%d");
 
 function mark_old(value){
   if (value == 0)
     return "highlight";
 }
+let formatDate = webix.Date.dateToStr("%d.%m.%y");
+let parserDate = webix.Date.strToDate("%Y-%m-%d");
 
 export default class OrderResultView extends JetView{
 
@@ -397,8 +399,10 @@ export default class OrderResultView extends JetView{
 
               tooltip:"#F# <br>#C#-#D# Дата клиента: #H# <br>#E#<br> #I#<br> #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
               template:function(obj, common){
-
-                if (obj.$level==1) return  obj.value;
+                let type = scope.$$("select-type").getValue();
+                let result;
+                result = (type != 1 ) ?  formatDate(parserDate(obj.value)) : obj.value;
+                if (obj.$level==1) return  result;
                 //if (obj.$level == 2) return common.treetable(obj, common) + obj.A;
                 //if (obj.$group) return common.treetable(obj,common) + (obj.value || obj.item);
                 return obj.A;
@@ -441,13 +445,22 @@ export default class OrderResultView extends JetView{
             // { id:"cost_work", header:[ "Стоим. работ", { content:"selectFilter" }, { content:"totalColumn" } ], width:110,
             //   "css": {"color": "green", "text-align": "right",  "font-weight": 600},
             // },
-
-            { id:"cost_cut", header:[ "Раб. крой", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
+            { id:"cost_cut_total_employee", header:[ "Итого крой", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
               "css": {"color": "green", "text-align": "right"},
               // "template" : function(data) {
               //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
               // }
             },
+            { id:"cost_cut_employee", header:[ "Раб. крой", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
+              "css": {"color": "green", "text-align": "right"},
+              // "template" : function(data) {
+              //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
+              // }
+            },
+            { id:"cost_cut_coef_employee", header:[ "Коэф. крой", { content:"selectFilter" }, "" ], width:100, batch:4,
+              "css": {"color": "green", "text-align": "right"}
+            },
+
             { id:"BY", header:[ "Настил", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
               "css": {"color": "green", "text-align": "right"},
               // "template" : function(data) {
@@ -636,9 +649,7 @@ export default class OrderResultView extends JetView{
               this.hideOverlay();
             },
             onBeforeDrop:function(context, e){
-              let record = this.getItem(context.start);
-              let recordSource = this.getItem(context.parent);
-              scope.beforeDropChangeData(record, recordSource.value);
+
 
             }
           }
@@ -775,7 +786,10 @@ export default class OrderResultView extends JetView{
       table.parse(data.json().items);
       table.sort([{by:selectDate, dir:"asc"}]);
       table.group({
-        by: function(obj){  return obj[selectDate]},
+        by: function(obj){
+          let result;
+          result = (type != 1 ) ?  formatDate(parserDate(obj[selectDate])) : obj[selectDate];
+          return result},
         map:{
           value:[selectDate],
         }
@@ -820,18 +834,7 @@ export default class OrderResultView extends JetView{
 
   }
 
-  beforeDropChangeData(record, dateObivka) {
 
-    let data = {'AE':dateObivka};
-    let tableUrl = this.app.config.apiRest.getUrl('put',"accounting/orders", {}, record.id);
-    record.date_obivka = dateObivka;
-    record.AE = formatDate(dateObivka);
-
-    webix.ajax().put(tableUrl, data).then(function(data){
-      webix.message('Данные сохранены!');
-    });
-
-  }
 
   loadColumnsSetting(columnsSetting, id) {
     //let columnsSetting = this.$$('columns-setting');
