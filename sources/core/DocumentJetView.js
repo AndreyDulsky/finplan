@@ -49,6 +49,9 @@ export default class DocumentJetView extends JetView {
             });
 
           }
+          if (id.column == 'action-refresh') {
+            this.$scope.clickActionRefresh(id, e, trg);
+          }
         },
         onAfterEditStop:function(state, editor, ignoreUpdate){
           var dtable = this;
@@ -70,5 +73,9 @@ export default class DocumentJetView extends JetView {
         },
       }
     };
+  }
+
+  clickActionRefresh() {
+
   }
 }

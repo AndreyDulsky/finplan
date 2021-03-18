@@ -287,7 +287,7 @@ export default class StartView extends JetView{
           css:"webix_header_border webix_data_border",
           leftSplit:3,
           //rightSplit:2,
-          select: "row",
+          select: "cell",
           resizeColumn: { headerOnly:true },
           localId: 'start-table',
           //subrow:"#N#",

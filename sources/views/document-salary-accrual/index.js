@@ -25,7 +25,7 @@ export default class DocumentSalaryAccrualView extends DocumentJetView{
       //save: "api->accounting/document-salary-accruals",
       columns:[
         { id:"employee_name", header:[ "Сотрудник",  { content:"countColumn" } ], width: 240, sort: "string", template: function(obj, common) {
-            if (obj.$group) return common.folder(obj, common) + obj.department_name;
+            if (obj.$group) return common.treetable(obj, common) + obj.department_name;
             return common.treetable(obj, common)+obj.employee_name;
         } },
 
@@ -33,10 +33,10 @@ export default class DocumentSalaryAccrualView extends DocumentJetView{
 
         { id:"is_piecework", header:[ "Тип",  "" ], width: 70, sort: "string", type:'select', collection: typeSalary },
         { id:"rate", header:[ "Ставка",  "" ], width: 80, sort: "string", editor:"text", format: webix.Number.format, "css": css },
-        { id:"rate_day", header:[ "Ставка за день",  "" ], width: 120, sort: "string",  format: webix.Number.format, "css": cssNumber
+        { id:"rate_day", header:[ "Ставка за день",  "" ], width: 120, sort: "string",  format: webix.Number.format, "css": cssNumber,editor:"text"
 
         },
-        { id:"all_time_days", header:[ "Рабочих дней",  { content:"summColumn" } ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber },
+        { id:"all_time_days", header:[ "Рабочих дней",  { content:"summColumn" } ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber, editor:"text" },
         { id:"work_time_days", header:[ "Дни посещения",  { content:"summColumn" } ],  width: 120, sort: "string",  format: webix.Number.format, "css": cssNumber },
         { id:"work_time_hours", header:[ "Дни по часам",  { content:"summColumn" } ],  width: 110, sort: "string",  format: webix.Number.format, "css": cssNumber, editor:"text" },
         { id:"salary_rate", header:[ "ЗП по ставке",  { content:"summColumn" } ], width: 100, sort: "string",   math:"[$r,work_time_hours]*[$r,rate_day]", format: webix.Number.format, "css": cssNumber },
@@ -50,9 +50,15 @@ export default class DocumentSalaryAccrualView extends DocumentJetView{
           "id": "action-delete",
           "header": "",
           "width": 50,
-          "template": "{common.trashIcon()}"
+          "template": function(obj, common) {
+            if (obj.$group) return '';
+            return common.trashIcon()
+          }
         },
-        {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
+        {"id": "action-refresh", "header": "", "width": 50, "template": function(obj) {
+          if (obj.$group) return '';
+          return "<i class='mdi mdi-refresh' style='font-size: 18px'></i>";
+        }}
       ],
       scheme:{
         $group:{
@@ -68,7 +74,13 @@ export default class DocumentSalaryAccrualView extends DocumentJetView{
         //$init:function(obj){ obj.index = this.count(); }
       },
 
+
     });
+  }
+
+  clickActionRefresh(id, item) {
+    let employee = this.getRoot().getItem(id.row);
+    this.getParentView().getParentView().doClickFillAll(employee.employee_id);
   }
 
 }

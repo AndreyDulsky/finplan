@@ -240,7 +240,12 @@ function mark_old(value){
 }
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let parserDate = webix.Date.strToDate("%Y-%m-%d");
-
+function customCompare(compared, selected, obj){
+  if (compared === null && selected === "null" ) return true; // filters on null values
+  else if (compared === "" && selected === "Empty") return true; // filters on empty values
+  else if (compared === "" ||compared === null && selected === "null/Empty") return true; // filters on both empty and null values
+  else return selected == compared;
+}
 export default class OrderResultView extends JetView{
 
 
@@ -323,13 +328,16 @@ export default class OrderResultView extends JetView{
               options:[
               { id:1, value:"Обивка" },
               { id:2, value:"Столярка" },
-              { id:3, value:"Пошив+крой" },
+              { id:3, value:"Швейка" },
               { id:4, value:"Крой" }
               
             ],
               width: 200,
               on:{
                 onChange:function(newv){
+                  if (newv == 4) {
+                    newv = 3;
+                  }
                   scope.showBatch(newv);
                 }
               }
@@ -411,15 +419,15 @@ export default class OrderResultView extends JetView{
             },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:100, editor:"text", hidden: false  },
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:230, editor:"text", hidden: false },
-            { id:"product_id", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,
-              editor: 'combo', options: productBed
-            },
+            // { id:"product_id", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,
+            //   editor: 'combo', options: productBed
+            // },
             //{ id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text", "sort": "string", hidden: true},
 
-            { id:"size", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
-              width:70,
-              "css": {"text-align": "center"},
-              editor:"text" },
+            // { id:"size", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
+            //   width:70,
+            //   "css": {"text-align": "center"},
+            //   editor:"text" },
 
             // { id:"V", header:[ "Сумма факт", { content:"textFilter" }, { content:"totalColumn" } ],
             //   width:100,
@@ -430,12 +438,12 @@ export default class OrderResultView extends JetView{
             //   width:120,
             //   "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:3
             // },
-            { id:"cost_ot", header:[ "Раб. отстр.", { content:"selectFilter" }, { content:"totalColumn" } ], width:100,
-              "css": {"color": "green", "text-align": "right"}, batch:3
-              // "template" : function(data) {
-              //   return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
-              // }
-            },
+            // { id:"cost_ot", header:[ "Раб. отстр.", { content:"selectFilter" }, { content:"totalColumn" } ], width:100,
+            //   "css": {"color": "green", "text-align": "right"}, batch:3
+            //   // "template" : function(data) {
+            //   //   return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
+            //   // }
+            // },
             // { id:"coef_cut", header:[ "Коэф. Крой. гот.", { content:"textFilter" }, { content:"totalColumn" } ],
             //   width:120,
             //   "css": {"color":"green","text-align": "right",  "font-weight": 500}, batch:4
@@ -445,38 +453,58 @@ export default class OrderResultView extends JetView{
             // { id:"cost_work", header:[ "Стоим. работ", { content:"selectFilter" }, { content:"totalColumn" } ], width:110,
             //   "css": {"color": "green", "text-align": "right",  "font-weight": 600},
             // },
-            { id:"cost_cut_total_employee", header:[ "Итого крой", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
+            { id:"date_cut", header:[ "Дата.крой.", { content:"textFilter" }, "" ], width:80, editor:"date", hidden: false, batch:3,format: formatDate  },
+            { id:"date_sewing", header:[ "Дата.пош.", { content:"textFilter" }, "" ], width:80, editor:"date", hidden: false, batch:3, format: formatDate },
+
+
+            { id:"P", header:[ "Отстр.", { content:"selectFilter" }, "" ], width:80,  batch:3},
+
+            { id:"cost_sewing_cut_total_employee", header:[ "Итого", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:3,
               "css": {"color": "green", "text-align": "right"},
-              // "template" : function(data) {
-              //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
-              // }
             },
-            { id:"cost_cut_employee", header:[ "Раб. крой", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
+            { id:"cost_cut_total_employee", header:[ "Итого крой", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:3,
               "css": {"color": "green", "text-align": "right"},
-              // "template" : function(data) {
-              //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
-              // }
             },
-            { id:"cost_cut_coef_employee", header:[ "Коэф. крой", { content:"selectFilter" }, "" ], width:100, batch:4,
+            { id:"cost_cut_employee", header:[ "Раб. крой", { content:"selectFilter" }, "" ], width:100, batch:3,
+              "css": {"color": "green", "text-align": "right"},
+
+            },
+            { id:"cost_cut_coef_employee", header:[ "Коэф. крой", { content:"selectFilter" }, "" ], width:100, batch:3,
               "css": {"color": "green", "text-align": "right"}
             },
 
-            { id:"BY", header:[ "Настил", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:4,
+            { id:"BY", header:[ "Настил", { content:"selectFilter" }, "" ], width:100, batch:3,
               "css": {"color": "green", "text-align": "right"},
-              // "template" : function(data) {
-              //     return  (data.productWorkSalary) ? data.productWorkSalary.cost_cut : '';
-              // }
+              "template" : function(data) {
+                  if (data.$group) return '';
+                  let result = data.BY;
+                  if (data.BY == -1) result = 1;
+                  if (data.BY == 0) result = '';
+                  return  result;
+              }
             },
-            { id:"cost_cut_additionally", header:[ "Доп.крой.", { content:"numberFilter" }, "" ],  width:115 , editor:"text", batch:4},
+            { id:"cost_cut_additionally", header:[ "Доп.крой.", { content:"numberFilter" }, "" ],  width:80 , editor:"text", batch:3},
 
 
-            { id:"cost_sewing", header:[ "Раб. пошив", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:3,
+            { id:"cost_sewing_total_employee", header:[ "Итого пошив", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:3,
               "css": {"color": "green", "text-align": "right"},
               // "template" : function(data) {
               //   return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
               // }
             },
-            { id:"cost_sewing_additionally", header:[ "Доп.шв.", { content:"numberFilter" }, "" ],  width:115 , editor:"text", batch:3},
+            { id:"cost_sewing_employee", header:[ "Раб. пошив", { content:"selectFilter" }, { content:"totalColumn" } ], width:100, batch:3,
+              "css": {"color": "green", "text-align": "right"},
+              // "template" : function(data) {
+              //   return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
+              // }
+            },
+            { id:"cost_sewing_ot_employee", header:[ "Раб. отстр.", { content:"selectFilter" }, { content:"totalColumn" } ], width:100,
+              "css": {"color": "green", "text-align": "right"}, batch:3
+              // "template" : function(data) {
+              //   return  (data.productWorkSalary) ? data.productWorkSalary.cost_sewing : '';
+              // }
+            },
+            { id:"cost_sewing_additionally", header:[ "Доп.шв.", { content:"numberFilter" }, "" ],  width:80 , editor:"text", batch:3},
 
             { id:"cost_work_carpenter_employee", header:[ "Итого ст.", { content:"numberFilter" },  { content:"totalColumn" } ], width:110,  batch:2,
               "css": {"color": "green", "text-align": "right"},
@@ -569,9 +597,12 @@ export default class OrderResultView extends JetView{
              { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" , batch:1},
 
 
-             { id:"AZ", header:[ "Столярка ФИО", { content:"selectFilter" }, "" ],  width:115 , editor:"text", batch:2},
-            // { id:"BO", header:[ "Пошив ФИО", { content:"selectFilter" }, "" ],  width:115 , batch:1, editor:"text", batch:3},
-            // { id:"BV", header:[ "Крой ФИО", { content:"selectFilter" }, "" ], width:115 ,  editor:"text", batch:4},
+             { id:"AZ", header:[ "Столярка ФИО", { content:"selectFilter", compare:function(compared, selected, obj){
+               return customCompare(compared, selected, obj);
+             } }, "" ],  width:115 , editor:"text", batch:2},
+
+             { id:"BV", header:[ "Крой ФИО", { content:"selectFilter" }, "" ], width:115 ,  editor:"text", batch:3},
+             { id:"BO", header:[ "Пошив ФИО", { content:"selectFilter" }, "" ],  width:115 , batch:1, editor:"text", batch:3},
             //
             // { id:"BQ", header:[ "Дата пош.", { content:"selectFilter" }, "" ], width:90, batch:3, editor:"text" },
             // { id:"BX", header:[ "Дата крой.", { content:"selectFilter" }, "" ], width:90, batch:4, editor:"text" },
@@ -627,6 +658,17 @@ export default class OrderResultView extends JetView{
           scroll: true,
 
           on: {
+            onCollectValues:function(id, obj){ // After DT collects options, iterates on each filters
+              for(var objNum in obj.values){ // iterates on each filter options
+                if(null === obj.values[objNum].value){ // puts the null filter (if created) on top
+                  var temp = obj.values[objNum];
+                  obj.values.splice(objNum, 1);
+                  obj.values.unshift(temp);
+                }
+              }
+              obj.values.unshift({ id:"Empty", value:"Empty"}); // adds an empty filter on top
+              obj.values.unshift({ id:"null/Empty", value:"null/Empty"}); //adds an null/empty filter on top
+            },
             "onColumnResize" : function() {
 
               webix.storage.local.put("report-salary-table", this.getState());
@@ -709,14 +751,27 @@ export default class OrderResultView extends JetView{
     }
     if (type == 3) {
       selectDate = 'date_sewing';
+      // filter = {
+      //   filter: {"date_sewing":{">=":dateFromValue, '<=':dateToValue}}
+      // };
       filter = {
-        filter: {"date_sewing":{">=":dateFromValue, '<=':dateToValue}}
+        filter: {
+          "or":[
+            {"date_sewing":{">=":dateFromValue, '<=':dateToValue}},
+            {"date_cut":{">=":dateFromValue, '<=':dateToValue}}
+          ]
+        }
       };
     }
     if (type == 4) {
       selectDate = 'date_cut';
       filter = {
-        filter: {"date_cut":{">=":dateFromValue, '<=':dateToValue}}
+        filter: {
+          "or":[
+            {"date_sewing":{">=":dateFromValue, '<=':dateToValue}},
+            {"date_cut":{">=":dateFromValue, '<=':dateToValue}}
+          ]
+        }
       };
 
     }
@@ -759,18 +814,23 @@ export default class OrderResultView extends JetView{
         };
       }
       if (type == 3) {
+
         filter = {
           filter: {
-            "date_sewing":{">=":dateFromValue, '<=':dateToValue},
-            "BO":employeeAr[0]
+            "or":[
+              {"date_sewing":{">=":dateFromValue, '<=':dateToValue}, "BO":employeeAr[0]},
+              {"date_cut":{">=":dateFromValue, '<=':dateToValue}, "BV":employeeAr[0]}
+            ]
           }
         };
       }
       if (type == 4) {
         filter = {
           filter: {
-            "date_cut":{">=":dateFromValue, '<=':dateToValue},
-            "BV":employeeAr[0]
+            "or":[
+              {"date_sewing":{">=":dateFromValue, '<=':dateToValue}, "BO":employeeAr[0]},
+              {"date_cut":{">=":dateFromValue, '<=':dateToValue}, "BV":employeeAr[0]}
+            ]
           }
         };
       }

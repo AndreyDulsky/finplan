@@ -206,7 +206,7 @@ export default class UpdateFormView extends JetView {
       let res2 = state.win.getBody().queryView({'localId':'document-salary-accrual-table'});
 
       res2.waitData.then(function(){
-        res2.openAll();
+        //res2.openAll();
         res2.data.attachEvent("onDataUpdate", function(id, data, old){
           scope.setSumByTableRows()
         });
@@ -215,6 +215,9 @@ export default class UpdateFormView extends JetView {
         });
         res2.data.attachEvent("onAfterDelete", function(id){
           scope.setSumByTableRows()
+        });
+        res2.data.attachEvent("onItemClick", function(id){
+          debugger;
         });
         // when we have data, do some actions
         scope.setSumByTableRows();
@@ -380,18 +383,21 @@ export default class UpdateFormView extends JetView {
     state.win.close();
   }
 
-  doClickFillAll() {
+  doClickFillAll(employeeId = '') {
     let state = this.state;
     let table = this.state.win.getBody().queryView({'localId':'document-salary-accrual-table'});
     let formatDate = webix.Date.dateToStr("%Y-%m-%d");
     let dateDocument = state.win.getBody().queryView({'localId':'date_document'}).getValue();
-
-    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/get-salary-by-days", {
+    let params = {
       sort: 'employee_name',
       dateDocument: formatDate(dateDocument)
       //filter: '{"B":"'+selectTypeValue+'"}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
-    });
+    };
+    if (employeeId) {
+      params['employee_id'] = employeeId;
+    }
+    let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/employee-time-work/get-salary-by-days", params);
     let scope =this;
     webix.ajax().get(tableUrl).then(function(data){
       //table.clearAll();
