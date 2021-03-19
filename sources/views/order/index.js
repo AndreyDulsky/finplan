@@ -245,12 +245,13 @@ export default class OrdersView extends JetView{
 
             },
             { id:"H", header:[ "Дата гот.", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
+
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,  editor:"text" },
             { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" }  ], width:70, batch:2, editor:"text" },
             { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150,  editor:"text" },
             { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
-            { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:100, disable: true, batch:2,
+            { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
               editor:"popup",
               template:function(obj, common){
                 if (obj.$group) return "";

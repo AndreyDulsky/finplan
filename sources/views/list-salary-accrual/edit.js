@@ -390,8 +390,9 @@ export default class UpdateFormView extends JetView {
     let dateDocument = state.win.getBody().queryView({'localId':'date_document'}).getValue();
     let params = {
       sort: 'employee_name',
-      dateDocument: formatDate(dateDocument)
-      //filter: '{"B":"'+selectTypeValue+'"}',
+      dateDocument: formatDate(dateDocument),
+      filter1: '{"date_carpenter":{">=": "01.02.21", "<=":"28.02.21"}}',
+      employee: "Василенко Роман"
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
     };
     if (employeeId) {
