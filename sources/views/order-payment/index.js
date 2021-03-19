@@ -340,7 +340,7 @@ export default class OrderPaymentView extends JetView{
               //footer: {content: "summColumn", css: {"text-align": "right"}}
             },
             { id:"I", header:[ "Изделие", { content:"textFilter" }, { content:"totalColumnCount" } ], width:200, editor:"text" },
-            { id:"pay_type", header:[ "Тип.опл", { content:"textFilter" }, "" ], width:50, editor:"text" },
+            { id:"pay_type", header:[ "Тип.опл", { content:"selectFilter" }, "" ], width:50, editor:"text" },
 
 
             { id:"date_predict_plan", header:[ "Дата.аван.план", { content:"textFilter" }, "" ], width:90,   editor:"date",

@@ -99,7 +99,7 @@ export default class EmployeeSalaryView extends JetView{
                 $sort:{ by:"department_id", dir:"asc", as:"int" },
               },
               ready:function(){
-                this.openAll();
+                //this.openAll();
               },
               on:{
                 onItemClick:function(id, e, trg) {

@@ -30,6 +30,11 @@ export default class DocumentSalaryAccrualView extends DocumentJetView{
         } },
 
         { id:"employee_id", header:[ "ID",  "" ], width: 30, sort: "string", hidden: true },
+        { id:"is_approved", header:[ "Утв.",  "" ], width: 40, sort: "string",template: function(obj, common, value, config, ind) {
+            if (obj.$group) return '';
+            return common.checkbox(obj, common, value, config);
+          }
+        },
 
         { id:"is_piecework", header:[ "Тип",  "" ], width: 70, sort: "string", type:'select', collection: typeSalary },
         { id:"rate", header:[ "Ставка",  "" ], width: 80, sort: "string", editor:"text", format: webix.Number.format, "css": css },
