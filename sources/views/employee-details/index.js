@@ -248,7 +248,11 @@ export default class EmployeeSalaryView extends JetView{
     let table = this.$$("card-employee-table");
     webix.toExcel(table, {
       filename: "months_"+this.getParam('name'),
-      styles:false
+      styles: false,
+      ignore: { "action-edit" : true},
+      filter:function(obj){
+        return obj.transaction_sum != 0;
+      }
     });
 
   }

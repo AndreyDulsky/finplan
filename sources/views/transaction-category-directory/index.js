@@ -74,6 +74,11 @@ export default class TransactionCategoryDirectoryView extends JetView{
               columns:[
                 { id:"id", header:"#",	width:80 },
                 { id:"name", header:"Наиименование", width: 380, sort: "string" },
+                { id:"activity_type", header:[ "Тип категории", { content:"selectFilter" }, "" ]},
+                { id:"transaction_category_type", header:[ "Тип операции", { content:"selectFilter" }, "" ]},
+                { id:"account_category_type", header:[ "account_category_type", { content:"selectFilter" }, "" ]},
+                { id:"outcome_classification", header:[ "outcome_classification", { content:"selectFilter" }, "" ]},
+
 
                 //{ id:"external_id", header:"Экспорт ID" },
                 { id:"parent_id", header:"Родитель" },

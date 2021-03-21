@@ -78,6 +78,7 @@ export default class EmployeeMonthHoursView extends JetView{
                 columns:[
                   { id:"date_work", header:[ scope.getParam('name'),  "" ], width: 120, sort: "string",
                     template:function(obj, common) {
+                      if (obj.$group) obj.$css =  'highlight-bold';
                       if (obj.$group) return common.treetable(obj, common) + formatMonthYear(obj.value);
                       return common.treetable(obj, common)+formatDate(obj.date_work);
                     },
@@ -112,20 +113,25 @@ export default class EmployeeMonthHoursView extends JetView{
                     css: {'text-align' : 'center'},
                     template: function(obj) {
                       if (obj.$group) return '';
-                      if (obj.int_start == 0) return '';
-                      if (obj.int_end == 0) return '';
-                      return  obj.int_end- obj.int_start -1;
+                      return  obj.qty_hours;
                     }
                   },
                   //{ id:"pay_prepaid", header:[ "Аванс",  "" ], width: 100, sort: "string" },
                   { id:"transaction_sum", header:[ "Оплата",  "" ], width: 100, sort: "string",
                     css: {'text-align' : 'right'}
                   },
-                  { id:"salary_day", header:[ "З.п/ч",  "" ], width: 100, sort: "string" },
+                  { id:"rate_day", header:[ "З.п/ч",  "" ], width: 100, sort: "string",
+                    css: {'text-align' : 'right'},
+                    numberFormat:"1111"
+                    // format:function(value){
+                    //   return webix.i18n.numberFormat(value);
+                    // },
+                  },
                   { id:"description", header:[ "Примечание",  "" ], width: 130, sort: "string", fillspace:true },
                   //{ id:"signature", header:[ "Подпись",  "" ], width: 100, sort: "string", fillspace:true },
                 ],
                 url: this.app.config.apiRest.getUrl('get',"accounting/employee-time-works",  {
+                  'expand': 'documentSalaryAccrual',
                   'filter':'{"employee_id":'+scope.getParam('id')+'}', 'per-page':'-1','sort':'date_work'}),
                 save: "api->accounting/employee-time-works",
 
@@ -137,9 +143,10 @@ export default class EmployeeMonthHoursView extends JetView{
                     map: {
                       'value' : ['date_work'],
                       'transaction_sum' : ['transaction_sum', 'sum'],
-
+                      'rate_day' : ['rate_day', 'sum'],
                     }
                   },
+
 
                   $sort:{ by:"date_work", dir:"asc", as:"date" },
                 },
@@ -147,6 +154,7 @@ export default class EmployeeMonthHoursView extends JetView{
 
 
                 },
+
                 on:{
                   onBeforeLoad:function() {
                     this.showOverlay("Loading...");
@@ -206,7 +214,7 @@ export default class EmployeeMonthHoursView extends JetView{
     let table = this.$$("calendar-employee-table");
     webix.toExcel(table, {
       filename: "hours_"+this.getParam('name'),
-      styles:false,
+      styles: true,
       filter:function(obj){
         return table.isBranchOpen(table.getParentId(obj.id)) == 1;
       }

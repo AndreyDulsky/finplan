@@ -3,7 +3,7 @@ export class ApiRest {
   constructor(){
     let $scope = this;
     //let wjetUser = webix.storage.local.get("wjet_user");
-    if (location.host == 'localhost:8082') {
+    if (location.host == 'localhost:8080') {
       this.urlBase = "http://admin.startsellshop.local/api";
     } else {
       this.urlBase = "http://admin.startsell.biz/api";
@@ -55,7 +55,8 @@ export class ApiRest {
   }
 
   put(model, params) {
-    if (!params[id]) return alert("You need fill params[id]");
+    debugger;
+    if (!params['id']) return alert("You need fill params[id]");
     return this.getUrl('put', model, params);
   }
 

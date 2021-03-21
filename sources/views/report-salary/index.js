@@ -478,7 +478,6 @@ export default class OrderResultView extends JetView{
               "template" : function(data) {
                   if (data.$group) return '';
                   let result = data.BY;
-                  if (data.BY == -1) result = 1;
                   if (data.BY == 0) result = '';
                   return  result;
               }
