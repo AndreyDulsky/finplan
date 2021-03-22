@@ -173,7 +173,7 @@ export default class ReportCashFlowView extends JetView{
   resetColumns(){
     this.$$("balance-table").config.columns = [
       { id:"name", header:"Наиименование", width: 380, sort: "string", "open":true, template:"{common.treetable()} #name#" },
-      //{ id:"category_id", header:"Категория", width: 380, sort: "string"},
+      { id:"transaction_category_type", header:"type", width: 380, sort: "string"},
       // { id:"value", header:"Sum",	width:100, css: {"text-align": "right", "font-weight": "500", "color":"#222"}, format: webix.Number.format,
       //   footer: {content: "summColumn", css: {"text-align": "right"}},  'editor' : 'text',
       // },

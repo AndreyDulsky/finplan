@@ -132,6 +132,18 @@ webix.editors.$popup = {
   }
 };
 
+webix.GroupMethods.mysum = function(prop, data){
+  let sumA = 0;
+  let sumB = 0;
+  for (let i = data.length - 1; i >= 0; i--) {
+    sumB = (data[i].G - data[i].pay_predict - data[i].pay_remainder)*1;
+    if (!isNaN(sumB)) sumA += sumB;
+  }
+
+  return 1;
+};
+
+
 webix.Date.monthEnd = function(obj){
   obj = webix.Date.monthStart(obj);
   obj = webix.Date.add(obj, 1, "month");
@@ -146,8 +158,6 @@ var parserDate = webix.Date.strToDate("%Y-%m-%d");
 var parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
 
 export default class OrderPaymentView extends JetView{
-
-
 
   config(){
     let scope = this;
@@ -177,7 +187,7 @@ export default class OrderPaymentView extends JetView{
                   label: 'с',
                   labelWidth:30,
                   width:160,
-                  value: webix.Date.weekStart(new Date())
+                  value: webix.Date.monthStart(new Date())
                 },
                 {
                   view:"datepicker",
@@ -292,6 +302,7 @@ export default class OrderPaymentView extends JetView{
           //autoConfig:true,
           tooltip:true,
           clipboard:"selection",
+          math: true,
           columns:[
 
             // {
@@ -369,8 +380,16 @@ export default class OrderPaymentView extends JetView{
               format: formatDate,
               "css": {"color": "green", "text-align": "center"},
             },
-            { id:"pay_remainder", header:[ "факт.ост", { content:"textFilter" },{ content:"totalColumn" } ], width:90,   editor:"text",
+            { id:"pay_remainder", header:[ "Факт.ост", { content:"textFilter" },{ content:"totalColumn" } ], width:90,   editor:"text",
               "css": {"color": "green", "text-align": "right"},
+            },
+            { id:"total_pay_remainder", header:[ "Остаток", { content:"numberFilter" },{ content:"totalColumn" }  ], width:90,
+              "css": {"color": "green", "text-align": "right"},
+              math:'[$r,G]-[$r,pay_predict]-[$r,pay_remainder]',
+              template: function(obj) {
+                  if (obj.$group) return '';
+                  return (obj.G - obj.pay_predict - obj.pay_remainder)
+              }
             },
             { id:"desc_pay", header:[ "Примечание", { content:"textFilter" }, "" ], width:150,  editor:"text" },
 
@@ -404,16 +423,17 @@ export default class OrderPaymentView extends JetView{
           scheme:{
             $group:{
               by:function(obj){ return formatDate(obj.date_shipment_plan)}, // 'company' is the name of a data property
-              map:{
-                G:["G","median"],
-                value:["date_shipment_plan"],
-                A:["A"],
-                pay_predict_plan: ['pay_predict_plan'],
-                pay_predict: ['pay_predict'],
-                pay_remainder_plan: ['pay_remainder_plan'],
-                pay_remainder: ['pay_remainder'],
+              map: {
+                G: ["G", "median"],
+                value: ["date_shipment_plan"],
+                A: ["A"],
+                pay_predict_plan: ['pay_predict_plan', 'sum'],
+                pay_predict: ['pay_predict', 'sum'],
+                pay_remainder_plan: ['pay_remainder_plan', 'sum'],
+                pay_remainder: ['pay_remainder', 'sum'],
+                //total_pay_remainder: ['total_pay_remainder'],
 
-              },
+              }
             },
 
 
@@ -429,7 +449,7 @@ export default class OrderPaymentView extends JetView{
                 item.$css = "highlight-green";
             }
           },
-          ready:function(){
+          ready:function() {
             scope.configColumns = JSON.parse(JSON.stringify(this.config.columns));
             let state = webix.storage.local.get("order-payment-table");
             if (state)
