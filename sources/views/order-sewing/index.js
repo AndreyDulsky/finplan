@@ -994,7 +994,7 @@ export default class OrderSewingView extends JetView{
             },
 
             {
-              id:"date_carpenter",
+              id:"BD",
               header:[ "Дата ст.факт оконч.", { content:"selectFilter" }, "" ],
               width:145,
               editor:"date",
@@ -1003,7 +1003,7 @@ export default class OrderSewingView extends JetView{
               "css": {"text-align": "center", "color":"green", "font-weight": 500},
               hidden: false,
               template: function(obj) {
-                return formatDateTime(parserDateTime(obj.date_carpenter));
+                return formatDateTime(parserDateTime(obj.BD));
               }
             },
             { id:"AZ", header:[ "ФИО столярка", { content:"selectFilter" },{ content:"mySummColumn" }], width:115 , batch:10, editor:"text"},
