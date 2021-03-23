@@ -94,7 +94,7 @@ export default class TimeWorkReportView extends JetView{
                 { id:"employee_id", header:"Сотрудник", width: 180, sort: "string",collection: employees },
                 { id:"date_absence_start", header:"Время отстутствия с", width: 180, sort: "string", editor:"date", format: formatDateTime },
                 { id:"date_absence_end", header:"Время отстутствия по", width: 180, sort: "string", edit: 'text', editor:"date", format: formatDateTime},
-                { id:"description", header:"Примечание", width: 180, sort: "string", editor: 'text' },
+                { id:"description", header:"Примечание", width: 280, sort: "string", editor: 'text' },
 
                 {
                   "id": "action-delete",
