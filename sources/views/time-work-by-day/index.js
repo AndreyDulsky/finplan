@@ -296,7 +296,12 @@ export default class ProductsBedView extends JetView{
     columns.splice(1,0,{ id:id+'-end', header:headerStop,	width:50 , css: {"text-align": "right"},
       format: webix.Number.format, editor:"text",
       template: function(obj) {
-        return (!obj[id+'-end'] || obj[id+'-end'] == 0) ? '':obj[id+'-end'];
+        let result = (!obj[id+'-end'] || obj[id+'-end'] == 0) ? '':obj[id+'-end'];
+        //if (obj[id+'-type'] == 'Прогул') return '<div class="highlight-red" >'+result+'</div>';
+        return result;
+      },
+      cssFormat: function(value, obj) {
+        return (obj[id+'-type'] == 'Прогул') ? 'highlight-red': {};
       }
     });
     columns.splice(1,0,{ id:id+'-start', header:headerStart,	width:50 , css: {"text-align": "right"},
