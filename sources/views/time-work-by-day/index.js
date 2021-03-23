@@ -301,13 +301,22 @@ export default class ProductsBedView extends JetView{
         return result;
       },
       cssFormat: function(value, obj) {
-        return (obj[id+'-type'] == 'Прогул') ? 'highlight-red': {};
+        let result;
+        result = (obj[id+'-type'] == 'Заявление') ? 'highlight-green': {};
+        if (obj[id+'-type'] == 'Прогул') result =  'highlight-red';
+        return result;
       }
     });
     columns.splice(1,0,{ id:id+'-start', header:headerStart,	width:50 , css: {"text-align": "right"},
       format: webix.Number.format, editor:"text",
       template: function(obj) {
         return (!obj[id+'-start'] || obj[id+'-start'] == 0) ? '':obj[id+'-start']
+      },
+      cssFormat: function(value, obj) {
+        let result;
+        result = (obj[id+'-type'] == 'Заявление') ? 'highlight-green': {};
+        if (obj[id+'-type'] == 'Прогул') result =  'highlight-red';
+        return result;
       }
     });
 
