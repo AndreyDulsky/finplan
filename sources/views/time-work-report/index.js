@@ -107,9 +107,13 @@ export default class TimeWorkReportView extends JetView{
               ],
               url: this.app.config.apiRest.getUrl('get',"accounting/employee-work-time-reports", {'sort':'-date_created'}),//"api->accounting/contragents",
               save: "api->accounting/employee-work-time-reports",
-              // scheme: {
-              //    $sort:{ by:"name", dir:"asc" },
-              //  },
+              scheme: {
+                $init:function(item) {
+                  if (item.type == 'Прогул')
+                    item.$css = "highlight-red";
+
+                }
+              },
 
               on:{
                 onItemClick:function(id, e, trg) {
