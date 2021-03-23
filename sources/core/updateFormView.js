@@ -59,12 +59,13 @@ export default class UpdateFormView extends JetView {
     let state  = this.state;
     let api = this.apiRest;
     let record = table.getSelectedItem();
-    if (!record && table.getFirstId()) record = table.getItem(table.getFirstId());
+    //if (!record && table.getFirstId()) record = table.getItem(table.getFirstId());
 
     let isUpdate = (record);
     state.tableId = table.config.urlEdit;
     state.table = table;
     state.tableRecord = record;
+
     state.isUpdate = isUpdate;
     state.formEdit = this.$$('formEdit');
     state.formUrl = "accounting/"+state.tableId+"/form";

@@ -1,11 +1,33 @@
 import {JetView} from "webix-jet";
 import UpdateFormView from "core/updateFormView";
+import {employees} from "models/employee/employees";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
 
-
-export default class TransactionCategoryDirectoryView extends JetView{
+let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
+webix.editors.$popup = {
+  date:{
+    view:"popup",
+    body:{
+      view:"calendar",
+      timepicker:true,
+      icons:true
+      //weekNumber:true,
+      //width: 220,
+      //height:200
+    }
+  },
+  text : {
+    view:"popup",
+    body:{
+      view:"textarea",
+      width:250,
+      height:100
+    }
+  }
+};
+export default class TimeWorkReportView extends JetView{
   config(){
     return {
       localId: "layout",
@@ -22,7 +44,7 @@ export default class TransactionCategoryDirectoryView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Категории затрат",
+                  "label": "Заявления на отсутствие",
                   "width": 150
                 },
 
@@ -33,7 +55,7 @@ export default class TransactionCategoryDirectoryView extends JetView{
                   value:"fs",
                   width: 30,
                   click: function() {
-                    webix.fullscreen.set("category-table");
+                    webix.fullscreen.set("employee-work-time-report-table");
                   }
                 },
               ]
@@ -59,24 +81,21 @@ export default class TransactionCategoryDirectoryView extends JetView{
             },
             {
               view: "datatable",
-              localId: "category-table",
-              urlEdit: 'category',
+              localId: "employee-work-time-report-table",
+              urlEdit: 'employee-work-time-report',
               css:"webix_header_border webix_data_border",
-              select: true,
+              select: 'cell',
+              editable:true,
+              editaction: "dblclick",
               resizeColumn: { headerOnly:true },
-
               columns:[
-                { id:"id", header:[ "#", { content:"selectFilter" }, "" ],	width:80 },
-                { id:"name", header:[ "Наименование", { content:"selectFilter" }, "" ], width: 380, sort: "string" },
-                { id:"activity_type", header:[ "Тип категории", { content:"selectFilter" }, "" ]},
-                { id:"transaction_category_type", header:[ "Тип операции", { content:"selectFilter" }, "" ]},
-                { id:"account_category_type", header:[ "account_category_type", { content:"selectFilter" }, "" ]},
-                { id:"outcome_classification", header:[ "outcome_classification", { content:"selectFilter" }, "" ]},
-                { id:"parent_balance_id", header:[ "parent_balance_id", { content:"selectFilter" }, "" ]},
 
+                { id:"date_created", header:"Дата", width: 100, sort: "string", format: formatDateTime, editor:"date" },
+                { id:"employee_id", header:"Сотрудник", width: 180, sort: "string",collection: employees },
+                { id:"date_absence_start", header:"Время отстутствия с", width: 180, sort: "string", editor:"date", format: formatDateTime },
+                { id:"date_absence_end", header:"Время отстутствия по", width: 180, sort: "string", edit: 'text', editor:"date", format: formatDateTime},
+                { id:"description", header:"Примечание", width: 180, sort: "string", editor: 'text' },
 
-                //{ id:"external_id", header:"Экспорт ID" },
-                { id:"parent_id", header:"Родитель" },
                 {
                   "id": "action-delete",
                   "header": "",
@@ -85,12 +104,11 @@ export default class TransactionCategoryDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/categories"),
-              save: "api->accounting/categories",
+              url: this.app.config.apiRest.getUrl('get',"accounting/employee-work-time-reports", {'sort':'-date_created'}),//"api->accounting/contragents",
+              save: "api->accounting/employee-work-time-reports",
               // scheme: {
-              //   $sort:{ by:"name", dir:"asc" },
-              //
-              // },
+              //    $sort:{ by:"name", dir:"asc" },
+              //  },
 
               on:{
                 onItemClick:function(id, e, trg) {
@@ -110,11 +128,12 @@ export default class TransactionCategoryDirectoryView extends JetView{
                       });
                     });
 
-                  } else {
+                  }
+                  if (id.column == 'action-edit') {
                     this.$scope.cashEdit.showForm(this);
                   }
                 },
-                onBeforeLoad:function(){
+                onBeforeLoad:function() {
                   this.showOverlay("Loading...");
                 },
                 onAfterLoad:function(){
@@ -135,7 +154,7 @@ export default class TransactionCategoryDirectoryView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("category-table");
+    let table = this.$$("employee-work-time-report-table");
     //table.markSorting("name", "asc");
     let scope = this;
     // table.attachEvent("onDataRequest", function (start, count) {
@@ -168,7 +187,7 @@ export default class TransactionCategoryDirectoryView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/categories'), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employee-work-time-reports'), objFilter).then(function(data) {
         table.parse(data);
       });
 
@@ -184,8 +203,8 @@ export default class TransactionCategoryDirectoryView extends JetView{
   }
 
   doAddClick() {
-    this.$$('category-table').unselect();
-    this.cashEdit.showForm(this.$$('category-table'));
+    this.$$('employee-work-time-report-table').unselect();
+    this.cashEdit.showForm(this.$$('employee-work-time-report-table'));
   }
 
 }

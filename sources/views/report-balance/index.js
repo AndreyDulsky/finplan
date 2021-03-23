@@ -76,6 +76,8 @@ export default class ReportCashFlowView extends JetView{
               footer: false,
               select: true,
               editable:true,
+              math: true,
+              editMath:true,
               editaction: "dblclick",
               resizeColumn: { headerOnly:true },
               columns:[
@@ -152,7 +154,8 @@ export default class ReportCashFlowView extends JetView{
       let record = {};
       //if(editor.column === "value"){
         record = table.getItem(editor.row);
-        let recordEdit = {'value': state.value};
+
+        let recordEdit = {'value': eval(state.value.replace('=',''))};
         let id = record.ids[editor.column];
         //table.refresh(editor.row);
         tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/report-balances/"+id);
@@ -166,7 +169,7 @@ export default class ReportCashFlowView extends JetView{
 
   addColumn(id, header) {
     var columns = this.$$("balance-table").config.columns;
-    columns.splice(1,0,{ id:id, header:header,	width:100 , css: {"text-align": "right"}, format: webix.Number.format, editor: 'text'});
+    columns.splice(1,0,{ id:id, header:header,	width:100 , css: {"text-align": "right"},format: webix.Number.format, editor: 'text'});
     this.$$("balance-table").refreshColumns();
   };
 
@@ -191,7 +194,7 @@ export default class ReportCashFlowView extends JetView{
 
     let dates = getDaysArray(dateFrom.getValue(), dateTo.getValue());
     dates.reverse();
-    let formatColumn = webix.Date.dateToStr("%d %M %y");
+    let formatColumn = webix.Date.dateToStr("%M %y");
     let format = webix.Date.dateToStr("%Y-%m-%d");
     this.resetColumns();
     for (let key in dates) {
