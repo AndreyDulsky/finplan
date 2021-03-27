@@ -214,7 +214,7 @@ export default class EmployeeMonthHoursView extends JetView{
     let table = this.$$("calendar-employee-table");
     webix.toExcel(table, {
       filename: "hours_"+this.getParam('name'),
-      styles: true,
+      styles: false,
       filter:function(obj){
         return table.isBranchOpen(table.getParentId(obj.id)) == 1;
       }

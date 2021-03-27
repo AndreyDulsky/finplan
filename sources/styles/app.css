@@ -88,6 +88,15 @@
     background: #F4F5F9;
 }
 
+
+.table-transaction .webix_column div[aria-level="2"] {
+    background: #F4F5F9;
+}
+
+.table-transaction .webix_column div[aria-level="1"] {
+    background: #fff;
+}
+
 div[column="2"] div[aria-level="2"] .subrowimage {
     margin-left: 25px;
     height: 100%;

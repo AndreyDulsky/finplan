@@ -419,15 +419,15 @@ export default class OrderResultView extends JetView{
             },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:100, editor:"text", hidden: false  },
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:230, editor:"text", hidden: false },
-            // { id:"product_id", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,
-            //   editor: 'combo', options: productBed
-            // },
+            { id:"product_id", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,
+              editor: 'combo', options: productBed
+            },
             //{ id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150, editor:"text", "sort": "string", hidden: true},
 
-            // { id:"size", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
-            //   width:70,
-            //   "css": {"text-align": "center"},
-            //   editor:"text" },
+            { id:"size", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" } ],
+              width:70,
+              "css": {"text-align": "center"},
+              editor:"text" },
 
             // { id:"V", header:[ "Сумма факт", { content:"textFilter" }, { content:"totalColumn" } ],
             //   width:100,

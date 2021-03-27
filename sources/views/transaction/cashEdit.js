@@ -177,6 +177,7 @@ export default class CashEditView extends JetView {
                                             { id:"project_id",	editor:"combo", options: projects, header:"Проект" , adjust: true,  hidden : true,  batch:'4'},
                                             { id:"value",	editor:"text", header:"Сумма", 	width:100,	sort:"int", "css" : {"text-align" : "right"}},
                                             { id:"part_procent",	header:"Доля,%", 	width:70, "css" : {"text-align" : "right", math:"[$r,value]"}},
+                                            { id:"employee_id",	header:"Сотрудник", 	width:70, "css" : {"text-align" : "right", math:"[$r,value]"}},
                                             { id:"action-delete-part", 	header:"", 	width:40, "template" : '{common.trashIcon()}'  },
                                         ],
                                         "editable":true,

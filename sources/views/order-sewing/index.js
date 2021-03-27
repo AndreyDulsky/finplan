@@ -1072,10 +1072,10 @@ export default class OrderSewingView extends JetView{
             //   "css": {"text-align": "right",  "font-weight": 500}, batch:2,
             // },
             { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" },
-            // { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, "" ],
-            //   width:100,
-            //   "css": {"text-align": "right",  "font-weight": 500}, batch:2,
-            // },
+            { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, "" ],
+              width:100,
+              "css": {"text-align": "right",  "font-weight": 500}, batch:10,
+            },
 
 
             // Sawcut

@@ -34,9 +34,9 @@ export default class UpdateJetView extends JetView {
           view: "window",
           position: function (state) {
               state.left = 44;
-              state.top = 42;
+              state.top = 34;
               state.width = state.maxWidth / 3;
-              state.height = state.maxHeight - 42;
+              state.height = state.maxHeight - 34;
           },
           head: "Редактирование операции",
           close: true,
@@ -361,9 +361,10 @@ export default class UpdateJetView extends JetView {
     if (record.type_part_id == 3) {
       changes = ["project_id"];
     }
-    //debugger;
+
     for (let key in parts) {
       for (let keyPart in parts[key]) {
+
         if (changes.indexOf(keyPart) != -1) {
           parts[key][keyPart] = record[keyPart];
         }
