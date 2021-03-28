@@ -2,6 +2,7 @@ import {JetView} from "webix-jet";
 import UpdateFormModelView from "core/updateFormView";
 import ProductWorkSalaryView from "views/product-work-salary/index";
 import PowerFormView from "views/order-sewing/power-form";
+import CheckFormView from "views/order/check-work";
 
 
 webix.GroupMethods.median = function(prop, data){
@@ -382,6 +383,11 @@ export default class OrderSewingView extends JetView{
               //format:formatDateHour,
               "css": {"color": "black", "text-align": "right", "font-weight": 500},
               //"sort" : "date"
+            },
+            {"id": "action-view", "header": "", "width": 50,
+              template: function(obj,common) {
+                return (obj.$group) ? '' : common.editIcon();
+              }
             },
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 ,  editor:"text"},
             { id:"H", header:[ "Дата клиента", { content:"textFilter" }, "" ], width:70, editor:"text" },
@@ -768,6 +774,8 @@ export default class OrderSewingView extends JetView{
               }
             },
 
+            { id:"desc_upholstery", header:[ "Комментарий обивка", { content:"selectFilter" },""], width:250,  editor:"popup" , batch:4},
+
 
             //sewing
             { id:"time_sewing", header:[ "Вр.шв.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
@@ -1072,6 +1080,7 @@ export default class OrderSewingView extends JetView{
             //   "css": {"text-align": "right",  "font-weight": 500}, batch:2,
             // },
             { id:"Z", header:[ "Обивщик", { content:"selectFilter" }, "" ], width:100, editor:"text" },
+
             { id:"AG", header:[ "Коэф. ст.", { content:"textFilter" }, "" ],
               width:100,
               "css": {"text-align": "right",  "font-weight": 500}, batch:10,
@@ -1298,6 +1307,13 @@ export default class OrderSewingView extends JetView{
               scope.beforeDropChangeData(record, recordSource.value);
 
             },
+            onItemClick:function(id, e, trg) {
+
+              if (id.column == 'action-view') {
+                this.$scope.formEdit.showWindow({},this);
+
+              }
+            },
 
           },
           onClick:{
@@ -1479,6 +1495,8 @@ export default class OrderSewingView extends JetView{
       body: ProductWorkSalaryView
     };
     this.winTable =  this.ui(winTable);
+
+    this.formEdit = this.ui(CheckFormView);
     //this.productWorkSalary = this.ui(ProductWorkSalaryView);
 
   }

@@ -2,6 +2,7 @@ import {JetView} from "webix-jet";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
+import CheckFormView from "views/order/check-work";
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -283,7 +284,7 @@ export default class StartView extends JetView{
 				/*wjet::Settings*/
         {
           view:"treetable",
-
+          urlEdit: 'order',
           css:"webix_header_border webix_data_border",
           leftSplit:3,
           //rightSplit:2,
@@ -321,6 +322,11 @@ export default class StartView extends JetView{
                 return obj.A;
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500}
+            },
+            {"id": "action-view", "header": "", "width": 50,
+              template: function(obj,common) {
+                return (obj.$group) ? '' : common.editIcon();
+              }
             },
             {
               id:"AE", header:"Дата", width:120, editor: 'date',
@@ -714,7 +720,14 @@ export default class StartView extends JetView{
               let recordSource = this.getItem(context.parent);
               scope.beforeDropChangeData(record, recordSource.value);
 
-            }
+            },
+            onItemClick:function(id, e, trg) {
+
+              if (id.column == 'action-view') {
+                this.$scope.formEdit.showWindow({},this);
+
+              }
+            },
           }
 
         }
@@ -780,7 +793,7 @@ export default class StartView extends JetView{
         table.parse(data.json().items);
       });
     });
-
+    this.formEdit = this.ui(CheckFormView);
 
   }
 
