@@ -37,16 +37,20 @@ export default class CheckFormView extends JetView {
   }
 
   init(view, url) {
-    this.attachFormEvents();
+
   }
 
 
 
   showWindow(obj, table) {
 
+    let scope = this;
     let state  = this.state;
     let record = table.getSelectedItem();
+    let isUpdate = (record);
     let fieldSet;
+    state.isUpdate = isUpdate;
+    state.table = table;
     state.formEdit =  this.$$("formEdit");
     state.win = this.$$("winEdit");
     state.formConfig = [];
@@ -68,6 +72,7 @@ export default class CheckFormView extends JetView {
           fieldSet = {
             view: "fieldset",
             label:departmentName,
+
             body: {
               rows: fields
             }
@@ -80,7 +85,7 @@ export default class CheckFormView extends JetView {
           {
             view: 'checkbox',
             label: obj.name,
-            labelWidth : 150,
+            labelWidth : 250,
             value: 0
           }
         );
@@ -99,109 +104,136 @@ export default class CheckFormView extends JetView {
       state.formConfig.push(fieldSet);
 
       state.formConfigBase = [
-        {
-          view:"tabview",
-          tabbar:{ options:["Описание","Производственные процессы"]},
-          animate:false,
-          paddingY:10,
-          cells:[
-            { id:"Описание", paddingY: 30,rows:[
+          {
+            view:"tabview",
+            tabbar:{ options:["Описание","Производственные процессы"]},
+            animate:false,
+            paddingY:10,
+            cells:[
+              { id:"Описание", paddingY: 30, labelWidth : 250, rows:[
 
-              {
-                view: 'text',
-                label : "№",
-                name: "A",
-                labelWidth : 150,
-
-              },
-              {
-                view: 'text',
-                label : "Клиент",
-                name: "F",
-                labelWidth : 150,
-
-              },
-              {
-                view: 'text',
-                label : "Тип",
-                name: "E",
-                labelWidth : 150
-              },
-              {
-                view: 'text',
-                label : "Наименование",
-                name: "I",
-                labelWidth : 150
-              },
-              {
-                view: 'text',
-                label : "Ткань",
-                name: "L",
-                labelWidth : 150
-              },
-
-              {
-                view: 'textarea',
-                name: 'T',
-                labelWidth : 150,
-                label : "Примечание продажи",
-                height :60,
-              },
-              {
-                view: 'textarea',
-                name: 'desc_sawcut',
-                label : "Примечание распил",
-                labelWidth : 150,
-                height :60,
-              },
-              {
-                view: 'textarea',
-                name: 'desc_carpenter',
-                label : "Примечание столярка",
-                labelWidth : 150,
-                height :60,
-              },
-              {
-                view: 'textarea',
-                name: 'desc_cut',
-                label : "Примечание крой",
-                labelWidth : 150,
-                height :60,
-              },
-              {
-                view: 'textarea',
-                name: 'desc_sewing',
-                label : "Примечание пошив",
-                labelWidth : 150,
-                height :60,
-              },
-              {
-                view: 'textarea',
-                name: 'desc_upholstery',
-                label : "Примечание обивка",
-                labelWidth : 150,
-                height :60,
-              },
-              {
-                view: 'textarea',
-                name: 'desc_packaging',
-                label : "Примечание упаковка",
-                labelWidth : 150,
-                height :60,
-              },
-              {
-                view: 'textarea',
-                name: 'desc_shipment',
-                label : "Примечание отгрузка",
-                labelWidth : 150,
-                height :60,
-              },
+                {
+                  view: 'text',
+                  label : "№",
+                  name: "A",
 
 
-              {}
-            ]},
-            { id:"Производственные процессы", paddingY: 30, rows:state.formConfig}
-          ]
+                },
+                {
+                  view: 'text',
+                  label : "Клиент",
+                  name: "F",
+                  labelWidth : 150,
+
+                },
+                {
+                  view: 'text',
+                  label : "Тип",
+                  name: "E",
+                  labelWidth : 150
+                },
+                {
+                  view: 'text',
+                  label : "Наименование",
+                  name: "I",
+                  labelWidth : 150
+                },
+                {
+                  view: 'text',
+                  label : "Ткань",
+                  name: "L",
+                  labelWidth : 150
+                },
+
+                {
+                  view: 'textarea',
+                  name: 'T',
+                  labelWidth : 150,
+                  label : "Примечание продажи",
+                  height :60,
+                },
+                {
+                  view: 'textarea',
+                  name: 'desc_sawcut',
+                  label : "Примечание распил",
+                  labelWidth : 150,
+                  height :60,
+                },
+                {
+                  view: 'textarea',
+                  name: 'desc_carpenter',
+                  label : "Примечание столярка",
+                  labelWidth : 150,
+                  height :60,
+                },
+                {
+                  view: 'textarea',
+                  name: 'desc_cut',
+                  label : "Примечание крой",
+                  labelWidth : 150,
+                  height :60,
+                },
+                {
+                  view: 'textarea',
+                  name: 'desc_sewing',
+                  label : "Примечание пошив",
+                  labelWidth : 150,
+                  height :60,
+                },
+                {
+                  view: 'textarea',
+                  name: 'desc_upholstery',
+                  label : "Примечание обивка",
+                  labelWidth : 150,
+                  height :60,
+                },
+                {
+                  view: 'textarea',
+                  name: 'desc_packaging',
+                  label : "Примечание упаковка",
+                  labelWidth : 150,
+                  height :60,
+                },
+                {
+                  view: 'textarea',
+                  name: 'desc_shipment',
+                  label : "Примечание отгрузка",
+                  labelWidth : 150,
+                  height :60,
+                },
+
+
+                {}
+              ]},
+              { id:"Производственные процессы", paddingY: 30, rows:state.formConfig}
+            ]
+          },
+          {
+            "margin" : 10,
+            "cols" : [
+              {
+                "view": "template",
+                "template": " ",
+                "role": "placeholder",
+                "borderless": true
+              },
+              // {
+              //   "view": "button",
+              //   "label": "Отмена",
+              //   "localId": "btn_cancel",
+              //   "css": "webix_transparent",
+              //   "align": "right",
+              //   "width": 120
+              // },
+              {
+                "view" : "button",
+                "localId" : "btn_save",
+                "css" : "webix_primary",
+                "label" : "Сохранить",
+                "align" : "right",
+                "width" : 120
+              }
+            ]
         }
       ];
 
@@ -210,13 +242,10 @@ export default class CheckFormView extends JetView {
         state.formEdit
       );
       state.formEdit.setValues(record);
+      scope.attachFormEvents();
 
       state.win.show();
     });
-
-
-
-
   }
 
 
@@ -230,9 +259,9 @@ export default class CheckFormView extends JetView {
     let btnSave = this.$$("btn_save");
     let btnCopy = this.$$("btn_copy");
 
-    // btnSave.attachEvent("onItemClick", function(newValue) {
-    //   scope.doClickSave();
-    // });
+    btnSave.attachEvent("onItemClick", function(newValue) {
+      scope.doClickSave();
+    });
     // btnCopy.attachEvent("onItemClick", function(newValue) {
     //   scope.doClickSave(true);
     // });
