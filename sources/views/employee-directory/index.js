@@ -98,6 +98,7 @@ export default class EmployeeDirectoryView extends JetView{
                 //{ id:"is_piecework", header:"Тип зарплаты", width: 180, sort: "string", type:'select',collection: typeSalary },
                 //{ id:"bitrix_id", header:"ID битрикс", width: 120, sort: "string", edit: 'text' },
                 { id:"category_id", header:"ID статьи выплат", width: 120, sort: "string", edit: 'text' },
+                { id:"phone", header:"Телефон", width: 120, sort: "string", edit: 'text' },
                 {
                   "id": "action-delete",
                   "header": "",

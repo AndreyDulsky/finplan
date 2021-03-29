@@ -131,7 +131,7 @@ export default class EmployeeMonthHoursView extends JetView{
                   //{ id:"signature", header:[ "Подпись",  "" ], width: 100, sort: "string", fillspace:true },
                 ],
                 url: this.app.config.apiRest.getUrl('get',"accounting/employee-time-works",  {
-                  'expand': 'documentSalaryAccrual',
+                  //'expand': 'documentSalaryAccrual',
                   'filter':'{"employee_id":'+scope.getParam('id')+'}', 'per-page':'-1','sort':'date_work'}),
                 save: "api->accounting/employee-time-works",
 
