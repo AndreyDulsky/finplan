@@ -85,6 +85,7 @@ export default class CheckFormView extends JetView {
           {
             view: 'checkbox',
             label: obj.name,
+            name: 'work'+'['+obj.id+'].name',
             labelWidth : 250,
             value: 0
           }
