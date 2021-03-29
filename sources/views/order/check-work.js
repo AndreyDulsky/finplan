@@ -117,7 +117,7 @@ export default class CheckFormView extends JetView {
                   view: 'text',
                   label : "№",
                   name: "A",
-
+                  labelWidth : 150,
 
                 },
                 {
