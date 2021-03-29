@@ -151,6 +151,24 @@ export default class CheckFormView extends JetView {
                   name: "N",
                   labelWidth : 150
                 },
+                {
+                  view: 'text',
+                  label : "Размер мет.рамы",
+                  name: "J",
+                  labelWidth : 150
+                },
+                {
+                  view: 'text',
+                  label : "Пуговицы",
+                  name: "O",
+                  labelWidth : 150
+                },
+                {
+                  view: 'text',
+                  label : "Отстрочка",
+                  name: "P",
+                  labelWidth : 150
+                },
 
                 {
                   view: 'textarea',
