@@ -776,7 +776,6 @@ export default class OrderSewingView extends JetView{
 
             { id:"desc_upholstery", header:[ "Комментарий обивка", { content:"selectFilter" },""], width:250,  editor:"popup" , batch:4},
 
-
             //sewing
             { id:"time_sewing", header:[ "Вр.шв.план,ч", { content:"textFilter" }, { content:"totalColumn" } ],
               width:90, editor:"text",
@@ -1181,12 +1180,7 @@ export default class OrderSewingView extends JetView{
             //{ id:"CD", header:"Упаковка", width:80, batch:3, editor:"text" },
             { id:"CE", header:"Дата", width:90, batch:3, editor:"text" },
             { id:"T", header:[ "Описание", { content:"textFilter" }, "" ], width:200, editor:"popup" },
-
-
-
-
-
-
+            { id:"AF", header:[ "Комментарий работников", { content:"selectFilter" },""], width:250,  editor:"popup" , batch:4},
           ],
           save: "api->accounting/orders",
           scheme:{
