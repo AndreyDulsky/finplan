@@ -1,13 +1,12 @@
 import {JetView} from "webix-jet";
 import UpdateFormView from "core/updateFormView";
-//import {departments} from "models/department/departments";
-//import {typeSalary} from "models/department/type-salary";
+import {productTypes} from "models/product/product-type";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
 
 
-export default class WorkDirectoryView extends JetView{
+export default class OrderWorkDirectoryView extends JetView{
   config(){
     let scope = this;
     return {
@@ -25,13 +24,30 @@ export default class WorkDirectoryView extends JetView{
               cols: [
                 {
                   "view": "label",
-                  "label": "Работы",
+                  "label": "Счета",
                   "width": 150
                 },
 
                 {},
-                { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
+                {
+                  view:"icon",
+                  //type:"icon",
+                  icon: 'mdi mdi-refresh',
+                  autowidth:true,
+                  value :true,
+                  click: function() { scope.doRefresh() }
 
+                },
+                {
+                  view:"toggle",
+                  type:"icon",
+                  icon: 'mdi mdi-file-tree',
+                  autowidth:true,
+                  value :true,
+                  click: function() { scope.doClickOpenAll() }
+
+                },
+                { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  }
               ]
             },
             {
@@ -50,35 +66,23 @@ export default class WorkDirectoryView extends JetView{
                   autowidth:true,
                   click: () => this.doAddClick()
                 },
-                {}
+
 
               ]
             },
+
             {
               view: "treetable",
-              localId: "work-directory-table",
-              urlEdit: 'work',
-              //autoConfig: true,
+              localId: "order-work-status-table",
+              urlEdit: 'order-work-status',
               css:"webix_header_border webix_data_border",
-              //leftSplit:1,
-              //rightSplit:2,
+              leftSplit:2,
               select: true,
-              //datafetch:100,
-              //datathrottle: 500,
-              //loadahead:100,
               resizeColumn: { headerOnly:true },
 
               columns:[
-                //{ id:"id", header:"ID", width: 40 },
-                { id:"name", header:"Наименование", width: 250,
-                  template: function(obj, common) {
-                    if (obj.$group) return common.treetable(obj, common) + obj.department.name;
-                    return common.icon(obj)+obj.name;
-                  }
-                },
-                { id:"department_id", header:"Подразделение", width: 250,
-                  collection: scope.app.config.apiRest.getCollection('accounting/departments',{'per-page': -1})
-                },
+                { id:"id", header:"#",	width:50, sort: "int"},
+                { id:"name", header:"Наиименование", width: 280, sort: "string"},
 
                 {
                   "id": "action-delete",
@@ -88,21 +92,18 @@ export default class WorkDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/works", {'sort':'[{"property":"name", "direction" : "ASC"}]', 'expand' : 'department'}),
-              save: "api->accounting/works",
-              scheme: {
-                // $sort:{ by:"department_id", dir:"asc", as:"int" },
-                $group:{
-                  by:"department_id",
-                  map:{
-                    value:["department_id"],
-                    department:["department"]
-                  },
-                },
-                $init:function(obj){ obj.index = this.count()+1; }
-              },
-              ready:function(){
-                this.openAll();
+              url: this.app.config.apiRest.getUrl('get',"accounting/order-work-statuses", {'sort':'name', 'per-page': -1}),
+              save: "api->accounting/order-work-statuses",
+              // scheme: {
+              //    $sort:{ by:"name", dir:"asc" },
+              //  },
+              scheme:{
+                // $group:{
+                //   by:function(obj){ return obj.type_id}, // 'company' is the name of a data property
+                //   map:{
+                //     value:["type_id"],
+                //   },
+                // }
               },
               on:{
                 onItemClick:function(id, e, trg) {
@@ -122,7 +123,8 @@ export default class WorkDirectoryView extends JetView{
                       });
                     });
 
-                  } else {
+                  }
+                  if (id.column == 'action-edit') {
                     this.$scope.cashEdit.showForm(this);
                   }
                 },
@@ -145,38 +147,64 @@ export default class WorkDirectoryView extends JetView{
   }
 
   init(view){
-
+    let table = this.$$("order-work-status-table");
     let form = this.$$("form-search");
-    let table = this.$$("work-directory-table");
-    //table.markSorting("name", "asc");
     let scope = this;
-
+    webix.extend(table, webix.ProgressBar);
 
     form.attachEvent("onChange", function(obj){
-      let filter = {'search':form.getValue()};
-      let objFilter = { filter: filter };
-
-      webix.extend(table, webix.ProgressBar);
-
-      table.clearAll(true);
-      table.showProgress({
-        delay:2000,
-        hide:false
-      });
-
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/works', {'sort':'name'}), objFilter).then(function(data) {
-        table.clearAll(true);
-        table.parse(data);
-      });
-
+      scope.getData();
     });
 
     this.cashEdit = this.ui(UpdateFormView);
   }
 
+  getData() {
+
+    let table = this.$$("order-work-status-table");
+    let form = this.$$("form-search");
+    let scope = this;
+    let filter = {'search':form.getValue()};
+    let objFilter = { filter: filter };
+
+    webix.extend(table, webix.ProgressBar);
+
+    table.clearAll(true);
+    table.showProgress({
+      delay:2000,
+      hide:false
+    });
+
+    webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/order-work-statuses', {'sort':'name', 'per-page': -1}), objFilter).then(function(data) {
+      table.parse(data);
+      table.enable();
+      table.openAll();
+    });
+  }
+
   doAddClick() {
-    this.$$('work-directory-table').unselect();
-    this.cashEdit.showForm(this.$$('work-directory-table'));
+    this.$$('order-work-status-table').unselect();
+    this.cashEdit.showForm(this.$$('order-work-status-table'));
+  }
+
+  doClickOpenAll() {
+    let table = this.$$("order-work-status-table");
+    if (table.getOpenItems().length >0 ) {
+      table.closeAll();
+    } else {
+      table.openAll();
+    }
+  }
+
+  doRefresh() {
+    let table = this.$$("order-work-status-table");
+    table.disable();
+    table.showProgress({
+      type:"icon",
+      hide:false
+    });
+    this.getData()();
+
   }
 
 }

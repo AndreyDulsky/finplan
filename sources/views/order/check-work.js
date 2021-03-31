@@ -21,7 +21,7 @@ export default class CheckFormView extends JetView {
       position: function (state) {
         state.left = 44;
         state.top = 34;
-        state.width = state.maxWidth / 3;
+        state.width = state.maxWidth / 1.5;
         state.height = state.maxHeight - 38;
       },
       head: "Производственные процессы",
@@ -54,6 +54,8 @@ export default class CheckFormView extends JetView {
     state.formEdit =  this.$$("formEdit");
     state.win = this.$$("winEdit");
     state.formConfig = [];
+    state.formProcessConfig = [];
+
 
     let departmentName = '';
     state.works = table.$scope.app.config.apiRest.getCollection('accounting/works',{'per-page': -1, sort: 'department_id', 'expand': 'department'});
@@ -63,21 +65,22 @@ export default class CheckFormView extends JetView {
         departmentName = state.works.data.getItem(state.works.data.getFirstId()).department.name;
       }
       let fields = [];
+      let works = [];
       let i=0;
 
       state.works.data.each(function(obj){
         i++;
 
         if (obj.department.name != departmentName && i!= state.works.data.count()) {
-          fieldSet = {
-            view: "fieldset",
-            label:departmentName,
-
-            body: {
-              rows: fields
-            }
-          };
-          state.formConfig.push(fieldSet);
+          // fieldSet = {
+          //   view: "fieldset",
+          //   label:departmentName,
+          //
+          //   body: {
+          //     rows: fields
+          //   }
+          // };
+          // state.formConfig.push(fieldSet);
           departmentName = obj.department.name;
           fields = [];
         }
@@ -90,24 +93,110 @@ export default class CheckFormView extends JetView {
             value: 0
           }
         );
+        works.push(
+          {
+            id: obj.id,
+            value: obj.name
+          }
+        );
 
         //console.log(obj);
 
       });
 
-      fieldSet = {
-        view: "fieldset",
-        label: departmentName,
-        body: {
-          rows: fields
+      // fieldSet = {
+      //   view: "fieldset",
+      //   label: departmentName,
+      //   body: {
+      //     rows: fields
+      //   }
+      // };
+      //state.formConfig.push(fieldSet);
+      state.formConfig.push({
+        view:"dbllist",
+        list:{ autoheight: true },
+        labelLeft:"Рабочие процессы",
+        labelRight:"Выбранные",
+        name: 'works',
+        value: [1,6],
+        data:works
+      });
+      state.formProcessConfig.push({
+        view:"datatable",
+        css:"webix_header_border webix_data_border",
+        editable:true,
+        editaction: "dblclick",
+        resizeColumn: { headerOnly:true },
+        columns:[
+          //{ id:"id", header:"ID", width: 50},
+          { id:"sort_order", header:"№ пор.", width: 50, editor:"text"},
+          { id:"name", header:"Наименование", width: 150,
+            // template: function(obj, common) {
+            //   if (obj.$group) return common.treetable(obj, common) + obj.department.name;
+            //   return common.icon(obj)+obj.name;
+            // }
+          },
+          { id:"department_id", header:"Подразделение", width: 100,
+            collection: state.table.$scope.app.config.apiRest.getCollection('accounting/departments',{'per-page': -1})
+          },
+          { id:"employee_name", header:"Исполнитель", width: 100, editor:"text"},
+          { id:"status", header:"Статус", width: 50, editor:"text"},
+          { id:"date_fact_start", header:"Дата.факт.старт", width: 120},
+          { id:"date_fact_end", header:"Дата.факт.оконч.", width: 120},
+
+          { id:"time_work", header:"Время", width: 80},
+          { id:"description", header:"Описание", width: 80, editor:"text"},
+          {
+            "id": "action-delete",
+            "header": "",
+            "width": 50,
+            "template": "{common.trashIcon()}"
+          },
+        ],
+        url: state.table.$scope.app.config.apiRest.getUrl('get',"accounting/order-works", {
+          'filter':'{"order_id":"'+record['id']+'"}',
+          'expand' : 'department',
+          'sort' : 'sort_order'
+        }),
+        save: "api->accounting/order-works",
+        on:{
+          onItemClick:function(id, e, trg) {
+
+            if (id.column == 'action-delete') {
+              var table = this;
+              webix.confirm("Удалить запись?").then(function(result){
+                webix.dp(table).save(
+                  id.row,
+                  "delete"
+                ).then(function(obj){
+                  webix.dp(table).ignore(function(){
+                    table.remove(id.row);
+                  });
+                }, function(){
+                  webix.message("Ошибка! Запись не удалена!");
+                });
+              });
+
+            }
+          },
+          onBeforeLoad:function(){
+            this.showOverlay("Loading...");
+          },
+          onAfterLoad:function(){
+            if (!this.count())
+              this.showOverlay("Sorry, there is no data");
+            else
+              this.hideOverlay();
+          },
         }
-      };
-      state.formConfig.push(fieldSet);
+
+      });
+
 
       state.formConfigBase = [
           {
             view:"tabview",
-            tabbar:{ options:["Описание","Производственные процессы"]},
+            tabbar:{ options:["Описание","Работы","Процессы"]},
             animate:false,
             paddingY:10,
             cells:[
@@ -230,7 +319,9 @@ export default class CheckFormView extends JetView {
 
                 {}
               ]},
-              { id:"Производственные процессы", paddingY: 30, rows:state.formConfig}
+              { id:"Работы", paddingY: 30, rows:state.formConfig},
+              { id:"Процессы", paddingY: 30, rows:state.formProcessConfig},
+
             ]
           },
           {

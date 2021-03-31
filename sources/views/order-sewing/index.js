@@ -1379,6 +1379,7 @@ export default class OrderSewingView extends JetView{
       "per-page": "500",
       sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
       filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
+      expand: 'works'
       //filter: '{"AE":{">=":"01.02.20"}}'
     });
     let scope =this;

@@ -42,7 +42,7 @@ export default class App extends JetApp {
     webix.Date.startOnMonday = true;
     webix.proxy.api = {
       $proxy:true,
-      params: {"expand":"data,contragent,category,project,account", "per-page":"-1"},
+      params: { "per-page":"-1"},
       //rest: this.config.apiRest,
       load: function(view, params) {
         return webix.ajax().get(restObj.getUrl('get',this.source), this.params);
