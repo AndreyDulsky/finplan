@@ -352,7 +352,7 @@ export default class OrderSewingView extends JetView{
           view:"treetable",
           css:"webix_header_border webix_data_border my_style",
           urlEdit: 'product-work-salary',
-          leftSplit:11,
+          leftSplit:12,
           //rightSplit:2,
           select: "row",
           resizeColumn: { headerOnly:true },
