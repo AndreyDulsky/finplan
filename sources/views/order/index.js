@@ -248,7 +248,7 @@ export default class OrdersView extends JetView{
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, sort: "date"},
             { id:"H", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:90,  editor:"text" },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, sort: "string" },
-            { id:"storage", header:[ "Склад", { content:"selectFilter" }, "" ], width:120, sort: "string", editor:"text"  },
+            { id:"storage", header:[ "Склад", { content:"textFilter" }, "" ], width:120, sort: "string", editor:"text"  },
             { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:200, batch:2, sort: "string", editor:"text" },
             { id:"G",
               width:90,
@@ -297,7 +297,7 @@ export default class OrdersView extends JetView{
             // if (state)
             //   this.setState(state);
             webix.ui({
-              view:"contextmenu", id:"cm",
+              view:"contextmenu",
               data: ["Редактировать", "Копировать"],
               on:{
                 onItemClick:function(id){
@@ -344,7 +344,7 @@ export default class OrdersView extends JetView{
               let selected = table.getSelectedId(true);
               //var text = "Selected: " + grid.getSelectedId(true).join();
 
-              if (!this.rowSelect && selected[0].column == 'index') {
+              if (!this.rowSelect && selected.length > 0 && selected[0].column == 'index') {
 
                 let selected = table.getSelectedId(true).join().split(',');
 
@@ -356,7 +356,7 @@ export default class OrdersView extends JetView{
                 table.selectRange(first,'A',last,'T');
 
               } else {
-
+                this.rowSelect = false;
               }
 
               //debugger;
@@ -549,6 +549,19 @@ export default class OrdersView extends JetView{
 
       webix.ajax().get( tableUrl, objFilter).then(function(data) {
         table.parse(data.json().items);
+      });
+
+    });
+
+    table.attachEvent("onPaste", function(text) {
+      // define your pasting logic here
+      let sel = this.getSelectedId(true);
+      let change = {};
+      sel.forEach(item => {
+        this.getItem(item.row)[item.column] = text;
+        this.refresh(item.row);
+        change[item.column] = text;
+        table.updateItem(item.row, change)
       });
 
     });

@@ -54,12 +54,27 @@ export default class App extends JetApp {
 
       	if (update.operation === "update") {
           editor = dp.config.master.getEditor();
-          return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), update.data, {
+          let dataChange = {};
+          let selectedCell = dp.config.master.getSelectedId();
+
+          if (dp.config.master.config.select == 'cell') {
+            if (!selectedCell.lenght) {
+              dataChange[selectedCell['column']] = update.data[selectedCell['column']];
+            }
+          } else {
+            dataChange = update.data;
+          }
+          return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), dataChange, {
             error:function(text, data, XmlHttpRequest){
-              view.addCellCss(id, editor.column, "webix_invalid_cell");
+              let selectedCell = dp.config.master.getSelectedId();
+              let selectedChange = (editor) ? editor.column : selectedCell.column;
+              view.addCellCss(id, selectedChange, "webix_invalid_cell");
             },
             success:function(text, data, XmlHttpRequest){
-              view.addCellCss(id, editor.column, "webix_editing_cell");
+
+              let selectedCell = dp.config.master.getSelectedId();
+              let selectedChange = (editor) ? editor.column : selectedCell.column;
+              view.addCellCss(id, selectedChange, "webix_editing_cell");
             }
           });
         }
