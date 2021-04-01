@@ -149,7 +149,7 @@ export default class TopView extends JetView{
     });
 
     this.$$('totalAccountsLabel').attachEvent("onItemClick", function(id, e){
-      scope.doClickBalance();
+      ///scope.doClickBalance();
       // code
     });
 

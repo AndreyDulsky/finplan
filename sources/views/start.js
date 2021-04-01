@@ -111,14 +111,7 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
 }, webix.ui.datafilter.summColumn);
 
 
-webix.editors.$popup.text = {
-  view:"popup",
-  body:{
-    view:"textarea",
-    width:250,
-    height:100
-  }
-};
+
 
 webix.editors.$popup = {
   date:{
@@ -126,12 +119,23 @@ webix.editors.$popup = {
     body:{
       view:"calendar",
       timepicker:true,
-      weekNumber:true,
-      width: 220,
-      height:200
+      icons:true
+      //weekNumber:true,
+      //width: 220,
+      //height:200
+    }
+  },
+  text : {
+    view:"popup",
+    body:{
+      view:"textarea",
+      width:250,
+      height:100
     }
   }
 };
+
+
 
 webix.Date.monthEnd = function(obj){
   obj = webix.Date.monthStart(obj);
@@ -331,7 +335,7 @@ export default class StartView extends JetView{
             {
               id:"AE", header:"Дата", width:120, editor: 'date',
               template:function(obj, common) {
-                return formatDateTime(obj.date_obivka);
+                return formatDate(obj.date_obivka);
               }
 
             },

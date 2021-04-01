@@ -194,7 +194,7 @@ export default class OrdersView extends JetView{
           resizeColumn: { headerOnly:true },
           localId: 'order-table',
           multiselect:true,
-          drag:true,
+          //drag:true,
           //fixedRowHeight:false, //rowLineHeight:25, rowHeight:25,
           editable:true,
           visibleBatch:2,
@@ -202,9 +202,11 @@ export default class OrdersView extends JetView{
           save: "api->accounting/orders",
           editaction: "dblclick",
           clipboard:"selection",
-          select:"cell",
+          //select:"cell",
+          blockselect:true,
           tooltip:true,
           columns:[
+            { id:"index", header:"", width: 40 },
 
             {
               id:"A", header:[ "# заказа", { content:"textFilter" },{ content:"totalColumnCount" } ], hidden: false,
@@ -240,6 +242,7 @@ export default class OrdersView extends JetView{
             },
             { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2,  sort: "date" },
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, sort: "date"},
+            { id:"H", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:90,  editor:"text" },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, sort: "string" },
             { id:"storage", header:[ "Склад", { content:"selectFilter" }, "" ], width:120, sort: "string", editor:"text"  },
             { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:200, batch:2, sort: "string", editor:"text" },
@@ -260,12 +263,13 @@ export default class OrdersView extends JetView{
 
             { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
+
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
               editor:"popup",
-              template:function(obj, common){
-                if (obj.$group) return "";
-                return obj.N+" "+obj.O+" "+obj.P+" "+obj.Q+" "+obj.R+" "+obj.T;
-              }
+              // template:function(obj, common){
+              //   if (obj.$group) return "";
+              //   return obj.N+" "+obj.O+" "+obj.P+" "+obj.Q+" "+obj.R+" "+obj.T;
+              // }
             },
 
           ],
@@ -278,7 +282,11 @@ export default class OrdersView extends JetView{
                 item.$css = "highlight-blue";
               if (item.B == 2)
                 item.$css = "highlight-green";
+              if (item.B == 6)
+                item.$css = "highlight-green";
+              item.index = this.count()+1;
             }
+
           },
           ready:function(){
             // var state = webix.storage.local.get("treetable_state");
@@ -286,7 +294,7 @@ export default class OrdersView extends JetView{
             //   this.setState(state);
             webix.ui({
               view:"contextmenu", id:"cm",
-              data: ["Редактировать"],
+              data: ["Редактировать", "Копировать"],
               on:{
                 onItemClick:function(id){
                   var context = this.getContext();
@@ -294,6 +302,14 @@ export default class OrdersView extends JetView{
                   scope.$$("order-table").select(context.id.row, context.id.column,true);
                   if (id == 'Редактировать') {
                     scope.formEdit.showForm(scope.$$("order-table"));
+                  }
+                  if (id == 'Копировать') {
+                    // var grid = scope.$$("order-table");
+                    // let clipboard = document.getElementsByClassName("webix_clipbuffer")[0].value;
+                    // grid.callEvent("onKeyPress", [
+                    //   clipboard,
+                    //   {ctrlKey:true,target:grid.$view}
+                    // ]);
                   }
                 }
               }
@@ -317,9 +333,12 @@ export default class OrdersView extends JetView{
             onBeforeDrop:function(context, e){
 
             },
-            // onItemDblClick:function(id, e, trg) {
-            //   this.$scope.formEdit.showForm(this);
-            // },
+            onItemClick:function(id, e, trg) {
+              if (id.column == 'index') {
+                var table = this;
+
+              }
+            },
           }
 
         }
