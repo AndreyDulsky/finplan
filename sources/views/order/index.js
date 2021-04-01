@@ -88,7 +88,7 @@ webix.Date.monthEnd = function(obj){
 }
 
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
-
+var parserDate = webix.Date.strToDate("%Y-%m-%d");
 export default class OrdersView extends JetView{
 
 
@@ -225,6 +225,7 @@ export default class OrdersView extends JetView{
               sort: "date",
               format:webix.Date.dateToStr("%d.%m.%y")
             },
+
             {
               id:"date_shipment", header:[ "Дата отгр.", { content:"selectFilter" },"" ],	width:100,
               "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "date", editor:"date",
@@ -232,6 +233,11 @@ export default class OrdersView extends JetView{
             },
 
             { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:80, batch:2, sort: "int", editor:"text" },
+            { id:"date_shipment_plan", header:[ "Дата.план.отгр.", { content:"textFilter" }, "" ], width:110, editor:"date",
+              template: function(obj) {
+                return formatDate(parserDate(obj.date_shipment_plan));
+              }
+            },
             { id:"C", header:[ "Принят", { content:"textFilter" }, "" ], width:70, batch:2,  sort: "date" },
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, sort: "date"},
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, sort: "string" },
@@ -251,7 +257,9 @@ export default class OrdersView extends JetView{
             { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" }  ], width:70, batch:2, editor:"text" },
             { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150,  editor:"text" },
+
             { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
+            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
               editor:"popup",
               template:function(obj, common){
@@ -259,7 +267,7 @@ export default class OrdersView extends JetView{
                 return obj.N+" "+obj.O+" "+obj.P+" "+obj.Q+" "+obj.R+" "+obj.T;
               }
             },
-            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:70, batch:2,  editor:"text" },
+
           ],
           scheme:{
             $sort:{ by:"B", dir:"desc", as: "int" },
