@@ -298,7 +298,7 @@ export default class OrdersView extends JetView{
             //   this.setState(state);
             webix.ui({
               view:"contextmenu",
-              data: ["Редактировать", "Копировать"],
+              data: ["Редактировать"],
               on:{
                 onItemClick:function(id){
                   var context = this.getContext();
