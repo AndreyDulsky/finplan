@@ -46,7 +46,7 @@ webix.ui.datafilter.totalColumn = webix.extend({
 }, webix.ui.datafilter.summColumn);
 
 
-webix.ui.datafilter.totalColumnCount = webix.extend({
+webix.ui.datafilter.totalColumnCountEmpty = webix.extend({
   refresh: function (master, node, value) {
     var result = 0, _val;
     master.data.each(function (obj) {
@@ -54,6 +54,30 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
 
       _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
       if (!isNaN(_val)) result = result+1;
+    });
+    result = webix.i18n.numberFormat(result,{
+      groupDelimiter:",",
+      groupSize:3,
+      decimalDelimiter:".",
+      decimalSize:0
+    })
+    if (value.format)
+      result = value.format(result);
+    if (value.template)
+      result = value.template({ value: result });
+    node.style.textAlign = "right";
+    node.innerHTML = result;
+  }
+}, webix.ui.datafilter.summColumn);
+
+webix.ui.datafilter.totalColumnCount = webix.extend({
+  refresh: function (master, node, value) {
+    var result = 0, _val;
+    master.data.each(function (obj) {
+      if (obj.$group) return;
+
+      _val = /*implement your logic*/ obj[value.columnId];// / obj.OTHER_COL;
+      if (_val!='') result = result+1;
     });
     result = webix.i18n.numberFormat(result,{
       groupDelimiter:",",
@@ -260,8 +284,8 @@ export default class OrdersView extends JetView{
             },
             //{ id:"H", header:[ "Дата гот.", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
 
-            { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,  editor:"text" },
-            { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" }  ], width:70, batch:2, editor:"text" },
+            { id:"I", header:[ "Изделие", { content:"textFilter" }, { content:"totalColumnCount" } ], width:200,  editor:"text" },
+            { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCountEmpty" }  ], width:70, batch:2, editor:"text" },
             { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150,  editor:"text" },
 
