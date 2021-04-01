@@ -206,7 +206,11 @@ export default class OrdersView extends JetView{
           blockselect:true,
           tooltip:true,
           columns:[
-            { id:"index", header:"", width: 40 },
+            { id:"index", header:"", width: 40,
+              cssFormat: function() {
+                return {'background-color': '#F4F5F9'};
+              }
+            },
 
             {
               id:"A", header:[ "# заказа", { content:"textFilter" },{ content:"totalColumnCount" } ], hidden: false,
