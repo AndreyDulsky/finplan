@@ -190,7 +190,7 @@ export default class OrdersView extends JetView{
           css:"webix_header_border webix_data_border",
           leftSplit:1,
           //rightSplit:2,
-          select: "row",
+          select: "cell",
           resizeColumn: { headerOnly:true },
           localId: 'order-table',
           multiselect:true,
@@ -254,7 +254,7 @@ export default class OrdersView extends JetView{
               //footer: {content: "summColumn", css: {"text-align": "right"}}
 
             },
-            { id:"H", header:[ "Дата гот.", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
+            //{ id:"H", header:[ "Дата гот.", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
 
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,  editor:"text" },
             { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCount" }  ], width:70, batch:2, editor:"text" },
@@ -304,7 +304,9 @@ export default class OrdersView extends JetView{
                     scope.formEdit.showForm(scope.$$("order-table"));
                   }
                   if (id == 'Копировать') {
-                    // var grid = scope.$$("order-table");
+
+                    var grid = scope.$$("order-table");
+
                     // let clipboard = document.getElementsByClassName("webix_clipbuffer")[0].value;
                     // grid.callEvent("onKeyPress", [
                     //   clipboard,
@@ -333,10 +335,39 @@ export default class OrdersView extends JetView{
             onBeforeDrop:function(context, e){
 
             },
+            onSelectChange: function(id, e, trg){
+              let table = this;
+              let selected = table.getSelectedId(true);
+              //var text = "Selected: " + grid.getSelectedId(true).join();
+
+              if (!this.rowSelect && selected[0].column == 'index') {
+
+                let selected = table.getSelectedId(true).join().split(',');
+
+
+                let first = selected[0];
+                let last = selected[selected.length - 1];
+                this.rowSelect = true;
+                //table.unselectAll();
+                table.selectRange(first,'A',last,'T');
+
+              } else {
+
+              }
+
+              //debugger;
+
+
+            },
             onItemClick:function(id, e, trg) {
               if (id.column == 'index') {
-                var table = this;
+                let table = this;
 
+                //table.selectRange(id.row,'index',id.row,'T');
+                this.rowSelect = false;
+
+              } else {
+                //this.rowSelect = false;
               }
             },
           }
