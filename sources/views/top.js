@@ -1,5 +1,8 @@
 import {JetView, plugins} from "webix-jet";
 
+
+let formatDate = webix.Date.dateToStr("%d.%m.%y");
+let formatTime = webix.Date.dateToStr("%H.%i");
 export default class TopView extends JetView{
 	config(){
 		const locale = this.app.getService("locale");
@@ -37,33 +40,35 @@ export default class TopView extends JetView{
               localId: "totalAccountsLabel",
               label: "",
 
-              template: "<div class='webix_el_box' ><a href='javascript: void(0);' style='line-height:32px; color: #color#; font-size: 12px; font-weight: normal; text-decoration: none; padding-right:0px;'>На счетах:  #label#</a><span class='webix_icon wxi-menu-down'></span> </div>",
+              // template: "<div class='webix_el_box' ><a href='javascript: void(0);' style='line-height:32px; color: #color#; font-size: 12px; font-weight: normal; text-decoration: none; padding-right:0px;'>На счетах:  #label#</a><span class='webix_icon wxi-menu-down'></span> </div>",
 							itemClick: this.doClickBalance
             },
-            {
-              view:"icon", icon: 'mdi mdi-arrow-down',
-              width: 150,
-              localId: "totalAccounts",
-              color: 'white',
-              hover: "myhover",
-              //template: "<button>#label#</button>",
-              click: this.doClickBalance
-            },
+            // {
+            //   view:"icon", icon: 'mdi mdi-arrow-down',
+            //   width: 150,
+            //   localId: "totalAccounts",
+            //   color: 'white',
+            //   hover: "myhover",
+            //   //template: "<button>#label#</button>",
+            //   click: this.doClickBalance
+            // },
 
 					]
 				},
 				logout,
 				{
 						view:"icon", icon: 'widget_icon wxi-drag',
-						badge:12,
+						//badge:12,
+            localId: "commentLabel",
 						popup: {
-								view: 'contextmenu',
-                scroll: true,
+								view: 'list',
+                //scroll: true,
+                //width :300,
 								data: [
-										{ value: 'Profile', href: '#profile' },
-										{ value: 'Settings', href: '#settings' },
-										{ value: 'Dummy' },
-										{ id: 'logout', value: 'Logout' },
+										//{ value: 'Profile', href: '#profile' },
+										//{ value: 'Сообщения', id: 'settings', badge:12 },
+										//{ value: 'Dummy' },
+										//{ id: 'logout', value: 'Logout' },
 								],
 								on: {
 										onMenuItemClick(id) {
@@ -120,7 +125,6 @@ export default class TopView extends JetView{
 					cols:[
             menu,
             { $subview:true }
-
 					]
 				}
 			],
@@ -133,8 +137,15 @@ export default class TopView extends JetView{
     this.use(plugins.Menu, "top:menu");
 		let scope = this;
     let urlSummaryAccount = this.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount');
-    webix.ajax().get( urlSummaryAccount).then(function(data) {
-      scope.setTotalAccounts(data.json());
+    // webix.ajax().get( urlSummaryAccount).then(function(data) {
+    //   scope.setTotalAccounts(data.json());
+    // });
+    let user = webix.storage.local.get("wjet_user");
+    let userId = user.user_id;
+    let urlMessage = this.app.config.apiRest.getUrl('get','accounting/comment/comment-view'
+      );
+    webix.ajax().get( urlMessage).then(function(data) {
+      scope.setComments(data.json());
     });
 
     this.$$('totalAccountsLabel').attachEvent("onItemClick", function(id, e){
@@ -145,16 +156,56 @@ export default class TopView extends JetView{
 
 	}
 
+  setComments(data) {
+    let commentLabel = this.$$('commentLabel');
+    (data.total > 0) ? commentLabel.config.badge = data.total : commentLabel.config.badge= '';
+    let commentData = [];
+    // data.data.forEach( function(row) {
+    //   commentData.push({
+    //     'title': formatDate(row['time_comment']),
+    //     'id' : formatDate(row['time_comment'])+'_'+row['id']
+    //   });
+    //   commentData.push({
+    //     'title': formatTime(row['time_comment'])+': №'+row['order_no']+' '+row['comment'],
+    //     'id' : row['id']
+    //   });
+    // });
+
+    let scope = this;
+    commentLabel.config.popup = {
+      view:"popup",
+      width:500,
+      localId: 'commentPopup',
+      body: {
+        view:"list",
+        type:{
+          height: 67,
+          template:"#time_comment#<br/> №#order_no# - #comment#",
+        },
+        data: data.data,
+        on: {
+          onItemClick:function (id, e, trg) {
+            let urlMessage = scope.app.config.apiRest.getUrl('get','accounting/comment/comment-view-ok', {'id' : id});
+            this.hide();
+            webix.ajax().get( urlMessage).then(function(data) {
+
+              scope.setComments(data.json());
+
+            });
+
+          }
+        }
+      }
+    };
+
+    commentLabel.refresh();
+  }
+
   setTotalAccounts(data) {
-
     let totalAccountsLabel = this.$$('totalAccountsLabel');
-
     totalAccountsLabel.setValue(data.total);
-
     (data.total >= 0) ? totalAccountsLabel.define("color","white") : totalAccountsLabel.define("color","red");
-
     totalAccountsLabel.refresh();
-
   }
 
 	doClickBalance(id, view) {
