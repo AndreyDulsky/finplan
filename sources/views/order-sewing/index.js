@@ -1257,7 +1257,7 @@ export default class OrderSewingView extends JetView{
 
                 let between = dayClient - dayObiv;
                 if (between < 3 && (monthClient == monthObiv)) {
-                  item.$css = "highlight-bold";
+                  item.$css = item.$css+" highlight-bold";
                 }
               }
               // if (item.B == 3)

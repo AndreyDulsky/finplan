@@ -81,7 +81,8 @@
 
 .highlight-bold {
 
-    font-weight: 600;
+    font-weight: 500;
+    //color: red;
 }
 
 .webix_column div[aria-expanded] {
