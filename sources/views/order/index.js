@@ -213,7 +213,7 @@ export default class OrdersView extends JetView{
           view:"treetable",
           urlEdit: 'order',
           css:"webix_header_border webix_data_border",
-          leftSplit:1,
+          leftSplit:3,
           //rightSplit:2,
           select: "cell",
           resizeColumn: { headerOnly:true },
