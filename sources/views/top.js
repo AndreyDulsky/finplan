@@ -180,7 +180,7 @@ export default class TopView extends JetView{
         view:"list",
         type:{
           height: 67,
-          template:"#time_comment#<br/> №#order_no# - #comment#",
+          template:"#time_comment# #user_name#<br/> №#order_no# - #comment#",
         },
         data: data.data,
         on: {
