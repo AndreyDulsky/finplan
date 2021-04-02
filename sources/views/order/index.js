@@ -95,6 +95,30 @@ webix.ui.datafilter.totalColumnCount = webix.extend({
   }
 }, webix.ui.datafilter.summColumn);
 
+webix.ui.datafilter.toolsContent = webix.extend({
+  refresh: function (master, node, value) {
+    var result = 0, _val;
+    master.data.each(function (obj) {
+      if (obj.$group) return;
+
+      _val = /*implement your logic*/ obj[value.columnId];// / obj.OTHER_COL;
+      if (_val!='') result = result+1;
+    });
+    result = webix.i18n.numberFormat(result,{
+      groupDelimiter:",",
+      groupSize:3,
+      decimalDelimiter:".",
+      decimalSize:0
+    })
+    if (value.format)
+      result = value.format(result);
+    if (value.template)
+      result = value.template({ value: result });
+    node.style.textAlign = "right";
+    node.innerHTML = result;
+  }
+}, webix.ui.datafilter.summColumn);
+
 webix.editors.$popup.text = {
   view:"popup",
   body:{
@@ -205,6 +229,7 @@ export default class OrdersView extends JetView{
                 }
               }
             },
+
             { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
           ]
         },
@@ -230,8 +255,9 @@ export default class OrdersView extends JetView{
           //select:"cell",
           blockselect:true,
           tooltip:true,
+          headermenu:true,
           columns:[
-            { id:"index", header:"", width: 40,
+            { id:"index", header:[{content:'toolsContent'},'',''], width: 40,
               cssFormat: function() {
                 return {'background-color': '#F4F5F9'};
               }
@@ -242,7 +268,7 @@ export default class OrdersView extends JetView{
               "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "int",
               tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
             },
-            {"id": "action-view", "header": "", "width": 50,
+            {"id": "action-view", "header": ['','',''], "width": 50,
               template: function(obj,common) {
                 return (obj.$group) ? '' : common.editIcon();
               }
@@ -268,7 +294,7 @@ export default class OrdersView extends JetView{
               format:webix.Date.dateToStr("%d.%m.%y")
             },
 
-            { id:"B", header:[ "Статус", { content:"selectFilter" },"" ], width:80, batch:2, sort: "int", editor:"text" },
+            { id:"B", header:[ "Статус", { content:"numberFilter" },"" ], width:80, batch:2, sort: "int", editor:"text" },
             { id:"date_shipment_plan", header:[ "Дата.план.отгр.", { content:"textFilter" }, "" ], width:110, editor:"date",
               template: function(obj) {
                 return formatDate(parserDate(obj.date_shipment_plan));
@@ -288,7 +314,8 @@ export default class OrdersView extends JetView{
               //footer: {content: "summColumn", css: {"text-align": "right"}}
 
             },
-            //{ id:"H", header:[ "Дата гот.", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
+
+
 
             { id:"I", header:[ "Изделие", { content:"textFilter" }, { content:"totalColumnCount" } ], width:200,  editor:"text" },
             { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCountEmpty" }  ], width:70, batch:2, editor:"text" },
@@ -301,7 +328,12 @@ export default class OrdersView extends JetView{
             // { id:"Q", header:[ "Пружина.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             // { id:"R", header:[ "Под.мех.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
 
-
+            { id:"discount", header:[ "Скидка", { content:"selectFilter" }, "" ],
+              "css": {"color": "black", "text-align": "right",  "font-weight": 300},
+              width:70, batch:2,  editor:"text" },
+            { id:"sum_full", header:[ "Сумма.прайс", { content:"numberFilter" }, { content:"totalColumn" } ],
+              "css": {"color": "black", "text-align": "right",  "font-weight": 300},
+              width:100, batch:2,  editor:"text" },
             { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
 
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
