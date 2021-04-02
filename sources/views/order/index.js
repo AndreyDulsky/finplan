@@ -288,6 +288,11 @@ export default class OrdersView extends JetView{
             { id:"J", header:[ "Размер", { content:"selectFilter" }, { content:"totalColumnCountEmpty" }  ], width:70, batch:2, editor:"text" },
             { id:"K", header:[ "Дата ткани", { content:"textFilter" }, "" ], width:90, batch:2,  editor:"text" },
             { id:"L", header:[ "Ткань", { content:"textFilter" }, "" ], width:150,  editor:"text" },
+            { id:"N", header:[ "Ножки", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
+            { id:"O", header:[ "Пуг.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
+            { id:"P", header:[ "Отстр.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
+            // { id:"Q", header:[ "Пружина.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
+            // { id:"R", header:[ "Под.мех.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
 
             { id:"M", header:[ "Статус ткани", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
