@@ -305,6 +305,7 @@ export default class OrdersView extends JetView{
               //   return obj.N+" "+obj.O+" "+obj.P+" "+obj.Q+" "+obj.R+" "+obj.T;
               // }
             },
+            { id:"AF", header:[ "Комментарий работников", { content:"textFilter" },""], width:250,  editor:"popup" , batch:4},
 
           ],
           scheme:{
@@ -391,6 +392,9 @@ export default class OrdersView extends JetView{
 
               //debugger;
 
+
+            },
+            onDataUpdate: function(id, data, old) {
 
             },
             onItemClick:function(id, e, trg) {
@@ -591,6 +595,7 @@ export default class OrdersView extends JetView{
         this.getItem(item.row)[item.column] = text;
         this.refresh(item.row);
         change[item.column] = text;
+        change['id'] = item.row;
         table.updateItem(item.row, change)
       });
 

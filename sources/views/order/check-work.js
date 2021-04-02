@@ -403,7 +403,7 @@ export default class CheckFormView extends JetView {
     ).then(function(obj){
       webix.dp(state.table).ignore(function(){
 
-        (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
+        (state.isUpdate) ? state.table.updateItem(record.id, record) : state.table.add(obj,0);
 
         state.table.select(obj.id);
 

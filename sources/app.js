@@ -42,7 +42,7 @@ export default class App extends JetApp {
     webix.Date.startOnMonday = true;
     webix.proxy.api = {
       $proxy:true,
-      params: { "per-page":"-1"},
+      //params: { "per-page":"-1"},
       //rest: this.config.apiRest,
       load: function(view, params) {
         return webix.ajax().get(restObj.getUrl('get',this.source), this.params);
@@ -57,7 +57,7 @@ export default class App extends JetApp {
           let dataChange = {};
           let selectedCell = dp.config.master.getSelectedId();
           //debugger;
-          if (dp.config.master.config.select == 'cell') {
+          if (view._in_edit_mode == 1) {
             if (!selectedCell.lenght) {
               dataChange[selectedCell['column']] = update.data[selectedCell['column']];
             }
