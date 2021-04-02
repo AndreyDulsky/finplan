@@ -56,7 +56,7 @@ export default class App extends JetApp {
           editor = dp.config.master.getEditor();
           let dataChange = {};
           let selectedCell = dp.config.master.getSelectedId();
-
+          debugger;
           if (dp.config.master.config.select == 'cell') {
             if (!selectedCell.lenght) {
               dataChange[selectedCell['column']] = update.data[selectedCell['column']];
