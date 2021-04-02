@@ -4,6 +4,7 @@ import UpdateFormOrderView from "core/updateFormOrderView";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
+import CheckFormView from "views/order/check-work";
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -241,6 +242,11 @@ export default class OrdersView extends JetView{
               "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "int",
               tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
             },
+            {"id": "action-view", "header": "", "width": 50,
+              template: function(obj,common) {
+                return (obj.$group) ? '' : common.editIcon();
+              }
+            },
             // {
             //   id:"AE", header:"Дата", width:120,
             //   template:function(obj, common){
@@ -398,6 +404,10 @@ export default class OrdersView extends JetView{
 
             },
             onItemClick:function(id, e, trg) {
+              if (id.column == 'action-view') {
+                this.$scope.formCheckEdit.showWindow({},this);
+
+              }
               if (id.column == 'index') {
                 let table = this;
 
@@ -602,6 +612,7 @@ export default class OrdersView extends JetView{
     });
 
     this.formEdit = this.ui(UpdateFormOrderView);
+    this.formCheckEdit = this.ui(CheckFormView);
   }
 
   doRefresh() {
