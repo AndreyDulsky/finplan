@@ -57,8 +57,8 @@ export default class CommnetView extends JetView{
             {
               view:"comments",
               currentUser: user.user_id,
-              url: this.app.config.apiRest.getUrl('get',"accounting/comments", {'sort':'-time_comment', 'fields': 'text,date,user_id'}),
-              users: this.app.config.apiRest.getUrl('get',"accounting/users", {'sort':'id', 'per-page': -1}),
+              url: this.app.config.apiRest.getUrl('get',"accounting/comments", {'sort':'-time_comment', 'fields': 'id,text,date,user_id'}),
+              users: this.app.config.apiRest.getUrl('get',"accounting/users", {'sort':'id', 'per-page': -1,'fields': 'value,id,username'}),
               mentions:true,
               on:{
                 onUserMentioned:function(userId, id){
