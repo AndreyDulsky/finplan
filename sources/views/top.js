@@ -60,23 +60,7 @@ export default class TopView extends JetView{
 						view:"icon", icon: 'widget_icon wxi-drag',
 						//badge:12,
             localId: "commentLabel",
-						popup: {
-								view: 'list',
-                //scroll: true,
-                //width :300,
-								data: [
-										//{ value: 'Profile', href: '#profile' },
-										//{ value: 'Сообщения', id: 'settings', badge:12 },
-										//{ value: 'Dummy' },
-										//{ id: 'logout', value: 'Logout' },
-								],
-								on: {
-										onMenuItemClick(id) {
-												if (id === 'logout')
-														webix.message('Loging out...');
-										}
-								}
-						}
+						popup: "commentPopup"
 				}
 			]
 		};
@@ -142,8 +126,52 @@ export default class TopView extends JetView{
     // });
     let user = webix.storage.local.get("wjet_user");
     let userId = user.user_id;
+
+    let winComment = {};
+
+    winComment = {
+      view:"popup",
+      width:500,
+      id: "commentPopup",
+      body: {
+        rows: [
+
+          {
+            view: "list",
+            localId: 'commentList',
+            type: {
+              height: 67,
+              template: "#time_comment# #user_name#<br/> №#order_no# - #comment#",
+            },
+            //url: urlMessage,
+            on: {
+              onItemClick: function (id, e, trg) {
+
+                let urlMessage = scope.app.config.apiRest.getUrl('get', 'accounting/comment/comment-view-ok', {'id': id});
+                this.getParentView().hide();
+                webix.ajax().get(urlMessage).then(function (data) {
+                  scope.setComments(data.json());
+                });
+
+              }
+            }
+          },
+          {
+            view: "menu",
+
+            data: [
+              { value: "Показать все", href: "#!/top/comment"},
+            ]
+          },
+        ]
+
+      }
+
+    };
+    this.winComment = this.ui(winComment);
+
     let urlMessage = this.app.config.apiRest.getUrl('get','accounting/comment/comment-view'
-      );
+    );
     webix.ajax().get( urlMessage).then(function(data) {
       scope.setComments(data.json());
     });
@@ -154,62 +182,21 @@ export default class TopView extends JetView{
     });
 
 
+
+
+
+
+
 	}
 
   setComments(data) {
     let commentLabel = this.$$('commentLabel');
+    let commentPopup = $$('commentPopup');
+    let commentList = commentPopup.queryView('list');
+
     (data.total > 0) ? commentLabel.config.badge = data.total : commentLabel.config.badge= '';
-    let commentData = [];
-    // data.data.forEach( function(row) {
-    //   commentData.push({
-    //     'title': formatDate(row['time_comment']),
-    //     'id' : formatDate(row['time_comment'])+'_'+row['id']
-    //   });
-    //   commentData.push({
-    //     'title': formatTime(row['time_comment'])+': №'+row['order_no']+' '+row['comment'],
-    //     'id' : row['id']
-    //   });
-    // });
-
-    let scope = this;
-    commentLabel.config.popup = {
-      view:"popup",
-      width:500,
-      localId: 'commentPopup',
-      body: {
-
-        rows:[
-
-          {
-            view:"list",
-            type:{
-              height: 67,
-              template:"#time_comment# #user_name#<br/> №#order_no# - #comment#",
-            },
-            data: data.data,
-            on: {
-              onItemClick:function (id, e, trg) {
-                let urlMessage = scope.app.config.apiRest.getUrl('get','accounting/comment/comment-view-ok', {'id' : id});
-                this.hide();
-                webix.ajax().get( urlMessage).then(function(data) {
-
-                  scope.setComments(data.json());
-
-                });
-
-              }
-            }
-          },
-          {
-            view:"menu",
-
-            data:[
-              { id:"1",value:"Показать все", href: "#!/top/comment"},
-            ]
-          },
-        ]
-    }};
-
+    commentList.clearAll();
+    commentList.parse(data);
     commentLabel.refresh();
   }
 

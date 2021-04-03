@@ -53,9 +53,13 @@ export default class App extends JetApp {
         let editor;
 
       	if (update.operation === "update") {
-          editor = dp.config.master.getEditor();
           let dataChange = {};
-          let selectedCell = dp.config.master.getSelectedId();
+      	  if (view._in_edit_mode == 1) {
+            let selectedCell = dp.config.master.getSelectedId();
+            editor = dp.config.master.getEditor();
+          }
+
+
           //debugger;
           if (view._in_edit_mode == 1) {
             if (!selectedCell.lenght) {
@@ -66,15 +70,19 @@ export default class App extends JetApp {
           }
           return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), dataChange, {
             error:function(text, data, XmlHttpRequest){
-              let selectedCell = dp.config.master.getSelectedId();
-              let selectedChange = (editor) ? editor.column : selectedCell.column;
-              view.addCellCss(id, selectedChange, "webix_invalid_cell");
+              if (view._in_edit_mode == 1) {
+                let selectedCell = dp.config.master.getSelectedId();
+                let selectedChange = (editor) ? editor.column : selectedCell.column;
+                view.addCellCss(id, selectedChange, "webix_invalid_cell");
+              }
             },
             success:function(text, data, XmlHttpRequest){
+              if (view._in_edit_mode == 1) {
 
-              let selectedCell = dp.config.master.getSelectedId();
-              let selectedChange = (editor) ? editor.column : selectedCell.column;
-              view.addCellCss(id, selectedChange, "webix_editing_cell");
+                let selectedCell = dp.config.master.getSelectedId();
+                let selectedChange = (editor) ? editor.column : selectedCell.column;
+                view.addCellCss(id, selectedChange, "webix_editing_cell");
+              }
             }
           });
         }
