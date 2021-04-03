@@ -177,26 +177,38 @@ export default class TopView extends JetView{
       width:500,
       localId: 'commentPopup',
       body: {
-        view:"list",
-        type:{
-          height: 67,
-          template:"#time_comment# #user_name#<br/> №#order_no# - #comment#",
-        },
-        data: data.data,
-        on: {
-          onItemClick:function (id, e, trg) {
-            let urlMessage = scope.app.config.apiRest.getUrl('get','accounting/comment/comment-view-ok', {'id' : id});
-            this.hide();
-            webix.ajax().get( urlMessage).then(function(data) {
 
-              scope.setComments(data.json());
+        rows:[
 
-            });
+          {
+            view:"list",
+            type:{
+              height: 67,
+              template:"#time_comment# #user_name#<br/> №#order_no# - #comment#",
+            },
+            data: data.data,
+            on: {
+              onItemClick:function (id, e, trg) {
+                let urlMessage = scope.app.config.apiRest.getUrl('get','accounting/comment/comment-view-ok', {'id' : id});
+                this.hide();
+                webix.ajax().get( urlMessage).then(function(data) {
 
-          }
-        }
-      }
-    };
+                  scope.setComments(data.json());
+
+                });
+
+              }
+            }
+          },
+          {
+            view:"menu",
+
+            data:[
+              { id:"1",value:"Показать все", href: "#!/top/comment"},
+            ]
+          },
+        ]
+    }};
 
     commentLabel.refresh();
   }

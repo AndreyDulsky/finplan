@@ -335,6 +335,7 @@ export default class OrdersView extends JetView{
               "css": {"color": "black", "text-align": "right",  "font-weight": 300},
               width:100, batch:2,  editor:"text" },
             { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
+            { id:"AL", header:[ "Номер.сделки", { content:"textFilter" },""], width:100,  editor:"text" , batch:2},
 
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
               editor:"popup",
