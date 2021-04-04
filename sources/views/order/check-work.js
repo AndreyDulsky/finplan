@@ -258,6 +258,30 @@ export default class CheckFormView extends JetView {
                   name: "P",
                   labelWidth : 150
                 },
+                {
+                  view: 'text',
+                  label : "Коэф.обивки",
+                  name: "AA",
+                  labelWidth : 150
+                },
+                {
+                  view: 'text',
+                  label : "Коэф.столярки",
+                  name: "AG",
+                  labelWidth : 150
+                },
+                {
+                  view: 'text',
+                  label : "Коэф.пошив",
+                  name: "CH",
+                  labelWidth : 150
+                },
+                {
+                  view: 'text',
+                  label : "Коэф.крой",
+                  name: "CI",
+                  labelWidth : 150
+                },
 
                 {
                   view: 'textarea',

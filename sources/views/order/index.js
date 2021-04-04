@@ -335,7 +335,13 @@ export default class OrdersView extends JetView{
               "css": {"color": "black", "text-align": "right",  "font-weight": 300},
               width:100, batch:2,  editor:"text" },
             { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
-            { id:"deal_id", header:[ "Номер.сделки", { content:"textFilter" },""], width:100,  editor:"text" , batch:2},
+            { id:"deal_id", header:[ "Номер.сделки", { content:"textFilter" },""], width:100,  editor:"text" , batch:2,
+              template: function(obj) {
+                if (!obj.deal_id) return '';
+                return "<a href='https://greensofa.bitrix24.ua/crm/deal/details/"+obj.deal_id+"/' target='_blank'>"+obj.deal_id+"</a>";
+
+              }
+            },
 
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
               editor:"popup",
