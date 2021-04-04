@@ -54,21 +54,10 @@ export default class App extends JetApp {
 
       	if (update.operation === "update") {
           let dataChange = {};
-          let selectedCell;
-          if (view._in_edit_mode == 1) {
-            selectedCell = dp.config.master.getSelectedId();
-            editor = dp.config.master.getEditor();
-          }
 
+          editor = dp.config.master.getEditor();
 
-          //debugger;
-          if (view._in_edit_mode == 1) {
-            if (selectedCell && !selectedCell.lenght) {
-              dataChange[selectedCell['column']] = update.data[selectedCell['column']];
-            }
-          } else {
-            dataChange = update.data;
-          }
+          dataChange = update.data;
           return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), dataChange, {
             error:function(text, data, XmlHttpRequest){
               if (view._in_edit_mode == 1) {
@@ -78,6 +67,33 @@ export default class App extends JetApp {
               }
             },
             success:function(text, data, XmlHttpRequest){
+
+              let result = data.json();
+              if (result.errors) {
+
+                for (var prop in result.errors) {
+                  webix.message({
+                    text:"Запись не сохранена!",
+                    type:"error"
+                  });
+                  webix.message({
+                    text:prop+':'+result.errors[prop],
+                    type:"error",
+                    expire: -1,
+                  });
+
+                }
+              }
+              if (result.changeData) {
+                for (var prop in result.changeData) {
+                  webix.message({
+                    text:prop+':  '+result.changeData[prop]['old']+' Изменено на: '+result.changeData[prop]['new'],
+                    type:"error",
+                    expire: -1,
+                  });
+
+                }
+              }
               if (view._in_edit_mode == 1) {
 
                 let selectedCell = dp.config.master.getSelectedId();
