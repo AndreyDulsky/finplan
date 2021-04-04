@@ -19,7 +19,7 @@ db.settings({ timestampsInSnapshots:true });
 
 webix.firestore = db;
 let restObj = new ApiRest();
-
+let formatDateTime = webix.Date.dateToStr("%Y-%m-%d %H:%i:%s");
 export default class App extends JetApp {
 
 	constructor(confrestig) {
@@ -83,6 +83,14 @@ export default class App extends JetApp {
                   });
 
                 }
+              } else {
+
+                let record = view.getItem(id);
+                if (result['updated']) {
+                  record['updated'] = result['updated'];
+                  record = view.getItem(id)
+                }
+
               }
               if (result.changeData) {
                 for (var prop in result.changeData) {
