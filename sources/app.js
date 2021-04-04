@@ -87,7 +87,7 @@ export default class App extends JetApp {
               if (result.changeData) {
                 for (var prop in result.changeData) {
                   webix.message({
-                    text:prop+':  '+result.changeData[prop]['old']+' Изменено на: '+result.changeData[prop]['new'],
+                    text:prop+':  '+result.changeData[prop]['old']+' Изменено на: '+result.changeData[prop]['new']+' User:'+result.changeData[prop]['user'],
                     type:"error",
                     expire: -1,
                   });
