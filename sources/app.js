@@ -54,15 +54,16 @@ export default class App extends JetApp {
 
       	if (update.operation === "update") {
           let dataChange = {};
-      	  if (view._in_edit_mode == 1) {
-            let selectedCell = dp.config.master.getSelectedId();
+          let selectedCell;
+          if (view._in_edit_mode == 1) {
+            selectedCell = dp.config.master.getSelectedId();
             editor = dp.config.master.getEditor();
           }
 
 
           //debugger;
           if (view._in_edit_mode == 1) {
-            if (!selectedCell.lenght) {
+            if (selectedCell && !selectedCell.lenght) {
               dataChange[selectedCell['column']] = update.data[selectedCell['column']];
             }
           } else {

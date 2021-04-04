@@ -141,7 +141,9 @@ export default class TopView extends JetView{
             localId: 'commentList',
             type: {
               height: 67,
-              template: "#time_comment# #user_name#<br/> №#order_no# - #comment#",
+              template: function(obj) {
+                return formatDate(obj.time_comment)+' '+formatTime(obj.time_comment)+' '+obj.user_name+'<br/>'+ '№'+obj.order_no+' - '+obj.comment;
+              },
             },
             //url: urlMessage,
             on: {
