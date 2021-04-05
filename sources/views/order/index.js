@@ -325,6 +325,14 @@ export default class OrdersView extends JetView{
             { id:"N", header:[ "Ножки", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             { id:"O", header:[ "Пуг.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             { id:"P", header:[ "Отстр.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
+            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
+            { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
+              editor:"popup",
+              // template:function(obj, common){
+              //   if (obj.$group) return "";
+              //   return obj.N+" "+obj.O+" "+obj.P+" "+obj.Q+" "+obj.R+" "+obj.T;
+              // }
+            },
             // { id:"Q", header:[ "Пружина.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             // { id:"R", header:[ "Под.мех.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
 
@@ -334,7 +342,7 @@ export default class OrdersView extends JetView{
             { id:"sum_full", header:[ "Сумма.прайс", { content:"numberFilter" }, { content:"totalColumn" } ],
               "css": {"color": "black", "text-align": "right",  "font-weight": 300},
               width:100, batch:2,  editor:"text" },
-            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
+
             { id:"deal_id", header:[ "Номер.сделки", { content:"textFilter" },""], width:100,  editor:"text" , batch:2,
               template: function(obj) {
                 if (!obj.deal_id) return '';
@@ -343,13 +351,7 @@ export default class OrdersView extends JetView{
               }
             },
 
-            { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
-              editor:"popup",
-              // template:function(obj, common){
-              //   if (obj.$group) return "";
-              //   return obj.N+" "+obj.O+" "+obj.P+" "+obj.Q+" "+obj.R+" "+obj.T;
-              // }
-            },
+
             { id:"AF", header:[ "Комментарий работников", { content:"textFilter" },""], width:250,  editor:"popup" , batch:4},
 
           ],
