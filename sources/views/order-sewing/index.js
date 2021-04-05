@@ -299,7 +299,7 @@ export default class OrderSewingView extends JetView{
             { view:"select",
               localId: "toggle-plan",
                 value:4, labelWidth:100, options:[
-                { id:4, value:"По дням обивки план" },
+                { id:4, value:"По дням готовности план" },
                 { id:9, value:"По часам крой план" },
                 //{ id:1, value:"По дате шв.факт(групировка)/Дата обивки (фильтер)" },
                 { id:2, value:"По часам шв.план" },
@@ -1625,7 +1625,7 @@ export default class OrderSewingView extends JetView{
       field = 'date_sewing_plan';
     }
     if (toggle.getValue() == 4) {
-      field = 'AE';
+      field = 'date_obivka';
     }
     if (toggle.getValue() == 5) {
       field = 'date_upholstery_plan';
@@ -1667,7 +1667,7 @@ export default class OrderSewingView extends JetView{
       field = 'date_sewing_plan';
     }
     if (toggle.getValue() == 4) {
-      field = 'AE';
+      field = 'date_obivka';
     }
     if (toggle.getValue() == 5) {
       field = 'date_upholstery_plan';
