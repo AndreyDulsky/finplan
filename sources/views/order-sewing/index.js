@@ -425,7 +425,7 @@ export default class OrderSewingView extends JetView{
 
             {
               id:"date_obivka",
-              header:[ "Дата Об.", { content:"selectFilter" }, "" ],
+              header:[ "Дата Гот.", { content:"selectFilter" }, "" ],
               width:80,
               editor:"date",
               //format:webix.Date.dateToStr("%d.%m.%y"),

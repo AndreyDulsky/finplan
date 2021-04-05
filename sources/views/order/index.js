@@ -282,7 +282,7 @@ export default class OrdersView extends JetView{
             //
             // },
             {
-              id:"date_obivka", header:[ "Дата произ.", { content:"selectFilter" },"" ],	width:100,
+              id:"date_obivka", header:[ "Дата гот.", { content:"selectFilter" },"" ],	width:100,
               "css": {"color": "black", "text-align": "right", "font-weight": 100},
               sort: "date",
               format:webix.Date.dateToStr("%d.%m.%y")

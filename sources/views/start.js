@@ -333,7 +333,7 @@ export default class StartView extends JetView{
               }
             },
             {
-              id:"AE", header:"Дата", width:120, editor: 'date',
+              id:"AE", header:"Дата Гот.", width:120, editor: 'date',
               template:function(obj, common) {
                 return formatDate(obj.date_obivka);
               }
