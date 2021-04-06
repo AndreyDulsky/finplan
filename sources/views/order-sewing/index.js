@@ -1376,7 +1376,7 @@ export default class OrderSewingView extends JetView{
     let filedSort = this.getSortFieldByTypeGroup();
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders",{
-      "per-page": "500",
+      "per-page": "1000",
       sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
       filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       expand: 'works'
@@ -1427,7 +1427,7 @@ export default class OrderSewingView extends JetView{
       let filedSort = scope.getSortFieldByTypeGroup();
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
-        "per-page": "500",
+        "per-page": "1000",
         sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
@@ -1455,7 +1455,7 @@ export default class OrderSewingView extends JetView{
       let filedSort = scope.getSortFieldByTypeGroup();
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders",{
-        "per-page": "500",
+        "per-page": "1000",
         sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
         //filter: '{"AE":{">=":"01.02.20"}}'
@@ -1555,7 +1555,7 @@ export default class OrderSewingView extends JetView{
 
 
     let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
-      "per-page": "500",
+      "per-page": "1000",
       sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
     });
     let scope =this;
@@ -1597,7 +1597,7 @@ export default class OrderSewingView extends JetView{
     let filedSort = this.getSortFieldByTypeGroup();
 
     let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
-      "per-page": "500",
+      "per-page": "1000",
       sort: '[{"property":"'+filedSort+'","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
       filter: '{"'+filedFilter+'":{">=":"'+dateFromValue+'","<=":"'+dateToValue+'"}}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
