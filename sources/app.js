@@ -85,7 +85,7 @@ export default class App extends JetApp {
                 }
               } else {
 
-                debugger;
+
                 let record = view.getItem(id);
                 if (result['updated']) {
                   record['updated'] = result['updated'];
