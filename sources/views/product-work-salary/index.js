@@ -33,15 +33,9 @@ export default class ProductWorkSalaryView extends JetView{
                 },
 
                 {},
+                { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
                 { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
-                {
-                  view:"button",
-                  value:"fs",
-                  width: 30,
-                  click: function() {
-                    webix.fullscreen.set("work-salary-table");
-                  }
-                },
+
               ]
             },
             {
@@ -208,8 +202,17 @@ export default class ProductWorkSalaryView extends JetView{
 
 
     form.attachEvent("onChange", function(obj){
-
-      let filter = {'search':form.getValue()};
+      let value = form.getValue();
+      let split = value.split(':');
+      let key;
+      let filter = {'search':value};
+      let filterKey = {};
+      if (split.length > 1) {
+        key = split[0];
+        value = split[1];
+        filterKey[key] = value;
+        filter = filterKey;
+      }
       let objFilter = { filter: filter };
 
       webix.extend(table, webix.ProgressBar);
@@ -249,6 +252,12 @@ export default class ProductWorkSalaryView extends JetView{
   doAddClick() {
     this.$$('work-salary-table').unselect();
     this.cashEdit.showForm(this.$$('work-salary-table'));
+  }
+
+  doClickToExcel() {
+    let table = this.$$("work-salary-table");
+    webix.toExcel(table);
+
   }
 
 }

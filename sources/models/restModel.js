@@ -55,14 +55,23 @@ export class ApiRest {
   }
 
   put(model, params) {
-    debugger;
     if (!params['id']) return alert("You need fill params[id]");
-    return this.getUrl('put', model, params);
+    let url = this.getUrl('put', model, params, params['id']);
+    return webix.ajax().put(url, params, {
+      error:function(text, data, XmlHttpRequest){
+        //webix.storage.local.remove("wjet_user")
+      }
+    });
   }
 
   delete(model, params) {
-    if (!params[id]) return alert("You need fill params[id]");
-    return this.getUrl('delete', model, params);
+    if (!params['id']) return alert("You need fill params[id]");
+    let url = this.getUrl('delete', model, params, params['id']);
+    return webix.ajax().del(url, params, {
+      error:function(text, data, XmlHttpRequest){
+        //webix.storage.local.remove("wjet_user")
+      }
+    });
   }
 
   getData(url, model, callback) {

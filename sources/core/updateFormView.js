@@ -63,12 +63,17 @@ export default class UpdateFormView extends JetView {
 
     let isUpdate = (record);
     state.tableId = table.config.urlEdit;
+    let prefix = 'accounting/';
+    if (table.config.urlEditFull) {
+      prefix = '';
+    }
+    state.tableUrl = table.config.urlEditLong;
     state.table = table;
     state.tableRecord = record;
 
     state.isUpdate = isUpdate;
     state.formEdit = this.$$('formEdit');
-    state.formUrl = "accounting/"+state.tableId+"/form";
+    state.formUrl = prefix+state.tableId+"/form";
     state.win = this.$$("winEdit");
 
     state.formEdit.clearValidation();

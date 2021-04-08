@@ -32,7 +32,9 @@
 				webix.CustomScroll.init();
             webix.attachEvent("onBeforeAjax",
                 function(mode, url, data, request, headers, files, promise){
+                  if (!files) {
                     headers["Content-type"] = "application/json";
+                  }
                 }
             );
 

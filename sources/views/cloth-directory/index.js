@@ -11,6 +11,7 @@ webix.UIManager.addHotKey("enter", function(view){
 
 export default class ClothDirectoryView extends JetView{
   config(){
+    let scope = this;
     return {
       localId: "layout",
       type:"wide",
@@ -84,6 +85,12 @@ export default class ClothDirectoryView extends JetView{
               columns:[
                 { id:"index", header:"#", sort:"int", width:50},
                 { id:"id", header:"ID",	width:50, sort: "int" },
+                { id:"image", header:"",	width:75, template:function(obj) {
+                  if (!obj.imageMain) return '';
+                  return '<img src="'+scope.app.config.apiRest.urlBase+'/'+obj.imageMain.folder+'/'+obj.imageMain.file+'" width=50 />';
+
+                } },
+
                 { id:"provider",  header:[ "Поставщик", { content:"selectFilter" }], width: 120, edit: 'text', sort: "text" },
                 { id:"full_name", header:[ "Полн. наимен.", { content:"textFilter" }], width: 380, sort: "text" },
                 { id:"name",  header:[ "Название", { content:"textFilter" }], width: 120,  edit: 'text', sort: "text" },
@@ -104,7 +111,7 @@ export default class ClothDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/cloths", {'sort':'provider+name+color', 'per-page': '-1'}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/cloths", {'sort':'provider+name+color', 'per-page': '-1', 'expand': 'images,imageMain'}),//"api->accounting/contragents",
               save: "api->accounting/cloths",
               // scheme: {
               //    $sort:{ by:"name", dir:"asc" },
@@ -171,22 +178,22 @@ export default class ClothDirectoryView extends JetView{
     let table = this.$$("cloth-table");
     //table.markSorting("name", "asc");
     let scope = this;
-    // table.attachEvent("onDataRequest", function (start, count) {
-    //   webix.ajax().get(scope.app.config.apiRest.getUrl('get', 'accounting/contragents', {
-    //     "expand": "contragent,category,project,account,data",
-    //     "per-page": count, "start" : start
-    //   })).then(function (data) {
-    //     //table.parse(data);
-    //     // table.parse({
-    //     //   pos: your_pos_value,
-    //     //   total_count: your_total_count,
-    //     //   data: data
-    //     // });
-    //   });
-    //
-    //   return false;
-    // });
-
+    let win = {
+      view:"window",
+      id:"tmpWin",
+      position:"center",
+      head:"Preview",
+      close:true,
+      move: true,
+      body:{
+        id:"tmp",
+        view:"template",
+        template:"<img src='#src#' style='width: 500px;' class='fit_parent'></img>",
+        width:500,
+        autoheight:true
+      }
+    };
+    this.win = this.ui(win);
 
     form.attachEvent("onChange", function(obj){
 
@@ -214,6 +221,84 @@ export default class ClothDirectoryView extends JetView{
     });
 
     this.cashEdit = this.ui(UpdateFormView);
+
+
+    this.cashEdit.attachFormEvents = function(newValue) {
+      let scope = this;
+      let state = this.state;
+      let btnSave = this.$$("btn_save");
+      let btnCopy = this.$$("btn_copy");
+      let uploader = this.$$('uploader');
+
+      btnSave.attachEvent("onItemClick", function(newValue) {
+        scope.doClickSave();
+      });
+      btnCopy.attachEvent("onItemClick", function(newValue) {
+        scope.doClickSave(true);
+      });
+      this.$$("formEdit").elements["id"].attachEvent("onChange", function(newv, oldv, config){
+
+        let url = scope.app.config.apiRest.getUrl('get','accounting/cloth/upload', {'type':'cloth', 'id': scope.state.tableRecord.id});
+
+        uploader.define({
+          'upload' : url
+        });
+        let data = [];
+        let images = scope.state.tableRecord.images;
+        for (let key in images) {
+          data.push({ id: images[key].id, name:images[key].name, sizetext:images[key].size, status:"server" },)
+        }
+        uploader.files.clearAll();
+        uploader.files.parse(data);
+
+      });
+
+      uploader.files.attachEvent("onBeforeDelete", function(id) {
+        let item = uploader.files.getItem(id);
+        let idRemote = id;
+        if (item.newId) {
+          idRemote = item.newId;
+        }
+        scope.app.config.apiRest.delete('accounting/images', {'id': idRemote}).then(function() {
+          let i=0;
+          for (let key in scope.state.tableRecord.images) {
+            if (scope.state.tableRecord.images[key]['id'] == idRemote) {
+              scope.state.tableRecord.images.splice(i,1);
+              break;
+            }
+            i++;
+          }
+          //scope.state.tableRecord.images.push(data.data);
+        });
+      });
+
+
+      uploader.attachEvent('onBeforeFileAdd', function(upload,data, obj1){
+
+        var file = upload.file;
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          // console.log(event.target.result);
+          $$("tmpWin").getBody().setValues({src:event.target.result});
+          $$("tmpWin").show()
+        };
+        reader.readAsDataURL(file)
+        return true;
+      });
+      uploader.attachEvent('onFileUpload', function(item, data, obj1){
+        //let item = uploader.files.getItem(upload.id);
+        //item['status'] = "local";
+        item['newId'] = data.data.id;
+
+        //uploader.files.remove(uploader.files.getLastId());
+        //uploader.files.add({ id: upload.data.id, name:upload.data.name, sizetext:upload.data.size, status:"server" });
+        scope.state.tableRecord.images.push(data.data);
+       //return true;
+      });
+
+    };
+
+
   }
 
   doAddClick() {

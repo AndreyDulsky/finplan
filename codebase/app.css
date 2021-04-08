@@ -217,6 +217,20 @@ i.mdi:hover{
     border-left: 8px solid transparent;
 }
 
+.webix_editing_cell_green {
+    position: relative;
+}
+.webix_editing_cell_green:after {
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 0px;
+    height: 1px;
+    border-top: 8px solid green;
+    border-left: 8px solid transparent;
+}
+
 .green .webix_el_box{
     color: green;
 }

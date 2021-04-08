@@ -179,6 +179,15 @@ export default class OrdersView extends JetView{
             {
               view:"icon",
               //type:"icon",
+              icon: 'mdi mdi-undo',
+              autowidth:true,
+              value :true,
+              click: function() { scope.doUndo() }
+
+            },
+            {
+              view:"icon",
+              //type:"icon",
               icon: 'mdi mdi-plus',
               autowidth:true,
               value :true,
@@ -304,7 +313,7 @@ export default class OrdersView extends JetView{
             { id:"D", header:[ "Отгрузка", { content:"textFilter" }, "" ], width:70 , batch:2, sort: "date"},
             { id:"H", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:90,  editor:"text" },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, sort: "string", editor:"text"  },
-            { id:"storage", header:[ "Склад", { content:"textFilter" }, "" ], width:120, sort: "string", editor:"text"  },
+            { id:"storage", header:[ "Склад", { content:"selectFilter" }, "" ], width:120, sort: "string", editor:"text"  },
             { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:200, batch:2, sort: "string", editor:"text" },
             { id:"G",
               width:90,
@@ -725,5 +734,45 @@ export default class OrdersView extends JetView{
   doClickToExcel() {
     let table = this.$$("order-table");
     webix.toExcel(table);
+  }
+
+  doUndo() {
+    let table = this.$$("order-table");
+    let scope = this;
+
+    this.restApi = this.app.config.apiRest;
+    let tableUrl = this.restApi.getUrl('get',"accounting/user/order-back", {});
+
+
+    this.restApi.getLoad(tableUrl, {}).then(function(data){
+      //table.parse(data.json());
+      let notChange = {'updated':false, 'index':false,'AE':false,'date_obivka':false};
+      let dataJson = data.json();
+      let record = dataJson.data[0];
+      let changeParams = record.change_params;
+
+      let oldRecord = JSON.parse(record.old_record);
+      let recordTable = table.getItem(record.model_id);
+      let changeField ={'id': record.model_id };
+      for(let key in changeParams) {
+         if(isNaN(notChange[key])) {
+           recordTable[key] = oldRecord[key];
+           changeField[key] = oldRecord[key];
+           table.refresh();
+         }
+      }
+      console.log(changeField);
+      scope.restApi.put('accounting/orders',changeField).then(function(data){
+        recordTable['updated'] = data['updated'];
+        for (let key in changeField) {
+          table.addCellCss(record.model_id, key, "webix_editing_cell_green highlight");
+          setInterval(function(){ table.removeCellCss(record.model_id, key, "webix_editing_cell_green highlight") }, 50000)
+        }
+        table.showItem(record.model_id);
+      });
+
+
+    });
+
   }
 }

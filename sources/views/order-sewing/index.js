@@ -1227,7 +1227,8 @@ export default class OrderSewingView extends JetView{
 
             $init:function(item) {
               //debugger;
-
+              // белое есть на скдале и получено
+              // заказано и дата желтый
               if (item.M == 'заказано') {
                 item.$css = "highlight";
 
