@@ -5,6 +5,7 @@ export class ApiRest {
     //let wjetUser = webix.storage.local.get("wjet_user");
     if (location.host == 'localhost:8080') {
       this.urlBase = "http://admin.startsellshop.local/api";
+      this.urlDomain = "http://greensofa.net";
     } else {
       this.urlBase = "http://admin.startsell.biz/api";
       this.urlDomain = "http://greensofa.net";

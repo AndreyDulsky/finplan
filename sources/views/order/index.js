@@ -375,6 +375,12 @@ export default class OrdersView extends JetView{
                 item.$css = "highlight-green";
               if (item.B == 6)
                 item.$css = "highlight-green";
+              let dateComplite = formatDate(item.date_obivka);
+              let dateToday = formatDate(new Date());
+
+              if (dateComplite < dateToday && item.B=='1') {
+                item.$css = "highlight-red";
+              }
               item.index = this.count()+1;
             }
 
