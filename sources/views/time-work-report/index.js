@@ -85,14 +85,6 @@ export default class TimeWorkReportView extends JetView{
 
                 {},
                 { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
-                {
-                  view:"button",
-                  value:"fs",
-                  width: 30,
-                  click: function() {
-                    webix.fullscreen.set("employee-work-time-report-table");
-                  }
-                },
               ]
             },
             {
@@ -126,7 +118,7 @@ export default class TimeWorkReportView extends JetView{
               columns:[
 
                 { id:"date_created", header:"Дата", width: 100, sort: "string", format: formatDateTime, editor:"date" },
-                { id:"employee_id", header:["Сотрудник",  { content:"textFilter" }], width: 180, sort: "string", collection: employees },
+                { id:"employee_id", header:["Сотрудник",  { content:"selectFilter" }], width: 180, sort: "string", collection: employees },
                 { id:"date_absence_start", header:["Время отстутствия с", { content:"textFilter" }], width: 180, sort: "string", editor:"date", format: formatDateTime},
                 { id:"date_absence_end", header:["Время отстутствия по", { content:"textFilter" }], width: 180, sort: "string", edit: 'text', editor:"date", format: formatDateTime},
                 { id:"type", header:["Тип отстутствия",{ content:"textFilter" }], width: 120, sort: "string", edit: 'text', editor:"text"},
@@ -232,7 +224,10 @@ export default class TimeWorkReportView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employee-work-time-reports'), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','accounting/employee-work-time-reports',{
+          'sort':'-date_created',
+          'expand' : 'employee'
+      }), objFilter).then(function(data) {
         table.parse(data);
       });
 
@@ -254,19 +249,18 @@ export default class TimeWorkReportView extends JetView{
 
         //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
       filter = {
-        filter: {"date_absence_start":{'>=':dateFromValue}, "date_absence_start":{'<=':dateToValue}}
+        filter: {"date_absence_start":{'>=':dateFromValue,'<=':dateToValue}}
       };
 
 
+
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/employee-work-time-reports", {
-        //"per-page": "1200",
-        //sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
-        //filter: '{"B":"'+selectTypeValue+'"}',
-        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+        'sort':'-date_created',
+        'expand' : 'employee'
       });
       webix.ajax().get(tableUrl, filter).then(function(data){
         table.clearAll();
-        table.parse(data.json().items);
+        table.parse(data);
       });
 
     });
@@ -275,30 +269,23 @@ export default class TimeWorkReportView extends JetView{
 
       dateFromValue = format(dateFrom.getValue());
       dateToValue = format(dateTo.getValue());
-      selectTypeValue = selectType.getValue();
 
-      if (selectTypeValue == 4) {
-        //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
-        filter = {
-          filter: {
-            "or":[
-              {"B": {"in":[3,1,2,5,6]}},
-              {"date_shipment":{">=":dateFromValue, '<=':dateToValue}, "B":4}
-            ]
-          }
-        };
-      }
+      let filter =  {};
+
+
+      //filter = {filter: {"B": {"in":[3,4]}, "date_shipment":{">=":dateFromValue}}};
+      filter = {
+        filter: {"date_absence_start":{'>=':dateFromValue,'<=':dateToValue}}
+      };
+
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/employee-work-time-reports", {
-        //"per-page": "1200",
-        //sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
-        //filter: '{"B":"'+selectTypeValue+'"}',
-        //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+        'sort':'-date_created',
+        'expand' : 'employee'
       });
-
       webix.ajax().get(tableUrl, filter).then(function(data){
         table.clearAll();
-        table.parse(data.json().items);
+        table.parse(data);
       });
     });
 

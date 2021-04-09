@@ -89,9 +89,11 @@ export default class StoreProductView extends JetView{
                   "width": 50,
                   "template": "{common.trashIcon()}"
                 },
-                {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
+                {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"},
+                {"id": "action-image", "header": "", "width": 50, "template": "<i class='mdi mdi-image hover'></i>"},
+                {"id": "action-variant", "header": "", "width": 50, "template": "<i class='mdi mdi-eye hover'></i>"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"products", {'expand': 'data,categories', 'per-page': -1}),
+              url: this.app.config.apiRest.getUrl('get',"products", {'expand': 'data,categories,images', 'per-page': -1}),
               save: "api->products",
               scheme: {
                 //$sort:{ by:"name", dir:"asc" },
@@ -116,42 +118,31 @@ export default class StoreProductView extends JetView{
                       });
                     });
 
-                  } else {
-                    //this.$scope.cashEdit.showForm(this);
+                  }
+                  if (id.column == 'action-edit') {
+                    this.$scope.cashEdit.showForm(this);
+                  }
+                  if (id.column == 'action-variant') {
                     let item = this.getItem(id.row);
 
-                     let url = scope.app.config.apiRest.getUrl('get',"products/product-variant-speed/form-variant",
-                       {'expand': 'data,categories', 'per-page': -1, 'typeId':item.type_id});
-                    //var widgets = import(/* webpackChunkName: "widgets" */ url);
-                    // widgets.then(function(data,data1) {
-                    //   debugger;
-                    //   localViews['customWidgetA'] = class some123 extends JetView {
-                    //     config(){
-                    //       return {view: 'customWidgetA'};
-                    //     }
-                    //   };
-                    //   scope.show("customWidgetA");
-                    // });
-
+                    let url = scope.app.config.apiRest.getUrl('get',"products/product-variant-speed/form-variant",
+                      {'expand': 'data,categories', 'per-page': -1, 'typeId':item.type_id}
+                    );
                     webix.ajax(url, function(text){
                       let text1 =eval(text);
-
-                      //scope.ui(webix.DataDriver.json.toObject(text), scope);
-                      // localViews['customWidgetA'] = class some123 extends JetView {
-                      //   config(){
-                      //     return {
-                      //       view: 'window',
-                      //       body: {view: 'customWidgetA'}
-                      //     };
-                      //   }
-                      // };
-                      //scope.show("customWidgetA");
-                      let win = scope.ui({view: 'customWidgetA'},scope.$$('layout'));
+                      let win = scope.ui({view: 'form-variant'},scope.$$('layout'));
                       win.show();
-                      //localViews['customWidgetA'].show();
-                      //scope.ui({view:'customWidgetA'}, scope.$$('layout'), scope.$$('store-product-table'));
-                      //scope.$$('layout').refresh();
+                    });
+                  }
+                  if (id.column == 'action-image') {
 
+                    let url = scope.app.config.apiRest.getUrl('get',"products/product-image/form-image",
+                      {'expand': 'data', 'per-page': -1, 'product_id':id.row}
+                    );
+                    webix.ajax(url, function(text){
+                      let text1 =eval(text);
+                      let win = scope.ui({view: 'form-image'},scope.$$('layout'));
+                      win.show();
                     });
                   }
                 },
@@ -221,7 +212,97 @@ export default class StoreProductView extends JetView{
 
     });
 
+    let win = {
+      view:"window",
+      id:"tmpWin",
+      position:"center",
+      head:"Preview",
+      close:true,
+      move: true,
+      body:{
+        id:"tmp",
+        view:"template",
+        template:"<img src='#src#' style='width: 500px;' class='fit_parent'></img>",
+        width:500,
+        autoheight:true
+      }
+    };
+    this.win = this.ui(win);
     this.cashEdit = this.ui(UpdateFormView);
+    this.cashEdit.attachFormEvents = function(newValue) {
+      let scope = this;
+      let state = this.state;
+      let btnSave = this.$$("btn_save");
+      let btnCopy = this.$$("btn_copy");
+      let uploader = this.$$('uploader');
+
+      btnSave.attachEvent("onItemClick", function(newValue) {
+        scope.doClickSave();
+      });
+      btnCopy.attachEvent("onItemClick", function(newValue) {
+        scope.doClickSave(true);
+      });
+      this.$$("formEdit").elements["id"].attachEvent("onChange", function(newv, oldv, config){
+
+        let url = scope.app.config.apiRest.getUrl('get','accounting/cloth/upload', {'type':'cloth', 'id': scope.state.tableRecord.id});
+
+        uploader.define({
+          'upload' : url
+        });
+        let data = [];
+        let images = scope.state.tableRecord.images;
+        for (let key in images) {
+          data.push({ id: images[key].id, name:images[key].name, sizetext:images[key].size, status:"server" },)
+        }
+        uploader.files.clearAll();
+        uploader.files.parse(data);
+
+      });
+
+      uploader.files.attachEvent("onBeforeDelete", function(id) {
+        let item = uploader.files.getItem(id);
+        let idRemote = id;
+        if (item.newId) {
+          idRemote = item.newId;
+        }
+        scope.app.config.apiRest.delete('accounting/images', {'id': idRemote}).then(function() {
+          let i=0;
+          for (let key in scope.state.tableRecord.images) {
+            if (scope.state.tableRecord.images[key]['id'] == idRemote) {
+              scope.state.tableRecord.images.splice(i,1);
+              break;
+            }
+            i++;
+          }
+          //scope.state.tableRecord.images.push(data.data);
+        });
+      });
+
+
+      uploader.attachEvent('onBeforeFileAdd', function(upload,data, obj1){
+
+        var file = upload.file;
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          // console.log(event.target.result);
+          $$("tmpWin").getBody().setValues({src:event.target.result});
+          $$("tmpWin").show()
+        };
+        reader.readAsDataURL(file)
+        return true;
+      });
+      uploader.attachEvent('onFileUpload', function(item, data, obj1){
+        //let item = uploader.files.getItem(upload.id);
+        //item['status'] = "local";
+        item['newId'] = data.data.id;
+
+        //uploader.files.remove(uploader.files.getLastId());
+        //uploader.files.add({ id: upload.data.id, name:upload.data.name, sizetext:upload.data.size, status:"server" });
+        scope.state.tableRecord.images.push(data.data);
+        //return true;
+      });
+
+    };
   }
 
   doAddClick() {
