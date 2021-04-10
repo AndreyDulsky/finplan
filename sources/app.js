@@ -55,7 +55,8 @@ export default class App extends JetApp {
       	if (update.operation === "update") {
           let dataChange = {};
 
-          editor = dp.config.master.getEditor();
+          if (view._in_edit_mode == 1)
+            editor = dp.config.master.getEditor();
 
           dataChange = update.data;
           return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), dataChange, {
@@ -112,8 +113,10 @@ export default class App extends JetApp {
             }
           });
         }
-        if (update.operation === "insert")
-          return webix.ajax().post(restObj.getUrl('create',this.source,this.params), update.data);
+        if (update.operation === "insert") {
+      	  delete update.data['id'];
+          return webix.ajax().post(restObj.getUrl('create', this.source, this.params), update.data);
+        }
         if (update.operation === "delete")
           return webix.ajax().del(restObj.getUrl('delete',this.source,this.params, id), update.data);
       }

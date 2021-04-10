@@ -93,7 +93,7 @@ export default class StoreProductView extends JetView{
                 {"id": "action-image", "header": "", "width": 50, "template": "<i class='mdi mdi-image hover'></i>"},
                 {"id": "action-variant", "header": "", "width": 50, "template": "<i class='mdi mdi-eye hover'></i>"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"products", {'expand': 'data,categories,images', 'per-page': -1}),
+              url: this.app.config.apiRest.getUrl('get',"products", {'expand': 'data,categories', 'per-page': -1}),
               save: "api->products",
               scheme: {
                 //$sort:{ by:"name", dir:"asc" },
@@ -136,12 +136,12 @@ export default class StoreProductView extends JetView{
                   }
                   if (id.column == 'action-image') {
 
-                    let url = scope.app.config.apiRest.getUrl('get',"products/product-image/form-image",
+                    let url = scope.app.config.apiRest.getUrl('get',"products/product-image/form-image-list",
                       {'expand': 'data', 'per-page': -1, 'product_id':id.row}
                     );
                     webix.ajax(url, function(text){
                       let text1 =eval(text);
-                      let win = scope.ui({view: 'form-image'},scope.$$('layout'));
+                      let win = scope.ui({view: 'form-image-list'},scope.$$('layout'));
                       win.show();
                     });
                   }
@@ -187,6 +187,18 @@ export default class StoreProductView extends JetView{
     // });
 
 
+
+    this.uploader = webix.ui({
+      localId:"uploadAPI",
+      name: 'uploader',
+      inputName : 'uploader',
+      view:"uploader",
+      datatype: null,
+      upload:'',
+      apiOnly:true
+    });
+
+
     form.attachEvent("onChange", function(obj){
 
       let filter = {'search':form.getValue()};
@@ -222,7 +234,7 @@ export default class StoreProductView extends JetView{
       body:{
         id:"tmp",
         view:"template",
-        template:"<img src='#src#' style='width: 500px;' class='fit_parent'></img>",
+        //template:"<img src='#src#' style='width: 500px;' class='fit_parent' />",
         width:500,
         autoheight:true
       }
