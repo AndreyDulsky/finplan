@@ -1522,7 +1522,7 @@ export default class OrderSewingView extends JetView{
     sel.forEach(item => {
       table.getItem(item.row)[field] = formatDateTimeDb(date);
       table.refresh(item.row);
-      webix.message('Данные сохранены!');
+      //webix.message('Данные сохранены!');
       table.updateItem(item.row, table.getItem(item.row))
     });
 

@@ -65,6 +65,12 @@ export default class App extends JetApp {
                 let selectedCell = dp.config.master.getSelectedId();
                 let selectedChange = (editor) ? editor.column : selectedCell.column;
                 view.addCellCss(id, selectedChange, "webix_invalid_cell");
+              } else {
+                webix.message({
+                  text: 'Данные  не сохранены',
+                  type: "error",
+                  expire: -1,
+                });
               }
             },
             success:function(text, data, XmlHttpRequest){
