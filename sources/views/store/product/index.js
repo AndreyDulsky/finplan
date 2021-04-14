@@ -93,7 +93,7 @@ export default class StoreProductView extends JetView{
                 {"id": "action-image", "header": "", "width": 50, "template": "<i class='mdi mdi-image hover'></i>"},
                 {"id": "action-variant", "header": "", "width": 50, "template": "<i class='mdi mdi-eye hover'></i>"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"products", {'expand': 'data,categories', 'per-page': -1}),
+              url: this.app.config.apiRest.getUrl('get',"products", {'expand': 'data,categories,images', 'per-page': -1}),
               save: "api->products",
               scheme: {
                 //$sort:{ by:"name", dir:"asc" },
@@ -256,7 +256,7 @@ export default class StoreProductView extends JetView{
       });
       this.$$("formEdit").elements["id"].attachEvent("onChange", function(newv, oldv, config){
 
-        let url = scope.app.config.apiRest.getUrl('get','accounting/cloth/upload', {'type':'cloth', 'id': scope.state.tableRecord.id});
+        let url = scope.app.config.apiRest.getUrl('get','accounting/images', {'type':'image', 'model':'product', 'id': scope.state.tableRecord.id});
 
         uploader.define({
           'upload' : url

@@ -138,7 +138,6 @@ export default class TimeWorkReportView extends JetView{
                 $init:function(item) {
                   if (item.type == 'Прогул')
                     item.$css = "highlight-red";
-
                 }
               },
 

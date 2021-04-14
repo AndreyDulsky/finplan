@@ -123,7 +123,9 @@ export default class ProductsBedView extends JetView{
                   "width": 50,
                   "template": "{common.trashIcon()}"
                 },
-                {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
+                {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"},
+                {"id": "action-image", "header": "", "width": 50, "template": "<i class='mdi mdi-image hover'></i>"},
+                {"id": "action-image-table", "header": "", "width": 50, "template": "<i class='mdi mdi-table hover'></i>"},
               ],
               url: this.app.config.apiRest.getUrl('get',"accounting/product-beds", {'sort':'name', 'per-page': -1}),//"api->accounting/contragents",
               save: "api->accounting/product-beds",
@@ -139,7 +141,7 @@ export default class ProductsBedView extends JetView{
                 }
               },
               on:{
-                onItemDblClick:function(id, e, trg) {
+                onItemClick:function(id, e, trg) {
 
                   if (id.column == 'action-delete') {
                     var table = this;
@@ -156,8 +158,29 @@ export default class ProductsBedView extends JetView{
                       });
                     });
 
-                  } else {
+                  }
+                  if (id.column == 'action-edit') {
                     this.$scope.cashEdit.showForm(this);
+                  }
+                  if (id.column == 'action-image') {
+                    let url = scope.app.config.apiRest.getUrl('get',"accounting/image-param/form-image-list",
+                      { 'per-page': -1, 'product_id':id.row}
+                    );
+                    webix.ajax(url, function(text){
+                      let text1 =eval(text);
+                      let win = scope.ui({view: 'form-image-param-list'},scope.$$('layout'));
+                      win.show();
+                    });
+                  }
+                  if (id.column == 'action-image-table') {
+                    let url = scope.app.config.apiRest.getUrl('get',"accounting/image-param/form-image-table",
+                      { 'per-page': -1, 'product_id':id.row}
+                    );
+                    webix.ajax(url, function(text){
+                      let text1 =eval(text);
+                      let win = scope.ui({view: 'form-image-param-table'},scope.$$('layout'));
+                      win.show();
+                    });
                   }
                 },
                 onBeforeLoad:function(){
@@ -189,6 +212,15 @@ export default class ProductsBedView extends JetView{
     });
 
     this.cashEdit = this.ui(UpdateFormView);
+    this.uploader = webix.ui({
+      localId:"uploadAPI",
+      name: 'uploader',
+      inputName : 'uploader',
+      view:"uploader",
+      datatype: null,
+      upload:'',
+      apiOnly:true
+    });
   }
 
   getData() {

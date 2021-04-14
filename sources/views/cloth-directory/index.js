@@ -85,9 +85,9 @@ export default class ClothDirectoryView extends JetView{
               columns:[
                 { id:"index", header:"#", sort:"int", width:50},
                 { id:"id", header:"ID",	width:50, sort: "int" },
-                { id:"image", header:"",	width:75, template:function(obj) {
-                  if (!obj.imageMain) return '';
-                  return '<img src="'+scope.app.config.apiRest.urlBase+'/'+obj.imageMain.folder+'/'+obj.imageMain.file+'" width=50 />';
+                { id:"image", header:"",	width:60, template:function(obj) {
+                  if (!obj.image) return '';
+                  return '<img src="'+scope.app.config.apiRest.urlBase+'/'+obj.image.folder+'/'+obj.image.file+'" width="35" height="35" />';
 
                 } },
 
@@ -111,7 +111,7 @@ export default class ClothDirectoryView extends JetView{
                 },
                 {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/cloths", {'sort':'provider+name+color', 'per-page': '-1', 'expand': 'images,imageMain'}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/cloths", {'sort':'provider+name+color', 'per-page': '-1', 'expand': 'image'}),//"api->accounting/contragents",
               save: "api->accounting/cloths",
               // scheme: {
               //    $sort:{ by:"name", dir:"asc" },
@@ -238,18 +238,27 @@ export default class ClothDirectoryView extends JetView{
       });
       this.$$("formEdit").elements["id"].attachEvent("onChange", function(newv, oldv, config){
 
-        let url = scope.app.config.apiRest.getUrl('get','accounting/cloth/upload', {'type':'cloth', 'id': scope.state.tableRecord.id});
+
+        let data = [];
+        let image = scope.state.tableRecord.image;
+        if (image) {
+          //for (let key in images) {
+          data.push({id: image.id, name: image.name, sizetext: image.size, status: "server"},)
+          //}
+        }
+        uploader.files.clearAll();
+        uploader.files.parse(data);
+        let mode = 'insert-save';
+        let id = scope.state.tableRecord.id;
+        if (uploader.files.count() > 0) {
+            mode = 'update';
+            id = image.id;
+        }
+        let url = scope.app.config.apiRest.getUrl('get','accounting/images', {'type':'image', 'model':'cloth','mode':mode, 'id': id});
 
         uploader.define({
           'upload' : url
         });
-        let data = [];
-        let images = scope.state.tableRecord.images;
-        for (let key in images) {
-          data.push({ id: images[key].id, name:images[key].name, sizetext:images[key].size, status:"server" },)
-        }
-        uploader.files.clearAll();
-        uploader.files.parse(data);
 
       });
 
@@ -263,7 +272,7 @@ export default class ClothDirectoryView extends JetView{
           let i=0;
           for (let key in scope.state.tableRecord.images) {
             if (scope.state.tableRecord.images[key]['id'] == idRemote) {
-              scope.state.tableRecord.images.splice(i,1);
+              scope.state.tableRecord.image = '';
               break;
             }
             i++;
@@ -275,15 +284,15 @@ export default class ClothDirectoryView extends JetView{
 
       uploader.attachEvent('onBeforeFileAdd', function(upload,data, obj1){
 
-        var file = upload.file;
-        var reader = new FileReader();
-        reader.onload = function(event) {
-          // console.log(event.target.result);
-          $$("tmpWin").getBody().setValues({src:event.target.result});
-          $$("tmpWin").show()
-        };
-        reader.readAsDataURL(file)
-        return true;
+        // var file = upload.file;
+        // var reader = new FileReader();
+        // reader.onload = function(event) {
+        //   // console.log(event.target.result);
+        //   $$("tmpWin").getBody().setValues({src:event.target.result});
+        //   $$("tmpWin").show()
+        // };
+        // reader.readAsDataURL(file);
+        // return true;
       });
       uploader.attachEvent('onFileUpload', function(item, data, obj1){
         //let item = uploader.files.getItem(upload.id);
@@ -292,7 +301,7 @@ export default class ClothDirectoryView extends JetView{
 
         //uploader.files.remove(uploader.files.getLastId());
         //uploader.files.add({ id: upload.data.id, name:upload.data.name, sizetext:upload.data.size, status:"server" });
-        scope.state.tableRecord.images.push(data.data);
+        scope.state.tableRecord.image = data.data;
        //return true;
       });
 
