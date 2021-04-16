@@ -1,6 +1,7 @@
 import {JetView} from "webix-jet";
 import UpdateFormView from "core/updateFormView";
 import {productTypes} from "models/product/product-type";
+import ClothDirectoryView from "views/cloth-directory/index";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
@@ -127,7 +128,7 @@ export default class ProductsBedView extends JetView{
                 {"id": "action-image", "header": "", "width": 50, "template": "<i class='mdi mdi-image hover'></i>"},
                 {"id": "action-image-table", "header": "", "width": 50, "template": "<i class='mdi mdi-table hover'></i>"},
               ],
-              url: this.app.config.apiRest.getUrl('get',"accounting/product-beds", {'sort':'name', 'per-page': -1}),//"api->accounting/contragents",
+              url: this.app.config.apiRest.getUrl('get',"accounting/product-beds", {'sort':'name', 'per-page': -1, 'expand':'images'}),//"api->accounting/contragents",
               save: "api->accounting/product-beds",
               // scheme: {
               //    $sort:{ by:"name", dir:"asc" },
@@ -221,6 +222,106 @@ export default class ProductsBedView extends JetView{
       upload:'',
       apiOnly:true
     });
+
+    this.cashEdit.attachFormEvents = function(newValue) {
+      let scope = this;
+      let state = this.state;
+      let btnSave = this.$$("btn_save");
+      let btnCopy = this.$$("btn_copy");
+      let uploader = this.$$('uploader');
+
+      btnSave.attachEvent("onItemClick", function(newValue) {
+        scope.doClickSave();
+      });
+      btnCopy.attachEvent("onItemClick", function(newValue) {
+        scope.doClickSave(true);
+      });
+      this.$$("formEdit").elements["id"].attachEvent("onChange", function(newv, oldv, config){
+
+
+        let data = [];
+        let images = scope.state.tableRecord.images;
+
+        if (images) {
+          for (let key in images) {
+            data.push({id: images[key].id, name: images[key].name, sizetext: images[key].size, status: "server"},)
+          }
+        }
+        uploader.files.clearAll();
+        uploader.files.parse(data);
+        let mode = 'insert-save';
+        let id = scope.state.tableRecord.id;
+        // if (uploader.files.count() > 0) {
+        //   mode = 'update';
+        //   id = image.id;
+        // }
+        let url = scope.app.config.apiRest.getUrl('get','accounting/images', {'type':'image', 'model':'product-bed','mode':mode, 'id': id});
+
+        uploader.define({
+          'upload' : url
+        });
+
+      });
+
+      uploader.files.attachEvent("onBeforeDelete", function(id) {
+        let item = uploader.files.getItem(id);
+        let idRemote = id;
+        if (item.newId) {
+          idRemote = item.newId;
+        }
+        scope.app.config.apiRest.delete('accounting/images', {'id': idRemote}).then(function() {
+          let i=0;
+          for (let key in scope.state.tableRecord.images) {
+            if (scope.state.tableRecord.images[key]['id'] == idRemote) {
+              scope.state.tableRecord.images = '';
+              break;
+            }
+            i++;
+          }
+          //scope.state.tableRecord.images.push(data.data);
+        });
+      });
+
+
+      uploader.attachEvent('onBeforeFileAdd', function(upload,data, obj1){
+
+        // var file = upload.file;
+        // var reader = new FileReader();
+        // reader.onload = function(event) {
+        //   // console.log(event.target.result);
+        //   $$("tmpWin").getBody().setValues({src:event.target.result});
+        //   $$("tmpWin").show()
+        // };
+        // reader.readAsDataURL(file);
+        // return true;
+      });
+      uploader.attachEvent('onFileUpload', function(item, data, obj1){
+        //let item = uploader.files.getItem(upload.id);
+        //item['status'] = "local";
+        item['newId'] = data.data.id;
+
+        //uploader.files.remove(uploader.files.getLastId());
+        uploader.files.add({ id: upload.data.id, name:upload.data.name, sizetext:upload.data.size, status:"server" });
+        scope.state.tableRecord.images.push(data.data);
+        //return true;
+      });
+
+    };
+
+    let winTable = {
+      localId: "winTable",
+      view: "window",
+      scope: this,
+      head: "Список",
+      position: 'center',
+      width: 800,
+      height: 600,
+      close: true,
+      modal: true,
+      move:true,
+      body: ClothDirectoryView
+    };
+    this.winTable =  this.ui(winTable);
   }
 
   getData() {

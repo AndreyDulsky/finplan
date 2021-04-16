@@ -5,7 +5,7 @@ import "components/comboDateClose";
 import "components/searchClose";
 
 
-export default class StoreProductVariantSpeedView extends JetView{
+export default class StoreExportClothView extends JetView{
   config(){
 
     let scope = this;
@@ -58,52 +58,30 @@ export default class StoreProductVariantSpeedView extends JetView{
             },
             {
               view: "treetable",
-              localId: "product-variant-speed-table",
-              urlEdit: 'products/product-variant-speed',
+              localId: "export-cloth-table",
+              urlEdit: 'products/export-cloth',
               urlEditFull: true,
               css:"webix_header_border webix_data_border",
               select: true,
               resizeColumn: { headerOnly:true },
               rowHeight:60,
               columns:[
-                //{ id:"id", header:[ "#", { content:"selectFilter" }, "" ],	width:80 },
-                // { id:"picture_anons_img", header:[ "", "", "" ], width: 140, sort: "string",
-                //   template: function(obj) {
-                //     return '<img src="'+obj.offer_picture_anons+'" style="cursor:pointer; width:120px;" />';
-                //
-                //   }
-                // },
 
-                { id:"url", header:[ "Символьный код", { content:"selectFilter" }, "" ], width: 180, sort: "string" },
-                { id:"url_category", header:[ "Символьный код (категории)", { content:"selectFilter" }, "" ], width: 100, sort: "string" },
-                { id:"name", header:[ "Наименование", { content:"selectFilter" }, "" ], width: 220, sort: "string" },
-                { id:"offer_name", header:[ "Наименование (ТП)", { content:"selectFilter" }, "" ], width: 280, sort: "string" },
-                { id:"offer_code", header:[ "Код элемента (ТП)", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
-                { id:"offer_property_1", header:[ "Спальное место", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
-                { id:"offer_property_2", header:[ "Цвет", { content:"selectFilter" }, "" ], width: 50, sort: "string" },
-                { id:"offer_property_3", header:[ "Ткань", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
-                { id:"offer_price_opt", header:[ "Закупочная цена", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
-                { id:"offer_price", header:[ "Розничная цена", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
-                { id:"offer_price_discount", header:[ "Цена со скидкой", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
-                { id:"offer_discount", header:[ "Cкидка", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
-                { id:"offer_picture_anons", header:[ "ТП картинка для анонса", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
-                { id:"offer_picture_details", header:[ "ТП картинка детальная", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
-                { id:"offer_pictures", header:[ "ТП картинки", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
-                { id:"is_active", header:[ "Активность", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
-                { id:"picture_anons", header:[ "Картинка для анонса", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
-                { id:"picture_details", header:[ "Картинка детальная", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
-                { id:"pictures", header:[ "Картинки", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
-                { id:"id_model", header:[ "Код", { content:"selectFilter" }, "" ], width: 50, sort: "string" },
-                {
-                  "id": "action-delete",
-                  "header": "",
-                  "width": 50,
-                  "template": "{common.trashIcon()}"
-                },
-                {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
+                { id:"full_name", header:[ "Наименование", { content:"selectFilter" }, "" ], width: 280, sort: "string" },
+                { id:"name", header:[ "Коллекция", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"color_real", header:[ "Цвет", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                //{ id:"provider", header:[ "Производитель", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"order_sort", header:[ "Сорт.", { content:"selectFilter" }, "" ], width: 50, sort: "string" },
+                { id:"id", header:[ "Внешний Код", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
+                { id:"link", header:[ "Ссылка", { content:"selectFilter" }, "" ], width: 90, sort: "string" },
+                { id:"description", header:[ "Описание", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"full_description", header:[ "Полное описание", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"category", header:[ "Категория", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"pictures", header:[ "Картинка", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id: "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
-              url: this.app.config.apiRest.getUrl('get',"products/product-variant-speed/export-bitrix", {'expand': 'data,categories', 'per-page': -1, 'id':id}),
-              //save: "api->products/product-variant-speeds",
+              url: this.app.config.apiRest.getUrl('get',"products/product-variant-speed/export-cloth-bitrix", {'expand': 'data,categories', 'per-page': -1, 'id':id}),
+              //save: "api->products/export-cloths",
               scheme: {
                 //$sort:{ by:"name", dir:"asc" },
               },
@@ -150,12 +128,12 @@ export default class StoreProductVariantSpeedView extends JetView{
   init(view){
 
     let form = this.$$("form-search");
-    let table = this.$$("product-variant-speed-table");
+    let table = this.$$("export-cloth-table");
     //table.markSorting("name", "asc");
     let scope = this;
     // table.attachEvent("onDataRequest", function (start, count) {
     //   webix.ajax().get(scope.app.config.apiRest.getUrl('get', 'accounting/contragents', {
-    //     "expand": "contragent,product-variant-speed,project,account,data",
+    //     "expand": "contragent,export-cloth,project,account,data",
     //     "per-page": count, "start" : start
     //   })).then(function (data) {
     //     //table.parse(data);
@@ -184,7 +162,7 @@ export default class StoreProductVariantSpeedView extends JetView{
         hide:false
       });
 
-      webix.ajax().get( scope.app.config.apiRest.getUrl('get','product-variant-speeds'), objFilter).then(function(data) {
+      webix.ajax().get( scope.app.config.apiRest.getUrl('get','products/product-variant-speed/export-cloth-bitrix'), objFilter).then(function(data) {
         table.parse(data);
       });
 
@@ -200,12 +178,12 @@ export default class StoreProductVariantSpeedView extends JetView{
   }
 
   doAddClick() {
-    this.$$('product-variant-speed-table').unselect();
-    this.cashEdit.showForm(this.$$('product-variant-speed-table'));
+    this.$$('export-cloth-table').unselect();
+    this.cashEdit.showForm(this.$$('export-cloth-table'));
   }
 
   doClickToExcel() {
-    let table = this.$$("product-variant-speed-table");
+    let table = this.$$("export-cloth-table");
     webix.toExcel(table);
   }
 

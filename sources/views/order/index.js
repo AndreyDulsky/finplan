@@ -375,10 +375,13 @@ export default class OrdersView extends JetView{
                 item.$css = "highlight-green";
               if (item.B == 6)
                 item.$css = "highlight-green";
-              let dateComplite = formatDate(item.date_obivka);
-              let dateToday = formatDate(new Date());
+              let dateComplite = parserDate(item.date_obivka);
+              let dateToday = webix.Date.add(new Date(), -1, "day");
 
-              if (dateComplite < dateToday && item.B=='1') {
+
+              //debugger;
+
+              if (webix.filters.date.greater(dateToday,dateComplite ) && item.B=='1') {
                 item.$css = "highlight-red";
               }
               item.index = this.count()+1;
