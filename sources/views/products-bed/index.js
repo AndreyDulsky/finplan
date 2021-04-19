@@ -219,7 +219,7 @@ export default class ProductsBedView extends JetView{
       inputName : 'uploader',
       view:"uploader",
       datatype: null,
-      upload:'',
+      //upload:'',
       apiOnly:true
     });
 

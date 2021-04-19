@@ -90,6 +90,7 @@ export default class App extends JetApp {
                   });
 
                 }
+
               } else {
 
 
@@ -98,6 +99,12 @@ export default class App extends JetApp {
                   record['updated'] = result['updated'];
                   record = view.getItem(id)
                 }
+                //if (view._in_edit_mode == 1) {
+
+                  let selectedCell = dp.config.master.getSelectedId();
+                  let selectedChange = (editor) ? editor.column : selectedCell.column;
+                  view.addCellCss(id, selectedChange, "webix_editing_cell");
+                //}
 
               }
               if (result.changeData) {
@@ -110,12 +117,7 @@ export default class App extends JetApp {
 
                 }
               }
-              if (view._in_edit_mode == 1) {
 
-                let selectedCell = dp.config.master.getSelectedId();
-                let selectedChange = (editor) ? editor.column : selectedCell.column;
-                view.addCellCss(id, selectedChange, "webix_editing_cell");
-              }
             }
           });
         }

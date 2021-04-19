@@ -133,7 +133,7 @@ export default class OrderChangeLogView extends JetView{
                     },
                     {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
                   ],
-                  url: this.app.config.apiRest.getUrl('get',"accounting/order-change-logs", {'sort':'-id', 'per-page': 100, 'fields':'id,model_id,order_id,date_created, change_params, old_change_params,user_code'}),
+                  url: this.app.config.apiRest.getUrl('get',"accounting/order-change-logs", {'sort':'-id', 'per-page': 100, 'fields':'id,model_id,order_id,date_created, change_params, old_change_params,user_code,old_record, new_record'}),
                   save: "api->accounting/order-change-logs",
                   // scheme: {
                   //    $sort:{ by:"name", dir:"asc" },
