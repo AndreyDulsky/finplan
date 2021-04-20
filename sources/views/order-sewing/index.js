@@ -1229,22 +1229,27 @@ export default class OrderSewingView extends JetView{
               //debugger;
               // белое есть на скдале и получено
               // заказано и дата желтый
-              if (item.M == 'заказано') {
-                item.$css = "highlight";
+              if (item.M == 'есть на складе' || item.M == 'получено') {
 
-                if (item.K) {
-                  let formatYear =  webix.Date.dateToStr("%y");
-                  let parseAE = webix.Date.strToDate("%d.%m.%y");
-                  let year =formatYear(new Date());
-                  let dateCloth = parserDateCloth(item.K+'.'+year);
-                  let dateAE = parseAE(item.AE);
-                  if (dateCloth > dateAE) {
-                    item.$css = "highlight-red";
+              } else {
+                if (item.M == 'заказано') {
+                  item.$css = "highlight";
+
+                  if (item.K) {
+                    let formatYear =  webix.Date.dateToStr("%y");
+                    let parseAE = webix.Date.strToDate("%d.%m.%y");
+                    let year =formatYear(new Date());
+                    let dateCloth = parserDateCloth(item.K+'.'+year);
+                    let dateAE = parseAE(item.AE);
+                    if (dateCloth > dateAE) {
+                      item.$css = "highlight-red";
+                    }
                   }
+                } else {
+                  item.$css = "highlight-red";
                 }
-
-
               }
+
 
               if (item.date_client) {
                 let formatDay =  webix.Date.dateToStr("%d");

@@ -304,7 +304,7 @@ export default class OrdersView extends JetView{
             },
 
             { id:"B", header:[ "Статус", { content:"numberFilter" },"" ], width:80, batch:2, sort: "int", editor:"text" },
-            { id:"date_shipment_plan", header:[ "Дата.план.отгр.", { content:"textFilter" }, "" ], width:110, editor:"date",
+            { id:"date_shipment_plan", header:[ "Дата.план.отгр.", { content:"textFilter" }, "" ],sort: "date", width:110, editor:"date",
               template: function(obj) {
                 return formatDate(parserDate(obj.date_shipment_plan));
               }
