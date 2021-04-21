@@ -78,6 +78,7 @@ export default class StoreExportClothView extends JetView{
                 { id:"full_description", header:[ "Полное описание", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id:"category", header:[ "Категория", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id:"pictures", header:[ "Картинка", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"provider", header:[ "Производитель", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id: "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
               url: this.app.config.apiRest.getUrl('get',"products/product-variant-speed/export-cloth-bitrix", {'expand': 'data,categories', 'per-page': -1, 'id':id}),
