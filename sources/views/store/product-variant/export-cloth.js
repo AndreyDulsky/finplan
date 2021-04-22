@@ -83,7 +83,7 @@ export default class StoreExportClothView extends JetView{
                 { id:"param_structure", header:[ "Состав", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id:"param_test", header:[ "Тест", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id:"param_weight", header:[ "Вес", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
-                { id:"param_permeation", header:[ "Проникновение", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"param_permeation", header:[ "Пропитка", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id:"param_link", header:[ "Ссылка", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id:"param_description", header:[ "Описание", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id: "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
