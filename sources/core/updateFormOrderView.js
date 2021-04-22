@@ -442,27 +442,26 @@ export default class UpdateFormOrderView extends JetView {
 
 
 
-    webix.ajax().get(tableUrl, valuesForm).then(function(data){
-      let result = data.json();
-      inputPrice.setValue(result['sum']);
-      let res =0;
-      for (let lebelId in result['rules']) {
-        res = parseInt(result['rules'][lebelId]);
-        if (res > 0 ) {
-          res = '+' + result['rules'][lebelId];
-          webix.html.removeCss(scope.$$(lebelId).$view,"red");
-          webix.html.addCss(scope.$$(lebelId).$view, "green");
-          scope.$$(lebelId).refresh();
-        } else {
-          webix.html.removeCss(scope.$$(lebelId).$view,"green");
-          webix.html.addCss(scope.$$(lebelId).$view, "red");
-          scope.$$(lebelId).refresh();
-        }
-        scope.$$(lebelId).setValue(res);
+    var xhr = webix.ajax().sync().get(tableUrl, valuesForm);
 
+    let result = JSON.parse(xhr.responseText);
+    inputPrice.setValue(result['sum']);
+    let res =0;
+    for (let lebelId in result['rules']) {
+      res = parseInt(result['rules'][lebelId]);
+      if (res > 0 ) {
+        res = '+' + result['rules'][lebelId];
+        webix.html.removeCss(scope.$$(lebelId).$view,"red");
+        webix.html.addCss(scope.$$(lebelId).$view, "green");
+        scope.$$(lebelId).refresh();
+      } else {
+        webix.html.removeCss(scope.$$(lebelId).$view,"green");
+        webix.html.addCss(scope.$$(lebelId).$view, "red");
+        scope.$$(lebelId).refresh();
       }
+      scope.$$(lebelId).setValue(res);
 
-    });
+    }
   }
 
   labelSetValue() {
