@@ -276,6 +276,12 @@ export default class OrdersView extends JetView{
               id:"A", header:[ "# заказа", { content:"textFilter" },{ content:"totalColumnCount" } ], hidden: false,
               "css": {"color": "black", "text-align": "right", "font-weight": 500}, sort: "int",
               tooltip:"#F# #C#-#D# Дата клиента: #H# <br>#E# #I# #L# - Статус ткани: #M# Дата ткани: #K#<br>#N# #O# #P# #Q# #R# #T#",
+              cssFormat: function(id, obj) {
+
+                if (obj.product_id && obj.client_id && obj.cloth_id && obj.type_product && obj.size_id && obj.carcass_type_id && obj.leg_id && obj.bottom_id)
+                  return {'color': 'green'};
+                return {};
+              }
             },
             {"id": "action-view", "header": ['','',''], "width": 50,
               template: function(obj,common) {
