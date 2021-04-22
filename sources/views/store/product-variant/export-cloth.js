@@ -79,6 +79,13 @@ export default class StoreExportClothView extends JetView{
                 { id:"category", header:[ "Категория", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id:"pictures", header:[ "Картинка", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id:"provider", header:[ "Производитель", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"param_type", header:[ "Тип ткани", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"param_structure", header:[ "Состав", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"param_test", header:[ "Тест", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"param_weight", header:[ "Вес", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"param_permeation", header:[ "Проникновение", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"param_link", header:[ "Ссылка", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
+                { id:"param_description", header:[ "Описание", { content:"selectFilter" }, "" ], width: 70, sort: "string" },
                 { id: "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
               ],
               url: this.app.config.apiRest.getUrl('get',"products/product-variant-speed/export-cloth-bitrix", {'expand': 'data,categories', 'per-page': -1, 'id':id}),
