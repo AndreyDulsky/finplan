@@ -3,7 +3,7 @@ import UpdateFormModelView from "core/updateFormView";
 import ProductWorkSalaryView from "views/product-work-salary/index";
 import PowerFormView from "views/order-sewing/power-form";
 import CheckFormView from "views/order/check-work";
-
+import UpdateFormOrderView from "core/updateFormOrderView";
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -351,7 +351,8 @@ export default class OrderSewingView extends JetView{
         {
           view:"treetable",
           css:"webix_header_border webix_data_border my_style",
-          urlEdit: 'product-work-salary',
+          //urlEdit: 'product-work-salary',
+          urlEdit: 'order',
           leftSplit:12,
           //rightSplit:2,
           select: "row",
@@ -381,6 +382,12 @@ export default class OrderSewingView extends JetView{
                 return obj.A;
               },
               //format:formatDateHour,
+              cssFormat: function(id, obj) {
+
+                if (obj.product_id && obj.client_id && obj.cloth_id && obj.type_product && obj.size_id && obj.carcass_type_id && obj.leg_id && obj.bottom_id)
+                  return {'color': 'green'};
+                return {};
+              },
               "css": {"color": "black", "text-align": "right", "font-weight": 500},
               //"sort" : "date"
             },
@@ -1273,6 +1280,30 @@ export default class OrderSewingView extends JetView{
             }
           },
           ready:function(){
+            webix.ui({
+              view:"contextmenu",
+              data: ["Редактировать"],
+              on:{
+                onItemClick:function(id){
+                  var context = this.getContext();
+                  scope.$$("sewing-table").unselect();
+                  scope.$$("sewing-table").select(context.id.row, context.id.column,true);
+                  if (id == 'Редактировать') {
+                    scope.formEdit.showForm(scope.$$("sewing-table"));
+                  }
+                  if (id == 'Копировать') {
+
+                    var grid = scope.$$("sewing-table");
+
+                    // let clipboard = document.getElementsByClassName("webix_clipbuffer")[0].value;
+                    // grid.callEvent("onKeyPress", [
+                    //   clipboard,
+                    //   {ctrlKey:true,target:grid.$view}
+                    // ]);
+                  }
+                }
+              }
+            }).attachTo(this);
             // var state = webix.storage.local.get("treetable_state");
             // if (state)
             //   this.setState(state);
@@ -1310,7 +1341,7 @@ export default class OrderSewingView extends JetView{
             onItemClick:function(id, e, trg) {
 
               if (id.column == 'action-view') {
-                this.$scope.formEdit.showWindow({},this);
+                this.$scope.formCheckEdit.showWindow({},this);
 
               }
             },
@@ -1486,6 +1517,8 @@ export default class OrderSewingView extends JetView{
     });
 
     this.modelEdit = this.ui(UpdateFormModelView);
+
+
     let winTable = {
       localId: "winTable",
       view: "window",
@@ -1497,7 +1530,9 @@ export default class OrderSewingView extends JetView{
     };
     this.winTable =  this.ui(winTable);
 
-    this.formEdit = this.ui(CheckFormView);
+    //this.formEdit = this.ui(CheckFormView);
+    this.formEdit = this.ui(UpdateFormOrderView);
+    this.formCheckEdit = this.ui(CheckFormView);
     //this.productWorkSalary = this.ui(ProductWorkSalaryView);
 
   }
