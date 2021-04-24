@@ -163,7 +163,7 @@ export default class UpdateFormOrderView extends JetView {
       //find element by id and get his options
       let list = $$(elementId).getPopup().getList();
       //get data by url collection
-
+      params = (collections[elementId].params) ? collections[elementId].params : params;
       let nameField = (collections[elementId].field) ? collections[elementId].field : 'name';
       let dataCollection = api.getCollection(collections[elementId].url, params, nameField);
 
