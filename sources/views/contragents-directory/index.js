@@ -86,7 +86,8 @@ export default class ContragentsDirectoryView extends JetView{
                   "width": 50,
                   "template": "{common.trashIcon()}"
                 },
-                {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
+                {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"},
+                {"id": "action-view", "header": "", "width": 50, "template": "<i class='mdi mdi-eye'></i>"}
               ],
               url: this.app.config.apiRest.getUrl('get',"accounting/contragents"),//"api->accounting/contragents",
               save: "api->accounting/contragents",
@@ -113,8 +114,15 @@ export default class ContragentsDirectoryView extends JetView{
                       });
                     });
 
-                  } else {
+                  }
+                  if (id.column == 'action-edit')  {
                     this.$scope.cashEdit.showForm(this);
+                  }
+
+                  if (id.column == 'action-view') {
+                    //this.$scope.cashEdit.showForm(this);
+                    let item = this.getItem(id.row);
+                    this.$scope.app.show("/top/contragent-product-bed?id="+item.id+'&name='+item.name);
                   }
                 },
                 onBeforeLoad:function(){

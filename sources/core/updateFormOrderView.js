@@ -157,7 +157,7 @@ export default class UpdateFormOrderView extends JetView {
     let loadedCount = 0;
     let collections = result.data.dataCollections;
     let collectionsCount = Object.keys(collections).length;
-    let params = {"per-page": -1};
+    let params = {"per-page": -1, 'sort': 'name'};
     for (let elementId in collections) {
 
       //find element by id and get his options
@@ -449,6 +449,7 @@ export default class UpdateFormOrderView extends JetView {
     let res =0;
     for (let lebelId in result['rules']) {
       res = parseInt(result['rules'][lebelId]);
+
       if (res > 0 ) {
         res = '+' + result['rules'][lebelId];
         webix.html.removeCss(scope.$$(lebelId).$view,"red");
