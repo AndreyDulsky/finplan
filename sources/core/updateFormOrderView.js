@@ -159,7 +159,7 @@ export default class UpdateFormOrderView extends JetView {
     let collectionsCount = Object.keys(collections).length;
     let params = {"per-page": -1, 'sort': 'name'};
     for (let elementId in collections) {
-
+      params = {"per-page": -1, 'sort': 'name'};
       //find element by id and get his options
       let list = $$(elementId).getPopup().getList();
       //get data by url collection

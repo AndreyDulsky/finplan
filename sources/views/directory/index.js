@@ -85,9 +85,9 @@ export default class DirectoryView extends JetView{
 
               columns:[
                 { id:"id", header:"ID", width: 40 },
-                { id:"name", header:"Наименование", width: 150},
-                { id:"type_id", header:"Тип справочника", width: 150, options: scope.apiRest.getCollection('accounting/directory-types')},
-
+                { id:"name", header:[ "Наименование", { content:"textFilter" } ], width: 150},
+                { id:"type_id", header:[ "Тип справочника", { content:"selectFilter" }], width: 150, options: scope.apiRest.getCollection('accounting/directory-types')},
+                { id:"sort_order", header:[ "Сорт.", { content:"textFilter" }], width: 70},
                 {
                   "id": "action-delete",
                   "header": "",
