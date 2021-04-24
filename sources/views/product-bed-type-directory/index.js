@@ -87,6 +87,7 @@ export default class ProductBedSizeDirectoryView extends JetView{
               columns:[
                 { id:"id", header:"ID", width: 40 },
                 { id:"name", header:"Наименование", width: 280},
+                { id:"sort_order", header:"Сорт.", width: 70},
 
                 {
                   "id": "action-delete",
