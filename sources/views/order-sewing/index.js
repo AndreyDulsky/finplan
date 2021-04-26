@@ -1335,7 +1335,8 @@ export default class OrderSewingView extends JetView{
             onBeforeDrop:function(context, e){
               let record = this.getItem(context.start);
               let recordSource = this.getItem(context.parent);
-              scope.beforeDropChangeData(record, recordSource.value);
+
+              scope.beforeDropChangeData(record, recordSource.value, context);
 
             },
             onItemClick:function(id, e, trg) {
@@ -1550,7 +1551,7 @@ export default class OrderSewingView extends JetView{
     this.$$("sewing-table").showColumnBatch(newv);
   }
 
-  beforeDropChangeData(record, date) {
+  beforeDropChangeData(record, date, context) {
     //debugger;
     let table = this.$$("sewing-table");
     let field = this.getSortFieldByTypeGroup();
@@ -1559,11 +1560,12 @@ export default class OrderSewingView extends JetView{
     //let tableUrl = this.app.config.apiRest.getUrl('put',"accounting/orders", {}, record.id);
 
     let sel = table.getSelectedId(true);
-    sel.forEach(item => {
-      table.getItem(item.row)[field] = formatDateTimeDb(date);
-      table.refresh(item.row);
+    context.source.forEach(item => {
+      //debugger;
+      table.getItem(item)[field] = formatDateTimeDb(date);
+      table.refresh(item);
       //webix.message('Данные сохранены!');
-      table.updateItem(item.row, table.getItem(item.row))
+      table.updateItem(item, table.getItem(item))
     });
 
 
