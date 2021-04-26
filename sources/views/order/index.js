@@ -142,7 +142,7 @@ export default class OrdersView extends JetView{
 
 
 
-  config(){
+  config() {
     let scope = this;
 
     return {

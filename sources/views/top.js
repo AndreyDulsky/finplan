@@ -7,10 +7,18 @@ export default class TopView extends JetView{
 	config(){
 		const locale = this.app.getService("locale");
 		const _ = locale._;
-		const logout = {
-			view:"button", label:"Выход", width: 120,
-			click: () => this.show("/logout")
-		};
+		const logout = [{
+        view:"label",
+        label:webix.storage.local.get("wjet_user").user,
+        width: 180,
+        css:{'font-weight' : 'normal'}
+
+      },
+		  {
+        view:"button", label:"Выход", width: 120,
+        click: () => this.show("/logout")
+		  }
+    ];
     let scope = this;
 
 
@@ -55,7 +63,9 @@ export default class TopView extends JetView{
 
 					]
 				},
-				logout,
+        {
+          cols: logout
+        },
 				{
 						view:"icon", icon: 'widget_icon wxi-drag',
 						//badge:12,

@@ -339,6 +339,7 @@ export default class OrderShipmentView extends JetView{
               }
             },
             { id:"storage", header:[ "Склад", { content:"selectFilter" }, "" ], width:120, sort: "string", editor:"text"  },
+            { id:"city", header:[ "Город", { content:"selectFilter" }, "" ], width:150, editor:"text" },
             { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:150, editor:"text" },
             { id:"H", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:80,  editor:"text" },
             { id:"S", header:[ "# кл.", { content:"textFilter" }, ""], width:70,  editor:"text" },

@@ -100,6 +100,9 @@ export default class CashesView extends JetView {
               "margin": 1,
               "scroll": "auto",
               "elements": [{"label": "Тип", "view": "label"}, {
+                hidden: scope.app.config.access,
+                disabled: (scope.app.config.access != "writer"),
+
                 "cols": [{
                   "view": "checkbox",
                   "localId": "search_type_operation",
@@ -164,8 +167,9 @@ export default class CashesView extends JetView {
                 "view": "combo-close",
                 "name": "account_id",
                 "height": 35
-              }, {"label": "Контрагент", "view": "label"}, {
+              }, {"label": "Контрагент", "view": "label",  hidden: (scope.app.config.access != "writer")}, {
                 "localId": "searchContragentCombo",
+                hidden: (scope.app.config.access != "writer"),
                 "view": "combo-close",
                 "options": [],
                 "name": "contragent_id",
@@ -413,9 +417,10 @@ export default class CashesView extends JetView {
                       "id": "action-delete",
                       "header": "",
                       "width": 50,
-                      "template": "{common.trashIcon()}"
+                      "template": "{common.trashIcon()}",
+                      hidden: (scope.app.config.access != "writer")
                     },
-                    {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}"}
+                    {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}", hidden: (scope.app.config.access != "writer")}
                   ],
                 // url: this.app.config.apiRest.getUrl('get','accounting/transactions',{
                 //   "expand":"contragent,category,project,account,data",

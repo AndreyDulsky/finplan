@@ -135,7 +135,7 @@ i.mdi:hover{
 .webix_toolbar .webix_el_label .webix_el_box {
     font-family: Roboto, sans-serif;
     /*font-size: 22px;*/
-    font-weight: bold;
+    font-weight: normal;
     color: #475466;
     padding-left: 5px;
     letter-spacing: 0px;

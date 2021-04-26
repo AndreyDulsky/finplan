@@ -33,7 +33,7 @@ function status(){
 
 
 function login(user, pass){
-
+	this.logout();
 	let rest = new ApiRest();
   let url = rest.getUrl('get','users/login');
 	return new webix.promise((resolve, reject) => {
@@ -42,7 +42,7 @@ function login(user, pass){
 				var result = data.json();
 				if (result.success) {
           				//rest.authKey = result.token;
-									webix.storage.local.put("wjet_user", { user:"admin", token:result.token, user_id: result.user.id });
+									webix.storage.local.put("wjet_user", { user:result.user.email, token:result.token, user_id: result.user.id });
 
           				webix.storage.local.put("wjet_permission", result.user['permissions_finplan']);
 									resolve({ user: "admin", token: result.token });

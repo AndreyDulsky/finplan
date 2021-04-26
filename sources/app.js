@@ -28,6 +28,7 @@ export default class App extends JetApp {
 			version: VERSION,
 			debug: !PRODUCTION,
 			start: "/top/start",
+      access: "reader",
       apiRest: restObj,
 			views: function(name) {
 				return localViews[name] || name;
@@ -138,7 +139,7 @@ export default class App extends JetApp {
 			lang: "ru",
 				webix:{
 					ru:"ru-RU",
-					en:"en-EN",
+					//en:"en-EN",
 					// ...other locales
 				},
 			storage: webix.storage.prefix(this.config.id, webix.storage.local)
