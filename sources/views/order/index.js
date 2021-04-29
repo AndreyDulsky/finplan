@@ -517,6 +517,7 @@ export default class OrdersView extends JetView{
 
     let tableUrl = this.app.config.apiRest.getUrl('get',"accounting/orders", {
       "per-page": "1200",
+      "expand": 'images',
       sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
       //filter: '{"B":"'+selectTypeValue+'"}',
       //filter: '{"AE":{">=":"'+dateToValue+'"}}'
@@ -550,6 +551,7 @@ export default class OrdersView extends JetView{
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
         "per-page": "1200",
+        "expand": 'images',
         sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
         //filter: '{"B":"'+selectTypeValue+'"}',
         //filter: '{"AE":{">=":"'+dateToValue+'"}}'
@@ -581,6 +583,7 @@ export default class OrdersView extends JetView{
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
         "per-page": "1200",
+        "expand": 'images',
         sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
         //filter: '{"B":"'+selectTypeValue+'"}',
         //filter: '{"AE":{">=":"'+dateToValue+'"}}'
@@ -612,6 +615,7 @@ export default class OrdersView extends JetView{
       }
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
         "per-page": "1200",
+        "expand": 'images',
         sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"index","direction":"ASC"}]',
         //filter: '{"B":'+selectTypeValue+'}',
         //filter: '{"AE":{">=":"01.02.20"}}'
@@ -639,6 +643,7 @@ export default class OrdersView extends JetView{
 
       let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/orders", {
         "per-page": "1200",
+        "expand": 'images',
         sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
         //filter: '{"B":"'+selectTypeValue+'"}',
         //filter: '{"AE":{">=":"'+dateToValue+'"}}'
@@ -702,6 +707,7 @@ export default class OrdersView extends JetView{
     this.restApi = this.app.config.apiRest;
     let tableUrl = this.restApi.getUrl('get',"accounting/orders", {
       "per-page": "1200",
+      "expand": 'images',
       sort: '[{"property":"B","direction":"DESC"}, {"property":"date_shipment","direction":"ASC"}, {"property":"A","direction":"ASC"}]',
     });
 

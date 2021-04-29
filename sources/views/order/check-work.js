@@ -3,6 +3,51 @@ import {CoreEditClass} from "core/CoreEditClass";
 
 
 
+webix.type(webix.ui.list, {
+  name:"myUploader",
+  //autoheight:true,
+
+  template:function(f,type){
+
+    var html = "<div class='overall'>";
+    html += "<div class='name' ><a href='"+f.domain+f.folder+"/"+f.filename+"' target='_blank'><img id='"+f.name+"' src='"+f.domain+f.folder+"/"+f.filename+"' height='100' /></a></div>";
+    html += "<div class='remove_file'><span style='color:#AAA' class='cancel_icon'></span></div>";
+    html += "<div class='status'>";
+    html += "<div class='progress "+f.status+"' style='width:"+(f.status == 'transfer'||f.status=="server"?f.percent+"%": "0px")+"'></div>";
+    html += "<div class='message "+ f.status+"'>"+type.status(f)+"</div>";
+    html +=	 "</div>";
+    html += "<div class='size'>"+ f.sizetext+"</div></div>";
+    return html;
+  },
+  status:function(f){
+    var messages = {
+      server: "Ok",
+      error: "Ошибка",
+      client: "",
+      transfer:  f.percent+"%"
+    };
+    return messages[f.status]
+
+  },
+  on_click:{
+    "remove_file":function(ev, id){
+      $$(this.config.uploader).files.remove(id);
+    }
+  },
+  height: 100
+});
+
+function uploadFiles(){
+  $$("upl1").send();
+}
+function cancel(){
+  var id= $$("upl1").files.getFirstId();
+  while(id){
+    $$("upl1").stopUpload(id);
+    id = $$("upl1").files.getNextId(id);
+  }
+}
+
 
 
 
@@ -21,7 +66,7 @@ export default class CheckFormView extends JetView {
       position: function (state) {
         state.left = 44;
         state.top = 34;
-        state.width = state.maxWidth / 1.5;
+        state.width = state.maxWidth / 2;
         state.height = state.maxHeight - 38;
       },
       head: "Производственные процессы",
@@ -196,9 +241,11 @@ export default class CheckFormView extends JetView {
       state.formConfigBase = [
           {
             view:"tabview",
-            tabbar:{ options:["Описание","Работы","Процессы"]},
+            tabbar:{ options:["Описание","Фото","Работы","Процессы"]},
             animate:false,
-            paddingY:10,
+            paddingX:20,
+            paddingY:0,
+
             cells:[
               { id:"Описание", paddingY: 30, labelWidth : 250, rows:[
 
@@ -343,6 +390,77 @@ export default class CheckFormView extends JetView {
 
                 {}
               ]},
+              { id:"Фото", paddingY: 30, rows:[{
+                padding: 5,
+                view: "form", type: "line", rows: [
+                  { view: "uploader",
+                    id:"upl1",
+                    height:37,
+                    align:"center",
+                    type:"iconButton",
+                    icon:"plus-circle",
+                    label:"Добавить файл" ,
+                    datatype: null,
+                    autosend:false,
+                    inputName : 'uploader',
+                    link:"mylist",
+                    upload:scope.app.config.apiRest.getUrl('get','accounting/images', {'type':'image', 'model':'order','mode':'insert-save', 'id': record.id}),
+                    on:{
+                      onAfterFileAdd: function(upload){
+                        //debugger;
+                        var file = upload.file;
+
+                        var reader = new FileReader();
+                        reader.onload = function(event) {
+                          // console.log(event.target.result);
+                          //debugger;
+                          document.getElementById(file.name).src = event.target.result;
+                          //$$(file.name).src = event.target.result;
+                          //$$("tmpWin").getBody().setValues({src:event.target.result});
+                          //$$("tmpWin").show()
+                        };
+                        reader.readAsDataURL(file)
+                        return true;
+                      },
+                      onBeforeRender: function(upload, data){
+                        //debugger;
+                        //var file = upload.file;
+
+
+                        return true;
+                      }
+                    }
+                  },
+                  // {
+                  //   localId:"uploadAPI",
+                  //   id:"upl1",
+                  //   name: 'uploader',
+                  //   inputName : 'uploader',
+                  //   view:"uploader",
+                  //   datatype: null,
+                  //   link:"mylist",
+                  //   type:"iconButton", icon:"plus-circle", label:"Add files",
+                  //   upload: scope.app.config.apiRest.getUrl('get','accounting/images', {'type':'image', 'model':'Order','mode':'insert', 'id': record.id}),
+                  //   apiOnly:true
+                  // },
+                  {
+                    borderless: true,
+                    view:"list",  id:"mylist", type:"myUploader",
+                    autoheight: true,
+
+                  },
+                  {
+                    id: "uploadButtons",
+                    cols:[
+                      {view:"button", label: "Загрузить", type:"iconButton", icon: "upload", click:uploadFiles, align: "center"},
+                      {width:5},
+                      {view:"button", label: "Отмена", type:"iconButton", icon: "cancel-circle",  align: "center"}
+
+                    ]
+                  }
+                ]
+              }]},
+
               { id:"Работы", paddingY: 30, rows:state.formConfig},
               { id:"Процессы", paddingY: 30, rows:state.formProcessConfig},
 
@@ -350,6 +468,7 @@ export default class CheckFormView extends JetView {
           },
           {
             "margin" : 10,
+            "padding" : 20,
             "cols" : [
               {
                 "view": "template",
@@ -382,6 +501,56 @@ export default class CheckFormView extends JetView {
         state.formEdit
       );
       state.formEdit.setValues(record);
+
+      let data = [];
+
+      let images = record.images;
+
+      if (images) {
+        for (let key in images) {
+          data.push({id: images[key].id, name: images[key].name, sizetext: images[key].size, status: "server", folder: images[key].folder,
+            filename: images[key].file, 'domain': scope.app.config.apiRest.urlBase
+          },)
+        }
+      }
+      $$('upl1').files.clearAll();
+      $$('upl1').files.parse(data);
+
+      $$('upl1').files.attachEvent("onBeforeDelete", function(id) {
+        let item = $$('upl1').files.getItem(id);
+        let idRemote = id;
+        if (item.newId) {
+          idRemote = item.newId;
+        }
+        scope.app.config.apiRest.delete('accounting/images', {'id': idRemote}).then(function() {
+          let i=0;
+          for (let key in record.images) {
+            if (record.images[key]['id'] == idRemote) {
+              record.images.splice(key, 1);
+              break;
+            }
+            i++;
+          }
+          //scope.state.tableRecord.images.push(data.data);
+        });
+      });
+
+      $$('upl1').attachEvent('onFileUpload', function(item, data, obj1){
+
+        //let item = $$('upl1').files.getItem($$('upl1').files.getLastId());
+        //item['status'] = "local";
+        item['folder'] = data.data.folder;
+        item['filename'] = data.data.file;
+        item['domain'] = scope.app.config.apiRest.urlBase;
+
+        //uploader.files.remove(uploader.files.getLastId());
+        //uploader.files.add({ id: upload.data.id, name:upload.data.name, sizetext:upload.data.size, status:"server" });
+        record.images.push(data.data);
+        //return true;
+      });
+
+
+
       scope.attachFormEvents();
 
       state.win.show();
