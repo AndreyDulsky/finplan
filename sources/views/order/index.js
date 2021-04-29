@@ -320,6 +320,7 @@ export default class OrdersView extends JetView{
             { id:"H", header:[ "Дата кл.", { content:"textFilter" }, "" ], width:90,  editor:"text" },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:80, sort: "string", editor:"text"  },
             { id:"storage", header:[ "Склад", { content:"selectFilter" }, "" ], width:120, sort: "string", editor:"text"  },
+            { id:"city", header:[ "Город", { content:"selectFilter" }, "" ], width:150, editor:"text" },
             { id:"F", header:[ "Клиент", { content:"textFilter" }, "" ], width:200, batch:2, sort: "string", editor:"text" },
             { id:"G",
               width:90,

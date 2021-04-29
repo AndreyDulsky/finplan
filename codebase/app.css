@@ -272,6 +272,18 @@ i.mdi:hover{
     font-size:24px;
 }
 
+.webix_list_item.disabled{
+    background: #eee;
+    color: #aaa;
+
+}
+.metadata_config_check{
+    float:left;
+    margin:7px;
+}
+
+
+
 
 
 

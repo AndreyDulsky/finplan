@@ -104,7 +104,9 @@ export default class App extends JetApp {
 
                   let selectedCell = dp.config.master.getSelectedId();
                   let selectedChange = (editor) ? editor.column : selectedCell.column;
-                  view.addCellCss(id, selectedChange, "webix_editing_cell");
+                  if (selectedChange) {
+                    view.addCellCss(id, selectedChange, "webix_editing_cell");
+                  }
                 //}
 
               }

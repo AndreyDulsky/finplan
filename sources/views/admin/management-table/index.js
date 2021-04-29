@@ -17,27 +17,50 @@ export default class ManagementTableView extends JetView{
         {
           view: 'toolbar',
           cols:[
-            { "view": "label", height:50, css: { 'font-size':'22px', 'padding': '5px 0px 10px 15px', 'font-weight': 700}, template:"<div>Операции</div>", borderless: true, width:130},
-            { view:"button", id:"LoadBut", value:"Load", width:100, align:"left" },
-            { view:"button", value:"Save", width:100, align:"center" },
-            { view:"button", value:"Info", width:100, align:"right" }
+            { "view": "label", height:40, css: { 'font-size':'17px', 'padding': '5px 0px 10px 15px', 'font-weight': 'normal'}, template:"<div>Управление таблицами</div>", borderless: true, width:250 },
+
           ]
         },
         {
           cols:[
             {
               view: 'datatable',
-              width: 400,
-              columns:[
-                {id: 'name', header: 'Наименование'}
-              ]
+              width: 200,
+              select: true,
+              localId: 'table-model',
+              columns: [
+                {id: 'name', header: 'Модели', width: 400},
+              ],
+              url: scope.app.config.apiRest.getUrl('get','accounting/user/get-tables'),
             },
             {
-              view: 'datatable',
-              columns:[
-                {id: 'name', header: 'Наименование'}
+              rows:[
+                {
+                  view: 'datatable',
+                  css:"webix_header_border webix_data_border my_style",
+                  editable:true,
+                  editaction: "dblclick",
+                  select: true,
+                  resizeColumn: { headerOnly:true },
+                  localId: 'table-schema'
+
+                },
+                {
+                  view: 'toolbar',
+                  cols:[
+                    {},
+                    {
+                      view: 'button',
+                      localId: 'btn-save',
+                      label: 'Сохранить',
+                      width: 200
+                    }
+                  ]
+                }
+
               ]
             }
+
           ]
         }
       ]
@@ -46,7 +69,43 @@ export default class ManagementTableView extends JetView{
   }
 
   init(view) {
+    let scope = this;
+    let tableModel = this.$$('table-model');
+    let tableSchema = this.$$('table-schema');
+    let btnSave =  this.$$('btn-save');
 
+    tableModel.attachEvent("onSelectChange", function() {
+      // define your pasting logic here
+
+      let selectName = tableModel.getSelectedItem().name;
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/user/get-schema-table",{
+        name: selectName
+      });
+
+      webix.ajax().get(tableUrl).then(function(data){
+        tableSchema.clearAll();
+        tableSchema.parse(data.json());
+      });
+
+    });
+
+    btnSave.attachEvent("onItemClick", function() {
+      let data = [];
+      let selectName = tableModel.getSelectedItem().name;
+      tableSchema.data.each(function(obj){
+        data.push(obj);
+
+      });
+      let tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/user/set-schema-table",{
+        name: selectName
+      });
+
+      webix.ajax().post(tableUrl, {'data' :data}).then(function(data){
+        //tableSchema.clearAll();
+        //tableSchema.parse(data.json());
+      });
+
+    });
   }
 
 }
