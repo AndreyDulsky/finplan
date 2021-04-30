@@ -265,8 +265,17 @@ export default class OrdersView extends JetView{
           blockselect:true,
           tooltip:true,
           headermenu:true,
+          sort: 'multi',
           columns:[
             { id:"index", header:[{content:'toolsContent'},'',''], width: 40,
+              template: function(obj) {
+
+                if (obj.images.length > 0) {
+                  return obj.index + "<i class='mdi mdi-attachment'></i>";
+                } else {
+                  return obj.index;
+                }
+              },
               cssFormat: function() {
                 return {'background-color': '#F4F5F9'};
               }
@@ -341,7 +350,7 @@ export default class OrdersView extends JetView{
             { id:"N", header:[ "Ножки", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             { id:"O", header:[ "Пуг.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
             { id:"P", header:[ "Отстр.", { content:"selectFilter" } , ""], width:100, batch:2,  editor:"text" },
-            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" },
+            { id:"S", header:[ "# клиента", { content:"textFilter" }, ""], width:90, batch:2,  editor:"text" ,sort:'text'},
             { id:"T", header:[ "Описание", { content:"textFilter" }, ""], width:300, disable: true, batch:2,
               editor:"popup",
               // template:function(obj, common){

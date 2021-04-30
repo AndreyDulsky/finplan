@@ -146,6 +146,7 @@ i.mdi:hover{
     width: 20px;
 }
 
+
 .webix_snippet_tag {
     border-radius: 100px;
     background-color: #EBEDF0;
@@ -301,6 +302,8 @@ i.mdi:hover{
 .message.error{ color: #e83b3b;}
 
 
-
+.small .webix_icon {
+    font-size:15px;
+}
 
 
