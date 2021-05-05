@@ -839,8 +839,8 @@ export default class AdminView extends JetView{
             scope.selectTypeValue = id;
             scope.schemaTableSetting = scope.getSchemaTableSetting();
             scope.schemaTableUserFilter = item.schemaTableUserFilter;
-            scope.schemaFilterUserList = JSON.parse(item.filter_setting);
-            scope.schemaSortUserList = JSON.parse(item.sort_setting);
+            scope.schemaFilterUserList = item.filter_setting;
+            scope.schemaSortUserList = item.sort_setting;
             scope.setTableSetting();
             scope.setFilterSetting();
             scope.getDataTable();
