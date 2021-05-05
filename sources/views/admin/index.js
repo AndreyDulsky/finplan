@@ -567,8 +567,8 @@ export default class AdminView extends JetView{
 
 
 
-
-    if (this.schemaFilterUserList.length >0) {
+    debugger;
+    if (this.schemaFilterUserList.length >0 && JSON.parse(this.schemaFilterUserList[0].setting).length >0) {
 
       let filterSchema = {};
       let filterFirstLavel = {"or":[]};
