@@ -26,7 +26,7 @@ export default class App extends JetApp {
 		const defaults = {
 			id: APPNAME,
 			version: VERSION,
-			debug: !PRODUCTION,
+			debug: true,//!PRODUCTION,
 			start: "/top/start",
       access: "reader",
       apiRest: restObj,

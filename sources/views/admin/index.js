@@ -142,6 +142,8 @@ let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
 var parserDate = webix.Date.strToDate("%Y-%m-%d");
 var parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
 
+
+
 function custom_checkbox(obj, common, value){
   if (value)
     return "<div class='webix_table_checkbox checked'> YES </div>";
@@ -219,12 +221,22 @@ export default class AdminView extends JetView{
                 },
                 {
                   view:"icon",
-                  icon:"mdi mdi-reorder-horizontal",
+                  icon:"mdi mdi-filter",
                   localId: "show-icon-setting",
                   width: 30,
                   css:'small',
                   click: function() {
                     scope.showFilterSetting();
+                  }
+                },
+                {
+                  view:"icon",
+                  icon:"mdi mdi-sort",
+                  localId: "show-icon-sort-setting",
+                  width: 30,
+                  css:'small',
+                  click: function() {
+                    scope.showSortSetting();
                   }
                 },
               ]
@@ -387,34 +399,54 @@ export default class AdminView extends JetView{
   //general
   getTable() {
     let layout = this.$$("body-layout");
-
+    let scope = this;
     let tableConfig = {
       view: "treetable",
       urlEdit: this.mode,
       css: "webix_header_border webix_data_border",
       leftSplit: (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value : 0,
       rightSplit: (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value : 0,
-      select: "cell",
+      select:"multiselect",
       resizeColumn: {headerOnly: true},
       localId: 'order-table',
       multiselect: true,
       scroll: true,
       clipboard: "selection",
-      blockselect: true,
+      //blockselect: true,
       tooltip: true,
       editable:true,
       editaction: "dblclick",
       sort:"multi",
+      drag:"order",
+      dragColumn:true,
       save: "api->accounting/"+this.getModelName(this.mode),
       scheme:{
         $init:function(item) {
           item.index = (this.count())+1;
+          if (item.B == 4)
+            item.$css = "highlight";
+          if (item.B == 3)
+            item.$css = "highlight-blue";
+          if (item.B == 2)
+            item.$css = "highlight-green";
+          if (item.B == 6)
+            item.$css = "highlight-green";
+          let dateComplite = parserDate(item.date_obivka);
+          let dateToday = webix.Date.add(new Date(), -1, "day");
+
+          if (webix.filters.date.greater(dateToday,dateComplite ) && item.B=='1') {
+            item.$css = "highlight-red";
+          }
         }
       },
       ready: function() {
 
       },
       on:{
+        onAfterColumnDrop : function() {
+          //webix.storage.local.put("start-table", this.getState());
+
+        },
         onItemClick:function(id, e, trg) {
 
           if (id.column == 'action-delete') {
@@ -439,17 +471,12 @@ export default class AdminView extends JetView{
         },
         onBeforeLoad:function(){
 
-          this.disable();
-          this.showProgress({
-            type:"icon",
-            hide: false
-          });
           //this.showOverlay("Loading...");
         },
         onAfterLoad:function(){
           //debugger;
-          this.enable();
-          this.hideProgress();
+
+
           if (!this.count()) {
             //this.showOverlay("Нет данных");
           }
@@ -457,14 +484,22 @@ export default class AdminView extends JetView{
         onSelectChange: function(id, e, trg){
           let table = this;
           let selected = table.getSelectedId(true);
-          if (!this.rowSelect && selected.length > 0 && selected[0].column == 'index') {
-            let selected = table.getSelectedId(true).join().split(',');
-            let first = selected[0];
-            let last = selected[selected.length - 1];
-            this.rowSelect = true;
-            table.selectRange(first,'A',last,'T');
+          if (!this.rowSelect && selected.length > 0 && selected[0] && selected[0].column == 'index') {
+
+            //var config = webix.copy(table);
+            //if(val)
+
+
+            //table.define('select','multiselect');
+            //table.refresh();
+            // let selected = table.getSelectedId(true).join().split(',');
+            // let first = selected[0];
+            // let last = selected[selected.length - 1];
+            // this.rowSelect = true;
+            // table.selectRange(first,'A',last,'T');
           } else {
             this.rowSelect = false;
+            table.config.select = 'cell';
           }
         },
       }
@@ -474,7 +509,7 @@ export default class AdminView extends JetView{
 
 
     this.table = table;
-    webix.extend(this.table, webix.ProgressBar);
+    //webix.extend(this.table, webix.ProgressBar);
     layout.addView(table);
 
   }
@@ -487,31 +522,47 @@ export default class AdminView extends JetView{
       'schema-table-user-id': scope.selectTypeValue,
       //'sort': '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]'
     };
-    if (this.filterDateRangeField) {
-      params['sort'] = '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]';
+
+    let paramsSort = this.getSortParams();
+    if (paramsSort.length > 0) {
+      params['sort'] = paramsSort;
     }
+
     scope.tableUrl = this.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.mode), params);
 
-
+    webix.extend(this.table, webix.ProgressBar);
+    this.table.disable();
+    this.table.showProgress({
+      type:"icon",
+      hide: false
+    });
     scope.filter = scope.getFilterParams();
 
     webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
       scope.table.clearAll();
       let items = data.json();
-      scope.columns = items.config.columns;
-      let dataItem = (items.data)?items.data:items.items;
 
+      let dataItem = (items.data)?items.data:items.items;
+      scope.dataItem = dataItem;
+      //debugger;
       //items.config.columns = webix.DataDriver.json.toObject(items.config.columns);
 
       items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
 
       scope.table.config.columns = items.config.columns;
+      scope.columns = items.config.columns;
       scope.table.refreshColumns();
       scope.table.parse(dataItem);
+
+      scope.table.enable();
+      scope.table.hideProgress();
+
       let resultType= '';
       if (scope.schemaTableSetting.group['group-by'].type) {
         resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
       } else {
+        let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+
         resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
       }
       scope.table.group({
@@ -520,8 +571,13 @@ export default class AdminView extends JetView{
         },
         map: {
           'property_value':[function (obj) {
-
-            return eval(resultType);
+            let per = eval(resultType);
+            let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+            if (configColumn.collection) {
+              return configColumn.collection.getItem(per).value;
+            } else {
+              return eval(resultType);
+            }
           }],
           //'property_title':['A'],
           'index':['','string'],
@@ -534,7 +590,26 @@ export default class AdminView extends JetView{
         },
       });
       scope.table.openAll();
+
     });
+  }
+
+
+  getSortParams() {
+    let params = '';
+    if (this.filterDateRangeField) {
+      params = '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]';
+    }
+    if (this.schemaSortUserList && this.schemaSortUserList[0]) {
+      let sort = this.schemaSortUserList;
+      params = [];
+      for (let key in sort) {
+        params.push({'property':sort[key].field, 'direction' : sort[key].direction});
+      }
+      params = JSON.stringify(params);
+    }
+
+    return params;
   }
 
   getFilterParams() {
@@ -568,31 +643,31 @@ export default class AdminView extends JetView{
 
 
 
-    if (this.schemaFilterUserList.length >0) {
-      let setting = JSON.parse(this.schemaFilterUserList[0].setting);
-      if (setting.valueOf(0)) {
-        let filterSchema = {};
-        let filterFirstLavel = {"or": []};
-        let filter = setting;
+    if (this.schemaFilterUserList && this.schemaFilterUserList[0]) {
+      let setting = this.schemaFilterUserList;
 
-        for (let key in filter) {
-          if (filter[key].value == 'dateFrom') filter[key].value = this.dateFromValue;
-          if (filter[key].value == 'dateTo') filter[key].value = this.dateToValue;
-          if (filter[key].comparison == 'in') filter[key].value = filter[key].value.split(',');
+      let filterSchema = {};
+      let filterFirstLavel = {"or": []};
+      let filter = setting;
 
-          if (filter[key].operator == "or") {
-            filterFirstLavel["or"].push(filterSchema);
-            filterSchema = {};
-          }
-          if (!filterSchema[filter[key].field]) filterSchema[filter[key].field] = {};
-          filterSchema[filter[key].field][filter[key].comparison] = filter[key].value;
+      for (let key in filter) {
+        if (filter[key].value == 'dateFrom') filter[key].value = this.dateFromValue;
+        if (filter[key].value == 'dateTo') filter[key].value = this.dateToValue;
+        if (filter[key].comparison == 'in') filter[key].value = filter[key].value.split(',');
 
-
+        if (filter[key].operator == "or") {
+          filterFirstLavel["or"].push(filterSchema);
+          filterSchema = {};
         }
+        if (!filterSchema[filter[key].field]) filterSchema[filter[key].field] = {};
+        filterSchema[filter[key].field][filter[key].comparison] = filter[key].value;
 
-        filterFirstLavel["or"].push(filterSchema);
-        filterParams["filter"] = filterFirstLavel;
+
       }
+
+      filterFirstLavel["or"].push(filterSchema);
+      filterParams["filter"] = filterFirstLavel;
+
 
     }
 
@@ -727,7 +802,8 @@ export default class AdminView extends JetView{
         if (item.id == stateSelectType) {
           idSelectType = item.id;
           scope.schemaTableUserFilter = item.schemaTableUserFilter;
-          scope.schemaFilterUserList = item.schemaFilterUserList;
+          scope.schemaFilterUserList = JSON.parse(item.filter_setting);
+          scope.schemaSortUserList = JSON.parse(item.sort_setting);
 
         }
       });
@@ -737,7 +813,8 @@ export default class AdminView extends JetView{
       if (idSelectType =='' && item.is_default == 1) {
         idSelectType = item.id;
         scope.schemaTableUserFilter = item.schemaTableUserFilter;
-        scope.schemaFilterUserList = item.schemaFilterUserList;
+        scope.schemaFilterUserList = JSON.parse(item.filter_setting);
+        scope.schemaSortUserList = JSON.parse(item.sort_setting);
 
       }
     });
@@ -760,7 +837,8 @@ export default class AdminView extends JetView{
             scope.selectTypeValue = id;
             scope.schemaTableSetting = scope.getSchemaTableSetting();
             scope.schemaTableUserFilter = item.schemaTableUserFilter;
-            scope.schemaFilterUserList = item.schemaFilterUserList;
+            scope.schemaFilterUserList = JSON.parse(item.filter_setting);
+            scope.schemaSortUserList = JSON.parse(item.sort_setting);
             scope.setTableSetting();
             scope.setFilterSetting();
             scope.getDataTable();
@@ -806,9 +884,70 @@ export default class AdminView extends JetView{
       scope.getDataTable();
       scope.putFilterState();
     });
+
+    scope.table.attachEvent("onColumnResize", function(id,newWidth,oldWidth,user_action) {
+      scope.eventSetColumnUserSize(id,newWidth,oldWidth,user_action);
+    });
+
+    scope.table.attachEvent("onAfterColumnDrop", function(sourceId, targetId, event) {
+      scope.eventSetColumnUserSort(sourceId, targetId, event);
+    });
+
   }
 
+  eventSetColumnUserSize(id,newWidth,oldWidth,user_action) {
+    let scope = this;
+    let url = this.app.config.apiRest.getUrl('get',"accounting/schema-table-users");
+    if (user_action) {
+      let config = this.table.getColumnConfig(id);
+      let url = this.app.config.apiRest.getUrl('get',"accounting/schema-table-users/"+config.rowId);
+      webix.ajax().put(url, {"width":newWidth,"adjust":'', "id":config.rowId}, function(text, data, request) {
+        scope.showMessageResult(data.json(), request, false)
+      })
+    }
+  }
 
+  eventSetColumnUserSort(sourceId, targetId, event) {
+    let configSource = this.table.getColumnConfig(sourceId);
+    let configTarget = this.table.getColumnConfig(targetId);
+    let sengent = 1;
+    if (configTarget.sort_order < configSource.sort_order) sengent = -1;
+    configSource.sort_order = configTarget.sort_order+sengent*1;
+    let url = this.app.config.apiRest.getUrl('get',"accounting/schema-table-users/"+configSource.rowId);
+    webix.ajax().put(url, {"sort_order": configTarget.sort_order+sengent*1, "id":configSource.rowId}, function(text, data, request) {
+      scope.showMessageResult(data.json(), request, false)
+    });
+
+  }
+
+  showMessageResult(data, request, showSuccess) {
+
+    if (data.errors ) {
+      for (var prop in data.errors) {
+        webix.message({
+          text:prop+':'+data.errors[prop],
+          type:"error",
+          expire: -1,
+        });
+      }
+    }
+
+    if (request.status == 200  && !data.errors && showSuccess) {
+      webix.message({
+        text: 'Данные cохранены',
+        type: 'info',
+        expire: 1000,
+      });
+    }
+
+    if (request.status == 204) {
+      webix.message({
+        text: 'Ошибка! Данные не сохранены',
+        type: 'error',
+        expire: -1,
+      });
+    }
+  }
 
   //setting table and columns
 
@@ -1430,15 +1569,30 @@ export default class AdminView extends JetView{
   dataDriverJsonToObject(configColumns) {
     configColumns.forEach(function(item,key) {
 
-      if (item.format && item.format.indexOf('formatDate') ==0) {
-        configColumns[key].format = eval(item.format);
+      let myObj = {
+        func: {}
       }
-      if (item.template && item.template.indexOf('custom_checkbox') ==0) {
-        configColumns[key].template = eval(item.template);
+
+      if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDate') ==0) {
+        eval(" myObj.func = (obj) => { try {formatDate(obj.trim())} catch (e) { debugger; } return  formatDate(obj.trim()); }");// + item.format);
+        configColumns[key].format = myObj.func;//eval(item.format);
+      }
+      if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateHour') ==0) {
+        eval(" myObj.func = (obj) => { return formatDateHour(obj.trim()); }");// + item.format);
+        configColumns[key].format = myObj.func;//eval(item.format);
+      }
+      if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateShort') ==0) {
+        eval(" myObj.func = (obj) => { return formatDateShort(obj.trim()); }");// + item.format);
+        configColumns[key].format = myObj.func;//eval(item.format);
+      }
+      if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('custom_checkbox') ==0) {
+        eval(" myObj.func = " + item.template);
+        configColumns[key].template = myObj.func;
       }
       //debugger;
       if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('columnGroupTemplate') ==0) {
-        configColumns[key].template = eval(item.template);
+        eval(" myObj.func = " + item.template);
+        configColumns[key].template = myObj.func;
       }
 
     });
@@ -1821,10 +1975,10 @@ export default class AdminView extends JetView{
   }
 
   setElementFilterForm() {
-    if (this.schemaFilterUserList.length >0) {
+    if (this.schemaFilterUserList && this.schemaFilterUserList[0]) {
 
-      let values = JSON.parse(this.schemaFilterUserList[0].setting);
-      this.schemaFilterUserListDefaultId = this.schemaFilterUserList[0].id;
+      let values = this.schemaFilterUserList;
+
       let formRowLayout = this.winFilter.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
         formRowLayout.addView(this.getElementFilterForm(key));
@@ -1962,17 +2116,13 @@ export default class AdminView extends JetView{
 
   doSaveFilterSettingClick(values) {
     let scope = this;
-    if (this.schemaFilterUserListDefaultId) {
-      scope.schemaFilterUserList[0].setting = JSON.stringify(values);
-      let url = this.app.config.apiRest.getUrl('put', "accounting/schema-filter-user-lists",{},this.schemaFilterUserListDefaultId);
+    if (this.selectTypeValue) {
+      scope.schemaFilterUserList = values;
+      let url = this.app.config.apiRest.getUrl('put', "accounting/schema-table-user-lists",{},this.selectTypeValue);
 
 
       webix.ajax().put(url, {
-        'model': this.model,
-        'setting': JSON.stringify(values),
-        'is_default': '1',
-        'name': 'Фильтр',
-        'list_id': this.selectTypeValue
+        'filter_setting': JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -1986,15 +2136,186 @@ export default class AdminView extends JetView{
         }
       });
 
-    } else {
-      let url = this.app.config.apiRest.getUrl('get', "accounting/schema-filter-user-lists");
+    }
 
-      webix.ajax().post(url, {
-        'model': this.model,
-        'setting': JSON.stringify(values),
-        'is_default': '1',
-        'name': 'Фильтр',
-        'list_id': this.selectTypeValue
+
+  }
+
+
+  //setting sort
+  showSortSetting() {
+    let scope = this;
+    let body = {
+      localId: 'body-setting-sort-layout',
+      css: 'webix_primary',
+      type: 'space',
+      cols:[
+        {
+          type: 'form',
+          rows:[
+
+            {
+
+              rows: this.getHeaderSortSetting()
+            },
+
+
+          ]
+        }
+      ]
+    }
+
+    let winConfig = {
+      view:"window",
+      head:"Настройки сортировки",
+      width: 700,
+      height: 500,
+      position: 'center',
+      modal:true,
+      close:true,
+      move: true,
+      resize:true,
+      body: body
+    };
+
+    this.winSort = webix.ui(winConfig);
+    this.setElementSortForm();
+    this.winSort.show();
+  }
+
+  setElementSortForm() {
+
+    if (this.schemaSortUserList && this.schemaSortUserList[0]) {
+
+      let values = this.schemaSortUserList;
+
+      let formRowLayout = this.winSort.queryView({'localId': 'form-row-layout'});
+      for (let key in values) {
+        formRowLayout.addView(this.getElementSortForm(key));
+      }
+      this.winSort.queryView('form').setValues(values);
+    }
+  }
+
+  getElementSortForm(id) {
+    let scope = this;
+    return {
+      localId: 'element-sort-'+id,
+      rows:[{
+        cols:[
+          {
+            view:'combo',
+            name: id+'.field',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Выберите поле',
+            value: 'date_shipment',
+            options: this.table.config.columns
+          },
+          {
+            view:'combo',
+            name: id+'.direction',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Тип сортировки',
+            value: 'ASC',
+            options: [{'id':'ASC','value': 'по возрастанию'},{'id':'DESC','value': 'по убыванию'}]
+
+          },
+          {
+            view:'icon',
+            icon: 'mdi mdi-close',
+            labelPosition: 'top',
+            labelWidth: 34,
+            click: function() {
+              scope.deleteElementSortForm('element-sort-'+id)
+            }
+
+          }
+        ]
+      },
+        {
+          height: 20
+        }
+      ]
+
+    };
+  }
+
+  deleteElementSortForm(id) {
+    let formRowLayout = this.winSort.queryView({'localId': 'form-row-layout'});
+    let element = this.winSort.queryView({'localId': id});
+    formRowLayout.removeView(element);
+  }
+
+  getHeaderSortSetting() {
+    let scope = this;
+    return [
+      {
+        view:'form',
+        complexData:true,
+        scroll: 'auto',
+        elements:[
+          {
+            localId: 'form-row-layout',
+            rows:[
+            ]
+          },
+
+          {
+            cols: [
+              {},
+              {},
+              {
+                view: 'button',
+                label: '+',
+                localId: 'add-sort-element',
+                css: 'webix_primary',
+                width: 40,
+                click: function() {
+                  let layout = this.getTopParentView().queryView({'localId':'form-row-layout'});
+                  let count = layout.getChildViews().length;
+                  layout.addView(scope.getElementSortForm(count));
+
+
+                }
+              },
+
+            ]
+          },
+          {},
+          {
+            cols: [
+              {},
+              {},
+              {
+                view: 'button',
+                label: 'Сохранить',
+                localId: 'save-setting',
+                css: 'webix_primary',
+                //width: 400,
+                click: function() {
+                  scope.doSaveSortSettingClick(this.getTopParentView().queryView('form').getValues());
+                  scope.winSort.close();
+                }
+              },
+
+            ]
+          }
+        ]
+      },
+    ]
+  }
+
+  doSaveSortSettingClick(values) {
+    let scope = this;
+    if (this.selectTypeValue) {
+      scope.schemaSortUserList = values;
+      let url = this.app.config.apiRest.getUrl('put', "accounting/schema-table-user-lists",{},this.selectTypeValue);
+
+
+      webix.ajax().put(url, {
+        'sort_setting': JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -2007,6 +2328,7 @@ export default class AdminView extends JetView{
           });
         }
       });
+
     }
 
 
