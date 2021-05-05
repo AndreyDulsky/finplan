@@ -567,30 +567,32 @@ export default class AdminView extends JetView{
 
 
 
-    debugger;
-    if (this.schemaFilterUserList.length >0 && JSON.parse(this.schemaFilterUserList[0].setting).length >0) {
 
-      let filterSchema = {};
-      let filterFirstLavel = {"or":[]};
-      let filter = JSON.parse(this.schemaFilterUserList[0].setting);
+    if (this.schemaFilterUserList.length >0) {
+      let setting = JSON.parse(this.schemaFilterUserList[0].setting);
+      if (setting.valueOf(0)) {
+        let filterSchema = {};
+        let filterFirstLavel = {"or": []};
+        let filter = setting;
 
-      for (let key in filter) {
-        if (filter[key].value == 'dateFrom') filter[key].value = this.dateFromValue;
-        if (filter[key].value == 'dateTo') filter[key].value = this.dateToValue;
-        if (filter[key].comparison == 'in') filter[key].value = filter[key].value.split(',');
+        for (let key in filter) {
+          if (filter[key].value == 'dateFrom') filter[key].value = this.dateFromValue;
+          if (filter[key].value == 'dateTo') filter[key].value = this.dateToValue;
+          if (filter[key].comparison == 'in') filter[key].value = filter[key].value.split(',');
 
-        if (filter[key].operator == "or") {
-          filterFirstLavel["or"].push(filterSchema);
-          filterSchema = {};
+          if (filter[key].operator == "or") {
+            filterFirstLavel["or"].push(filterSchema);
+            filterSchema = {};
+          }
+          if (!filterSchema[filter[key].field]) filterSchema[filter[key].field] = {};
+          filterSchema[filter[key].field][filter[key].comparison] = filter[key].value;
+
+
         }
-        if (!filterSchema[filter[key].field]) filterSchema[filter[key].field] = {};
-        filterSchema[filter[key].field][filter[key].comparison] = filter[key].value;
 
-
+        filterFirstLavel["or"].push(filterSchema);
+        filterParams["filter"] = filterFirstLavel;
       }
-
-      filterFirstLavel["or"].push(filterSchema);
-      filterParams["filter"] = filterFirstLavel;
 
     }
 
