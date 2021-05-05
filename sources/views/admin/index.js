@@ -600,8 +600,8 @@ export default class AdminView extends JetView{
     if (this.filterDateRangeField) {
       params = '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]';
     }
-    if (this.schemaSortUserList && this.schemaSortUserList[0]) {
-      let sort = this.schemaSortUserList;
+    if (this.schemaSortUserList && this.schemaSortUserList.length > 2) {
+      let sort = JSON.parse(this.schemaSortUserList);
       params = [];
       for (let key in sort) {
         params.push({'property':sort[key].field, 'direction' : sort[key].direction});
@@ -643,16 +643,18 @@ export default class AdminView extends JetView{
 
 
 
-    if (this.schemaFilterUserList && this.schemaFilterUserList[0]) {
-      let setting = this.schemaFilterUserList;
+    if (this.schemaFilterUserList && this.schemaFilterUserList.length > 2) {
+      let filter = JSON.parse(this.schemaFilterUserList);
 
       let filterSchema = {};
       let filterFirstLavel = {"or": []};
-      let filter = setting;
+      //let filter = setting;
 
       for (let key in filter) {
+
         if (filter[key].value == 'dateFrom') filter[key].value = this.dateFromValue;
         if (filter[key].value == 'dateTo') filter[key].value = this.dateToValue;
+
         if (filter[key].comparison == 'in') filter[key].value = filter[key].value.split(',');
 
         if (filter[key].operator == "or") {
@@ -802,8 +804,8 @@ export default class AdminView extends JetView{
         if (item.id == stateSelectType) {
           idSelectType = item.id;
           scope.schemaTableUserFilter = item.schemaTableUserFilter;
-          scope.schemaFilterUserList = JSON.parse(item.filter_setting);
-          scope.schemaSortUserList = JSON.parse(item.sort_setting);
+          scope.schemaFilterUserList = item.filter_setting;
+          scope.schemaSortUserList = item.sort_setting;
 
         }
       });
@@ -813,8 +815,8 @@ export default class AdminView extends JetView{
       if (idSelectType =='' && item.is_default == 1) {
         idSelectType = item.id;
         scope.schemaTableUserFilter = item.schemaTableUserFilter;
-        scope.schemaFilterUserList = JSON.parse(item.filter_setting);
-        scope.schemaSortUserList = JSON.parse(item.sort_setting);
+        scope.schemaFilterUserList = item.filter_setting;
+        scope.schemaSortUserList = item.sort_setting;
 
       }
     });
@@ -1975,9 +1977,9 @@ export default class AdminView extends JetView{
   }
 
   setElementFilterForm() {
-    if (this.schemaFilterUserList && this.schemaFilterUserList[0]) {
+    if (this.schemaFilterUserList && this.schemaFilterUserList.length >2) {
 
-      let values = this.schemaFilterUserList;
+      let values = JSON.parse(this.schemaFilterUserList);
 
       let formRowLayout = this.winFilter.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -2117,7 +2119,7 @@ export default class AdminView extends JetView{
   doSaveFilterSettingClick(values) {
     let scope = this;
     if (this.selectTypeValue) {
-      scope.schemaFilterUserList = values;
+      scope.schemaFilterUserList =  JSON.stringify(values);
       let url = this.app.config.apiRest.getUrl('put', "accounting/schema-table-user-lists",{},this.selectTypeValue);
 
 
@@ -2185,9 +2187,9 @@ export default class AdminView extends JetView{
 
   setElementSortForm() {
 
-    if (this.schemaSortUserList && this.schemaSortUserList[0]) {
+    if (this.schemaSortUserList && this.schemaSortUserList.length >2) {
 
-      let values = this.schemaSortUserList;
+      let values = JSON.parse(this.schemaSortUserList);
 
       let formRowLayout = this.winSort.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -2310,7 +2312,7 @@ export default class AdminView extends JetView{
   doSaveSortSettingClick(values) {
     let scope = this;
     if (this.selectTypeValue) {
-      scope.schemaSortUserList = values;
+      scope.schemaSortUserList =  JSON.stringify(values);
       let url = this.app.config.apiRest.getUrl('put', "accounting/schema-table-user-lists",{},this.selectTypeValue);
 
 
