@@ -343,15 +343,15 @@ export default class InproduceView extends JetView{
 
             },
             {},
-            {
-              view:"icon",
-              //type:"icon",
-              icon: 'mdi mdi-undo',
-              autowidth:true,
-              value :true,
-              click: function() { scope.doUndo() }
-
-            },
+            // {
+            //   view:"icon",
+            //   //type:"icon",
+            //   icon: 'mdi mdi-undo',
+            //   autowidth:true,
+            //   value :true,
+            //   click: function() { scope.doUndo() }
+            //
+            // },
           ]
         },
         {
@@ -971,7 +971,7 @@ export default class InproduceView extends JetView{
   //setting table and columns
 
   showSetting() {
-    if (!this.win) {
+    //if (!this.win) {
       let scope = this;
       this.state = {
         'model' :this.capitalizeFirstLetter(this.mode),
@@ -988,9 +988,9 @@ export default class InproduceView extends JetView{
 
       this.state['dataList'] = this.dataSelectType.data;
       this.state['listId'] = this.selectTypeValue;
-      // let responseList = webix.ajax().sync().get(this.state.urlTableUserLists, {filter:{"model":this.state['model']}});
-      // this.state['dataList'] = JSON.parse(responseList.responseText);
-      //this.state['listId'] = (this.state['dataList'].data[0]) ? this.state['dataList'].data[0]['id'] : 0;
+      let responseList = webix.ajax().sync().get(this.state.urlTableUserLists, {filter:{"model":this.state['model']}});
+      this.state['dataList'] = JSON.parse(responseList.responseText);
+      this.state['listId'] = (this.state['dataList'].data[0]) ? this.state['dataList'].data[0]['id'] : 0;
 
       let response = webix.ajax().sync().get(scope.state.urlTableUsers, {filter:{"model":scope.state.model,"list_id":scope.state.listId}});
       let data = JSON.parse(response.responseText);
@@ -1032,11 +1032,14 @@ export default class InproduceView extends JetView{
                 scope.state['tableConfigColumn'] = dataUser.config.columns;
                 scope.state['tableItems'] = (dataUser.data)? dataUser.data : dataUser.items;
                 scope.state['listId'] = id;
+                let showColumnTab = scope.$$(this.getParentView().queryView({'localId':'showColumnsTab'}));
+                let settingColumnTab = scope.$$(this.getParentView().queryView({'localId':'settingColumnsTab'}));
+                let propertyTab = scope.$$(this.getParentView().queryView({'localId':'tablePropertyTab'}));
 
-                $$('showColumnsTab').define('rows',scope.getHeaderShowColumns());
-                $$('showColumnsTab').reconstruct();
-                $$('settingColumnsTab').define('rows',scope.getHeaderSettingColumns());
-                $$('settingColumnsTab').reconstruct();
+                showColumnTab.define('rows',scope.getHeaderShowColumns());
+                showColumnTab.reconstruct();
+                settingColumnTab.define('rows',scope.getHeaderSettingColumns());
+                settingColumnTab.reconstruct();
 
                 let responseSetting = webix.ajax().sync().get(scope.state.urlTableSettingUsers, {filter:{"model":scope.state.model,"list_id":id}});
                 let dataSetting = JSON.parse(responseSetting.responseText);
@@ -1044,8 +1047,8 @@ export default class InproduceView extends JetView{
                 scope.state['tableSetiingConfigColumn'] =  dataSetting.config.columns;
                 scope.state['tableSettingItems'] = (dataSetting.data)? dataSetting.data : dataSetting.items;
 
-                $$('tablePropertyTab').define('rows',scope.getHeaderTableProperty());
-                $$('tablePropertyTab').reconstruct();
+                propertyTab.define('rows',scope.getHeaderTableProperty());
+                propertyTab.reconstruct();
               }
             }
           },
@@ -1062,7 +1065,7 @@ export default class InproduceView extends JetView{
                 ],
                 on:{
                   onItemClick:function(id,e){
-                    $$(this.getValue()).show();
+                    scope.$$(this.getParentView().queryView({'localId':this.getValue()})).show();
                   }
                 }
               },
@@ -1072,7 +1075,7 @@ export default class InproduceView extends JetView{
                 cells:[
                   {
                     //header:'Показывать',
-                    id: 'showColumnsTab',
+                    localId: 'showColumnsTab',
                     type:"space",
                     // padding:{
                     //   top:5, bottom:0, left:0, right:0
@@ -1081,12 +1084,12 @@ export default class InproduceView extends JetView{
                   },
                   {
                     //header:'Настройки',
-                    id: 'settingColumnsTab',
+                    localId: 'settingColumnsTab',
                     type:"space",
                     rows: this.getHeaderSettingColumns()
                   },
                   {
-                    id: 'tablePropertyTab',
+                    localId: 'tablePropertyTab',
                     type:"space",
                     rows: this.getHeaderTableProperty()
                   }
@@ -1123,7 +1126,7 @@ export default class InproduceView extends JetView{
       this.win = webix.ui(winConfig);
       this.contentMenu = this.ui(this.getContentMenu(),scope);
       this.contentMenu.attachTo(this.win.queryView({'localId':'menu-list'}));
-    }
+    //}
 
     this.win.show();
   }
@@ -1330,7 +1333,7 @@ export default class InproduceView extends JetView{
     let scope = this;
     return {
       view:"contextmenu",
-      id:"cmenu",
+      //id:"cmenu",
       editable:true,
       editor:"text",
       data:[
