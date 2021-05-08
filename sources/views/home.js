@@ -20,7 +20,11 @@ export default class HomeView extends JetView{
         this.show('/top/inproduce/order');
       }
     } else {
-      this.show('/top/inproduce/order');
+      if (user.start_page) {
+        this.show(user.start_page);
+      } else {
+        this.show('/top/inproduce/order');
+      }
     }
   }
 
