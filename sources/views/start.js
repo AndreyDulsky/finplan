@@ -158,6 +158,7 @@ export default class StartView extends JetView{
 
 
 	config(){
+
     let scope = this;
     let configColumns = [];
     let url = this.app.config.apiRest.getUrl('get',"accounting/orders",

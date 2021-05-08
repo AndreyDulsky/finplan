@@ -159,8 +159,10 @@ function columnGroupTemplate(obj, common, item){
 }
 
 
-export default class AdminView extends JetView{
+export default class InproduceView extends JetView{
   config(){
+
+
     let hash = document.location.hash.split('/');
     let hashMode = hash[hash.length-1];
     let state = webix.storage.local.get(hashMode+"_filter_state");
@@ -169,10 +171,11 @@ export default class AdminView extends JetView{
 
     return {
       localId:'layout',
+
       rows:[
         {
           //type:"space",
-
+          view: "toolbar",
           padding: 10,
           cols:[
             {
@@ -353,21 +356,33 @@ export default class AdminView extends JetView{
         },
         {
           localId: 'body-layout',
-          cols:[]
+          cols:[{
+            localId: 'table-layout',
+            view: 'datatable'
+          }]
         }
       ],
     };
   }
 
+  urlChange(view,id,id1){
+    var id = this.getParam("mode", true);
+    var mode = this.getParam("mode", true);
+    this.mode = mode;
+    if (this.initParam) {
+      this.setPage();
+    }
+    this.initParam = true;
+  }
+
 
 
   init(view) {
+    this.initParam =false;
     this.use(plugins.UrlParam, ["mode"]);
-
-
     let mode = this.getParam('mode');
+
     this.mode = mode;
-    this.model = this.capitalizeFirstLetter(this.mode);
     this.state = {};
     this.stateFilter =  webix.storage.local.get(this.mode+"_filter_state");
     this.state['urlTableUserLists'] = this.app.config.apiRest.getUrl('get',"accounting/schema-table-user-lists",
@@ -376,24 +391,21 @@ export default class AdminView extends JetView{
         'sort':'sort_order'
       });
 
-    let iconSetting = this.$$('icon-setting');
-    let scope = this;
-
-
-    this.setSelectType();
-    this.schemaTableSetting = this.getSchemaTableSetting();
-    this.setTableSetting();
-    this.setFilterSetting();
-    //this.filter = this.getFilterParams();
-
-
-
-    this.getTable();
-    this.getDataTable();
+    this.setPage();
     this.attachToolBarEvents();
 
     this.formEdit = this.ui(UpdateFormView);
 
+  }
+
+  setPage() {
+    this.model = this.capitalizeFirstLetter(this.mode);
+    this.setSelectType();
+    this.schemaTableSetting = this.getSchemaTableSetting();
+    this.setTableSetting();
+    this.setFilterSetting();
+    this.getTable();
+    this.getDataTable();
   }
 
   //general
@@ -402,13 +414,14 @@ export default class AdminView extends JetView{
     let scope = this;
     let tableConfig = {
       view: "treetable",
+      localId: 'table-layout',
       urlEdit: this.mode,
       css: "webix_header_border webix_data_border",
       leftSplit: (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value : 0,
       rightSplit: (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value : 0,
       select:"multiselect",
       resizeColumn: {headerOnly: true},
-      localId: 'order-table',
+      //localId: 'order-table',
       multiselect: true,
       scroll: true,
       clipboard: "selection",
@@ -505,12 +518,13 @@ export default class AdminView extends JetView{
       }
     };
 
-    let table = webix.ui(tableConfig);
+    //let table = webix.ui(tableConfig);
 
 
-    this.table = table;
+    //this.table = table;
     //webix.extend(this.table, webix.ProgressBar);
-    layout.addView(table);
+    //layout.addView(table);
+    this.table = webix.ui(tableConfig,layout,this.$$('table-layout') )
 
   }
 
@@ -735,16 +749,16 @@ export default class AdminView extends JetView{
     scope.$$('filter-field').refresh();
     this.schemaTableUserFilter.forEach(function(item, key) {
 
-        scope.$$('filter-field').data.options.push({'id': item.column_id, 'value': item.header});
-        if (key==0 && !scope.$$('filter-input')) {
-          scope.$$('filter-layout').addView({
-            view:'search-close',
-            name:'text',
-            value: (scope.stateFilter) ? scope.stateFilter.filterInput: '',
-            //width:200,
-            localId: 'filter-input'
-          })
-        }
+      scope.$$('filter-field').data.options.push({'id': item.column_id, 'value': item.header});
+      if (key==0 && !scope.$$('filter-input')) {
+        scope.$$('filter-layout').addView({
+          view:'search-close',
+          name:'text',
+          value: (scope.stateFilter) ? scope.stateFilter.filterInput: '',
+          //width:200,
+          localId: 'filter-input'
+        })
+      }
 
     });
 
@@ -1000,88 +1014,88 @@ export default class AdminView extends JetView{
         cols:[
 
           {
-          view:"menu",
-          layout:"y",
-          width:200,
-          select:true,
-          localId: 'menu-list',
-          onContext:{},
-          data: this.state['dataList'],
-          ready:function(){
-            this.select(scope.state.listId);
-          },
-          on:{
-            onItemClick:function (id) {
+            view:"menu",
+            layout:"y",
+            width:200,
+            select:true,
+            localId: 'menu-list',
+            onContext:{},
+            data: this.state['dataList'],
+            ready:function(){
+              this.select(scope.state.listId);
+            },
+            on:{
+              onItemClick:function (id) {
 
-              let response = webix.ajax().sync().get(scope.state.urlTableUsers, {filter:{"model": scope.state.model, 'list_id': id}});
-              let dataUser = JSON.parse(response.responseText);
-              scope.state['tableConfigColumn'] = dataUser.config.columns;
-              scope.state['tableItems'] = (dataUser.data)? dataUser.data : dataUser.items;
-              scope.state['listId'] = id;
+                let response = webix.ajax().sync().get(scope.state.urlTableUsers, {filter:{"model": scope.state.model, 'list_id': id}});
+                let dataUser = JSON.parse(response.responseText);
+                scope.state['tableConfigColumn'] = dataUser.config.columns;
+                scope.state['tableItems'] = (dataUser.data)? dataUser.data : dataUser.items;
+                scope.state['listId'] = id;
 
-              $$('showColumnsTab').define('rows',scope.getHeaderShowColumns());
-              $$('showColumnsTab').reconstruct();
-              $$('settingColumnsTab').define('rows',scope.getHeaderSettingColumns());
-              $$('settingColumnsTab').reconstruct();
+                $$('showColumnsTab').define('rows',scope.getHeaderShowColumns());
+                $$('showColumnsTab').reconstruct();
+                $$('settingColumnsTab').define('rows',scope.getHeaderSettingColumns());
+                $$('settingColumnsTab').reconstruct();
 
-              let responseSetting = webix.ajax().sync().get(scope.state.urlTableSettingUsers, {filter:{"model":scope.state.model,"list_id":id}});
-              let dataSetting = JSON.parse(responseSetting.responseText);
-              scope.state['tableSetiingData'] = dataSetting;
-              scope.state['tableSetiingConfigColumn'] =  dataSetting.config.columns;
-              scope.state['tableSettingItems'] = (dataSetting.data)? dataSetting.data : dataSetting.items;
+                let responseSetting = webix.ajax().sync().get(scope.state.urlTableSettingUsers, {filter:{"model":scope.state.model,"list_id":id}});
+                let dataSetting = JSON.parse(responseSetting.responseText);
+                scope.state['tableSetiingData'] = dataSetting;
+                scope.state['tableSetiingConfigColumn'] =  dataSetting.config.columns;
+                scope.state['tableSettingItems'] = (dataSetting.data)? dataSetting.data : dataSetting.items;
 
-              $$('tablePropertyTab').define('rows',scope.getHeaderTableProperty());
-              $$('tablePropertyTab').reconstruct();
-            }
-          }
-        },
-        {
-          rows:[
-
-            { view:"tabbar",
-              value:"showColumnsTab",
-              //inputWidth:550,
-              options:[
-                { id:"showColumnsTab", value:"Видимые колонки" },
-                { id:"settingColumnsTab", value:"Свойства колонок"},
-                { id:"tablePropertyTab", value:"Настройки таблицы"}
-              ],
-              on:{
-                onItemClick:function(id,e){
-                  $$(this.getValue()).show();
-                }
+                $$('tablePropertyTab').define('rows',scope.getHeaderTableProperty());
+                $$('tablePropertyTab').reconstruct();
               }
-            },
-            {
-              animate:false,
-              width: 660,
-              cells:[
-                {
-                  //header:'Показывать',
-                  id: 'showColumnsTab',
-                  type:"space",
-                  // padding:{
-                  //   top:5, bottom:0, left:0, right:0
-                  // },
-                  rows: this.getHeaderShowColumns()
-                },
-                {
-                  //header:'Настройки',
-                  id: 'settingColumnsTab',
-                  type:"space",
-                  rows: this.getHeaderSettingColumns()
-                },
-                {
-                  id: 'tablePropertyTab',
-                  type:"space",
-                  rows: this.getHeaderTableProperty()
+            }
+          },
+          {
+            rows:[
+
+              { view:"tabbar",
+                value:"showColumnsTab",
+                //inputWidth:550,
+                options:[
+                  { id:"showColumnsTab", value:"Видимые колонки" },
+                  { id:"settingColumnsTab", value:"Свойства колонок"},
+                  { id:"tablePropertyTab", value:"Настройки таблицы"}
+                ],
+                on:{
+                  onItemClick:function(id,e){
+                    $$(this.getValue()).show();
+                  }
                 }
-              ]
-            },
+              },
+              {
+                animate:false,
+                width: 660,
+                cells:[
+                  {
+                    //header:'Показывать',
+                    id: 'showColumnsTab',
+                    type:"space",
+                    // padding:{
+                    //   top:5, bottom:0, left:0, right:0
+                    // },
+                    rows: this.getHeaderShowColumns()
+                  },
+                  {
+                    //header:'Настройки',
+                    id: 'settingColumnsTab',
+                    type:"space",
+                    rows: this.getHeaderSettingColumns()
+                  },
+                  {
+                    id: 'tablePropertyTab',
+                    type:"space",
+                    rows: this.getHeaderTableProperty()
+                  }
+                ]
+              },
 
 
-          ]
-        }
+            ]
+          }
 
         ]
       }
@@ -1089,7 +1103,7 @@ export default class AdminView extends JetView{
       let winConfig = {
         view:"window",
         head:{
-           cols:[
+          cols:[
             { width:4 },
             { type:"header", template: "Настройки таблицы", borderless:true },
             { view:"icon", icon: 'mdi mdi-close',  align: 'right', click:function(){ this.getTopParentView().hide(); }}
@@ -1658,18 +1672,18 @@ export default class AdminView extends JetView{
           }
         }
       },
-      {
-        type: 'form',
-        rows:[
+        {
+          type: 'form',
+          rows:[
 
-          {
-            header:'Показывать',
-            rows: this.getHeaderPrintColumns()
-          },
+            {
+              header:'Показывать',
+              rows: this.getHeaderPrintColumns()
+            },
 
 
-        ]
-      }
+          ]
+        }
 
       ]
     }
@@ -2052,10 +2066,10 @@ export default class AdminView extends JetView{
           }
         ]
       },
-      {
-        height: 20
-      }
-    ]
+        {
+          height: 20
+        }
+      ]
 
     };
   }

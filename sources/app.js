@@ -18,16 +18,18 @@ var db = firebase.firestore();
 db.settings({ timestampsInSnapshots:true });
 
 webix.firestore = db;
-let restObj = new ApiRest();
+
 let formatDateTime = webix.Date.dateToStr("%Y-%m-%d %H:%i:%s");
 export default class App extends JetApp {
 
+
 	constructor(confrestig) {
+    let restObj = new ApiRest();
 		const defaults = {
 			id: APPNAME,
 			version: VERSION,
 			debug: true,//!PRODUCTION,
-			start: "/top/start",
+			//start: "/top/start",
       access: "reader",
       apiRest: restObj,
 			views: function(name) {

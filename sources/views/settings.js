@@ -27,10 +27,10 @@ export default class SettingsView extends JetView{
 
 		return {
 			type:"clean", rows:[
-				{ type:"header", template:"Settings"},
+				{ type:"header", template:"Настройки"},
 				{ type:"form", rows:[langs] },
 /*wjet::Settings*/
-				{ template:"Place app's seetings here" }
+				{ template:"Выберите язык" }
 			]
 		}
 	}

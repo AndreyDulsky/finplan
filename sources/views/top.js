@@ -5,6 +5,7 @@ let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let formatTime = webix.Date.dateToStr("%H.%i");
 export default class TopView extends JetView{
 	config(){
+
 		const locale = this.app.getService("locale");
 		const _ = locale._;
 		const logout = [{
@@ -105,8 +106,8 @@ export default class TopView extends JetView{
 		let menuPermissions = webix.storage.local.get("wjet_permission");
 		(menuPermissions) ? menu['data'] = menuPermissions :  menu['data'] = {};
 
-		menu['data'].push({ value:"Настройки", id:"settings",  icon:"mdi mdi-tools" },)
-    menu['data'].push({ value:"Открытые отчеты", id:"info", icon:"mdi mdi-folder-open", data:[] })
+		//menu['data'].push({ value:"Настройки", id:"settings",  icon:"mdi mdi-tools" },)
+    //menu['data'].push({ value:"Открытые отчеты", id:"info", icon:"mdi mdi-folder-open", data:[], hidden: true })
 
 
 
