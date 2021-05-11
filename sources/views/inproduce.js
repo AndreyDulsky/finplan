@@ -225,7 +225,7 @@ export default class InproduceView extends JetView{
                 {
                   view:"icon",
                   icon:"mdi mdi-filter",
-                  localId: "show-icon-setting",
+                  localId: "show-icon-filter-settingr",
                   width: 30,
                   css:'small',
                   click: function() {
@@ -296,6 +296,7 @@ export default class InproduceView extends JetView{
               icon:"mdi mdi-tools",
               localId: "show-icon-setting",
               width: 30,
+              hidden: true,
               click: function() {
                 scope.showSetting();
               }
@@ -316,6 +317,7 @@ export default class InproduceView extends JetView{
               icon:"mdi mdi-plus",
               localId: 'show-add-button',
               tooltip: 'Добавить',
+              hidden: true,
               width: 30,
               click: () => this.doAddClick()
             },
