@@ -42,7 +42,7 @@ function login(user, pass){
 				var result = data.json();
 				if (result.success) {
           				//rest.authKey = result.token;
-									webix.storage.local.put("wjet_user", { user:result.user.email, token: result.token,  user_id: result.user.id });
+									webix.storage.local.put("wjet_user", { user:result.user.email, token: result.token,  user_id: result.user.id, type: result.user.type });
 
           				webix.storage.local.put("wjet_permission", result.user['permissions_finplan']);
 									resolve({ user: result.user.email, token: result.token, type: result.user.type, start_page: result.user.start_page});

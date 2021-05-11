@@ -182,17 +182,20 @@ export default class TopView extends JetView{
 
     };
     this.winComment = this.ui(winComment);
+    let userService = this.app.getService("user").getUser();
 
-    let urlMessage = this.app.config.apiRest.getUrl('get','accounting/comment/comment-view'
-    );
-    webix.ajax().get( urlMessage).then(function(data) {
-      scope.setComments(data.json());
-    });
+    if (userService.type == 0 || userService.type == 10) {
+      let urlMessage = this.app.config.apiRest.getUrl('get', 'accounting/comment/comment-view'
+      );
+      webix.ajax().get(urlMessage).then(function (data) {
+        scope.setComments(data.json());
+      });
 
-    this.$$('totalAccountsLabel').attachEvent("onItemClick", function(id, e){
-      ///scope.doClickBalance();
-      // code
-    });
+      this.$$('totalAccountsLabel').attachEvent("onItemClick", function (id, e) {
+        ///scope.doClickBalance();
+        // code
+      });
+    }
 
 
 
