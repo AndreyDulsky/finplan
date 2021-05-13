@@ -977,7 +977,9 @@ export default class InproduceView extends JetView{
       let scope = this;
       this.state = {
         'model' :this.capitalizeFirstLetter(this.mode),
-        'urlTableUsers': this.app.config.apiRest.getUrl('get',"accounting/schema-table-users",{'per-page':-1,'sort':'[{"property":"sort_order","direction":"ASC"}]'}),
+        'urlTableUsers': this.app.config.apiRest.getUrl('get',"accounting/schema-table-users",{'per-page':-1,
+          'sort':'[{"property":"sort_order","direction":"ASC"},{"property":"column_id","direction":"ASC"}]'
+        }),
         'urlTableUserLists' : this.app.config.apiRest.getUrl('get',"accounting/schema-table-user-lists",{'per-page':-1,'sort':'sort_order'}),
         'urlTableSettingUsers' : this.app.config.apiRest.getUrl('get',"accounting/schema-table-setting-users",{'per-page':-1,'sort':'type-property'}),
         'dataList' : '',
@@ -1128,6 +1130,7 @@ export default class InproduceView extends JetView{
       this.win = webix.ui(winConfig);
       this.contentMenu = this.ui(this.getContentMenu(),scope);
       this.contentMenu.attachTo(this.win.queryView({'localId':'menu-list'}));
+      this.attachEventShowColumns();
     //}
 
     this.win.show();
@@ -1137,16 +1140,24 @@ export default class InproduceView extends JetView{
     let scope = this;
 
     return [
-
       {
-        cols:[{
+        view: "text",
+        //width: '63',
+        localId: 'search-show-columns',
+        placeholder: 'поиск'
+      },
+      {
+        cols:[
+
+          {
           view:"dataview",
+          localId: 'dataview-show-columns',
           borderless:false,
           select:true,
-          xCount:3,
+          xCount:2,
           scroll: true,
           type: {
-            width:210,
+            width:315,
             markCheckbox:function(obj,common){
               return "<span class='metadata_config_check webix_icon wxi-checkbox-"+(!obj.hidden?"marked":"blank")+" +square-o'></span>";
             },
@@ -1184,7 +1195,7 @@ export default class InproduceView extends JetView{
                 obj.$css = "metadata_list_item_disabled";
             }
           },
-          template:"{common.markCheckbox()}<div style='margin-top:5px;'>#header#</div>",
+          template:"{common.markCheckbox()}<div style='margin-top:5px;'>#header# (#column_id#)</div>",
           data: scope.state.tableItems,
           datatype:"json",
           save: scope.state.urlTableUsersSave
@@ -1217,6 +1228,23 @@ export default class InproduceView extends JetView{
       }
     ];
 
+  }
+
+  attachEventShowColumns() {
+    let searchField = this.win.queryView({'localId':'search-show-columns'});
+    let dataViewShowColumns = this.win.queryView({'localId':'dataview-show-columns'});
+
+    searchField.attachEvent('onChange', function(text) {
+      dataViewShowColumns.filter(function(obj){
+        return obj.column_id.toString().indexOf(text) != -1;
+      });
+
+      if (dataViewShowColumns.count() == 0) {
+        dataViewShowColumns.filter(function (obj) {
+          return obj.header.toString().indexOf(text) != -1;
+        });
+      }
+    })
   }
 
   getHeaderSettingColumns() {
