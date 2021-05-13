@@ -992,9 +992,10 @@ export default class InproduceView extends JetView{
 
       this.state['dataList'] = this.dataSelectType.data;
       this.state['listId'] = this.selectTypeValue;
+      this.state.listId = this.selectTypeValue;
       let responseList = webix.ajax().sync().get(this.state.urlTableUserLists, {filter:{"model":this.state['model']}});
       this.state['dataList'] = JSON.parse(responseList.responseText);
-      this.state['listId'] = (this.state['dataList'].data[0]) ? this.state['dataList'].data[0]['id'] : 0;
+      //this.state['listId'] = (this.state['dataList'].data[0]) ? this.state['dataList'].data[0]['id'] : 0;
 
       let response = webix.ajax().sync().get(scope.state.urlTableUsers, {filter:{"model":scope.state.model,"list_id":scope.state.listId}});
       let data = JSON.parse(response.responseText);
@@ -1027,10 +1028,11 @@ export default class InproduceView extends JetView{
             data: this.state['dataList'],
             ready:function(){
               this.select(scope.state.listId);
+              this.callEvent("onItemClick", [scope.state.listId]);
+
             },
             on:{
               onItemClick:function (id) {
-
                 let response = webix.ajax().sync().get(scope.state.urlTableUsers, {filter:{"model": scope.state.model, 'list_id': id}});
                 let dataUser = JSON.parse(response.responseText);
                 scope.state['tableConfigColumn'] = dataUser.config.columns;
