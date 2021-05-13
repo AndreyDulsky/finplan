@@ -26,13 +26,28 @@ webix.ui.datafilter.totalColumn = webix.extend({
     var result = 0, _val;
     master.data.each(function (obj) {
       if (obj.$group) return;
-      _val = /*implement your logic*/ parseFloat(obj[value.columnId]);// / obj.OTHER_COL;
+
+
+      _val = obj[value.columnId];
+      if (value.columnId == 'coefMoney') {
+        _val = obj.G/7860;
+      }
+      if (_val !== null) {
+        if (_val!= 0) {
+          _val = _val.toString().replace(".",",");
+        }
+        _val = webix.Number.parse(_val, {
+          decimalSize: 2, groupSize: 3,
+          decimalDelimiter: ",", groupDelimiter: ""
+        });
+      }
+      _val =  parseFloat(_val);
       if (!isNaN(_val)) result = result+_val;
     });
     result = webix.i18n.numberFormat(result,{
-      groupDelimiter:",",
+      groupDelimiter:"`",
       groupSize:3,
-      decimalDelimiter:".",
+      decimalDelimiter:",",
       decimalSize:2
     })
     if (value.format)
@@ -117,12 +132,25 @@ webix.ui.datafilter.toolsContent = webix.extend({
   }
 }, webix.ui.datafilter.summColumn);
 
-webix.editors.$popup.text = {
-  view:"popup",
-  body:{
-    view:"textarea",
-    width:250,
-    height:100
+webix.editors.$popup = {
+  date:{
+    view:"popup",
+    body:{
+      view:"calendar",
+      timepicker:true,
+      icons:true
+      //weekNumber:true,
+      //width: 220,
+      //height:200
+    }
+  },
+  text : {
+    view:"popup",
+    body:{
+      view:"textarea",
+      width:350,
+      height:200
+    }
   }
 };
 
@@ -137,11 +165,12 @@ webix.Date.monthEnd = function(obj){
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let formatDateHour = webix.Date.dateToStr("%d.%m.%y %H:00");
 let formatDateShort = webix.Date.dateToStr("%d.%m");
+let formatDateTimeDb = webix.Date.dateToStr("%Y-%m-%d %H:%i");
 
 let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
 var parserDate = webix.Date.strToDate("%Y-%m-%d");
 var parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
-
+var parserDateTimeGroup = webix.Date.strToDate("%d.%m.%y %H:%i");
 
 
 function custom_checkbox(obj, common, value){
@@ -225,7 +254,7 @@ export default class InproduceView extends JetView{
                 {
                   view:"icon",
                   icon:"mdi mdi-filter",
-                  localId: "show-icon-filter-settingr",
+                  localId: "show-icon-filter-setting",
                   width: 30,
                   css:'small',
                   click: function() {
@@ -240,6 +269,16 @@ export default class InproduceView extends JetView{
                   css:'small',
                   click: function() {
                     scope.showSortSetting();
+                  }
+                },
+                {
+                  view:"icon",
+                  icon:"mdi mdi-format-color-fill",
+                  localId: "show-icon-color-setting",
+                  width: 30,
+                  css:'small',
+                  click: function() {
+                    scope.showColorSetting();
                   }
                 },
               ]
@@ -432,29 +471,14 @@ export default class InproduceView extends JetView{
       editable:true,
       editaction: "dblclick",
       sort:"multi",
-      drag:"order",
+      drag: (!this.schemaTableSetting['access'] || this.schemaTableSetting['access']['can-drop'].value == 0) ? false :  "order",
       dragColumn:true,
       save: "api->accounting/"+this.getModelName(this.mode),
       scheme:{
-        $init:function(item) {
-          item.index = (this.count())+1;
-          if (item.B == 4)
-            item.$css = "highlight";
-          if (item.B == 3)
-            item.$css = "highlight-blue";
-          if (item.B == 2)
-            item.$css = "highlight-green";
-          if (item.B == 6)
-            item.$css = "highlight-green";
-          let dateComplite = parserDate(item.date_obivka);
-          let dateToday = webix.Date.add(new Date(), -1, "day");
 
-          if (webix.filters.date.greater(dateToday,dateComplite ) && item.B=='1') {
-            item.$css = "highlight-red";
-          }
-        }
       },
       ready: function() {
+
 
       },
       on:{
@@ -488,34 +512,29 @@ export default class InproduceView extends JetView{
 
           //this.showOverlay("Loading...");
         },
-        onAfterLoad:function(){
-          //debugger;
+        onBeforeDrop:function(context, e){
 
 
-          if (!this.count()) {
-            //this.showOverlay("Нет данных");
+          let record = this.getItem(context.start);
+          let recordSource = this.getItem(context.parent);
+          let result = true;
+          if (!recordSource) {
+            result = false;
           }
+
+          if (result) {
+            result = scope.beforeDropChangeData(record, recordSource.value, context);
+          }
+          if (!result) {
+            scope.table.addRowCss(record.id, "highlight-red");
+            setInterval(function(){ scope.table.removeRowCss(record.id, "highlight-red") }, 4000);
+          }
+          return result;
+
         },
+
         onSelectChange: function(id, e, trg){
-          let table = this;
-          let selected = table.getSelectedId(true);
-          if (!this.rowSelect && selected.length > 0 && selected[0] && selected[0].column == 'index') {
 
-            //var config = webix.copy(table);
-            //if(val)
-
-
-            //table.define('select','multiselect');
-            //table.refresh();
-            // let selected = table.getSelectedId(true).join().split(',');
-            // let first = selected[0];
-            // let last = selected[selected.length - 1];
-            // this.rowSelect = true;
-            // table.selectRange(first,'A',last,'T');
-          } else {
-            this.rowSelect = false;
-            table.config.select = 'cell';
-          }
         },
       }
     };
@@ -526,7 +545,9 @@ export default class InproduceView extends JetView{
     //this.table = table;
     //webix.extend(this.table, webix.ProgressBar);
     //layout.addView(table);
-    this.table = webix.ui(tableConfig,layout,this.$$('table-layout') )
+    this.table = webix.ui(tableConfig,layout,this.$$('table-layout') );
+    this.setColorSettingForTable();
+
 
   }
 
@@ -825,6 +846,7 @@ export default class InproduceView extends JetView{
           scope.schemaTableUserFilter = item.schemaTableUserFilter;
           scope.schemaFilterUserList = item.filter_setting;
           scope.schemaSortUserList = item.sort_setting;
+          scope.schemaColorUserList = item.color_setting;
 
         }
       });
@@ -836,6 +858,7 @@ export default class InproduceView extends JetView{
         scope.schemaTableUserFilter = item.schemaTableUserFilter;
         scope.schemaFilterUserList = item.filter_setting;
         scope.schemaSortUserList = item.sort_setting;
+        scope.schemaColorUserList = item.color_setting;
 
       }
     });
@@ -860,6 +883,8 @@ export default class InproduceView extends JetView{
             scope.schemaTableUserFilter = item.schemaTableUserFilter;
             scope.schemaFilterUserList = item.filter_setting;
             scope.schemaSortUserList = item.sort_setting;
+            scope.schemaColorUserList = item.color_setting;
+            scope.setColorSettingForTable();
             scope.setTableSetting();
             scope.setFilterSetting();
             scope.getDataTable();
@@ -969,6 +994,7 @@ export default class InproduceView extends JetView{
       });
     }
   }
+
 
   //setting table and columns
 
@@ -1257,6 +1283,7 @@ export default class InproduceView extends JetView{
     let optionsHeaderTotalType = [];
     let optionsFormat = [];
     let optionsSortType = [];
+    let optionsEditorType = [];
     let filterData = [];
 
 
@@ -1280,6 +1307,9 @@ export default class InproduceView extends JetView{
       if (item.id == 'sort_type') {
         optionsSortType = item.options;
       }
+      if (item.id == 'editor') {
+        optionsEditorType = item.options;
+      }
 
     });
     return [{
@@ -1298,12 +1328,13 @@ export default class InproduceView extends JetView{
         {'id':'sort_order', 'header':'Порядок', editor:'text',  'adjust':'all'},
         {'id':'header_filter_type', 'header':'Тип фильтра', editor:'select', 'options':optionsHeaderFilterType, 'adjust':'all'},
         {'id':'header_total_type', 'header':'Тип итого', editor:'select', 'options':optionsHeaderTotalType, 'adjust':'all'},
+        {'id':'editor', 'header':'Редактор', editor:'select', 'options':optionsEditorType, 'adjust':'all'},
         {'id':'format', 'header':'Формат колонки', editor:'select', 'options':optionsFormat, 'adjust':'all'},
         {'id':'css_format', 'header':'Css Формат', editor:'popup', 'adjust':'all'},
         {'id':'sort_type', 'header':'Тип сорт.', editor:'select', 'options':optionsSortType, 'adjust':'all'},
         {'id':'width', 'header':'Ширина', editor:'text', 'adjust':'all'},
         {'id':'adjust', 'header':'Рег.ширины', editor:'text', 'adjust':'all'},
-        {'id':'template', 'header':'Шаблон', editor:'text', 'adjust':'all'},
+        {'id':'template', 'header':'Шаблон', editor:'popup', 'adjust':'all'},
         {'id':'options', 'header':'Список', editor:'popup', 'adjust':'all'},
         {'id':'use_filter', 'header':'Исп. в фильтре', editor:'text', 'adjust':'all'},
         {'id':'', 'header':'', 'fillspace':true},
@@ -1671,6 +1702,21 @@ export default class InproduceView extends JetView{
   doAddClick() {
     this.table.unselect();
     this.formEdit.showForm(this.table);
+  }
+
+  beforeDropChangeData(record, date, context) {
+
+    let table = this.table;
+    let field = this.schemaTableSetting.group['group-by'].value;
+
+    let sel = table.getSelectedId(true);
+    context.source.forEach(item => {
+      table.getItem(item)[field] = formatDateTimeDb(parserDateTimeGroup(date));
+      table.refresh(item);
+      table.updateItem(item, table.getItem(item))
+    });
+    return true;
+
   }
 
 
@@ -2385,6 +2431,279 @@ export default class InproduceView extends JetView{
 
       webix.ajax().put(url, {
         'sort_setting': JSON.stringify(values)
+      }, {
+        error: function (text, data, response) {
+          scope.showMessageError(data.json());
+        },
+        success: function (text, data, response) {
+          webix.message({
+            text: 'Данные успешно сохранены!',
+            type: "info",
+            expire: 4000,
+          });
+        }
+      });
+
+    }
+
+
+  }
+
+
+  //setting color
+  setColorSettingForTable() {
+
+    let colorSetting = JSON.parse(this.schemaColorUserList);
+
+    let condition = [];
+    let obj = { func: function() {} };
+    let index = -1;
+    for (let key in colorSetting) {
+      let item = colorSetting[key];
+      if (item['operator'].trim() !='') {
+        condition[index].push(item);
+      } else {
+        index++;
+        condition[index] = [];
+        condition[index].push(item);
+      }
+    }
+    let conditionFunction = 'function(item, view, prop) { item.index = (this.count())+1; ';
+
+    condition.forEach((items) => {
+
+      if (items.length > 1) {
+        let operatorCondition = '(';
+        let lastItem = {};
+        items.forEach((itemOperator) => {
+          let comparison = (itemOperator['comparison'] == '=') ? '==' : itemOperator['comparison'];
+          let value = (itemOperator['value'].indexOf('{')!=-1) ? itemOperator['value'].replace('{','').replace('}','') : '\''+itemOperator['value']+'\'';
+          let operator = '';
+          if (itemOperator['operator'] == 'and') operator = '&&';
+          if (itemOperator['operator'] == 'or') operator = '||';
+          operatorCondition += operator+' item.'+itemOperator['field']+' '+comparison+' '+value+' ';
+          lastItem = itemOperator;
+        });
+        operatorCondition += ')';
+        let css = '{"background-color":"'+lastItem['color']+'"}';
+        conditionFunction += 'if '+operatorCondition+' { item.$css = '+css+'; } ';
+      }
+
+      if (items.length == 1) {
+        let item = items[0];
+        let css = '{"background-color":"'+item['color']+'"}';
+        let comparison = (item['comparison'] == '=') ? '==' : item['comparison'];
+        let value = (item['value'].indexOf('{')!=-1) ? item['value'].replace('{','').replace('}','') : '\''+item['value']+'\'';
+        conditionFunction += 'if (item.'+item['field']+' '+comparison+' '+value+') { item.$css = '+css+'; } ';
+      }
+    });
+
+    conditionFunction += '}';
+    console.log(conditionFunction);
+
+    eval(" obj.func = " + conditionFunction);
+    this.table.define('scheme', {
+      $init: obj.func
+    });
+  }
+
+  showColorSetting() {
+    let scope = this;
+    let body = {
+      localId: 'body-setting-color-layout',
+      css: 'webix_primary',
+      type: 'space',
+      cols:[
+        {
+          type: 'form',
+          rows:[
+
+            {
+
+              rows: this.getHeaderColorSetting()
+            },
+
+
+          ]
+        }
+      ]
+    }
+
+    let winConfig = {
+      view:"window",
+      head:"Настройки цветов",
+      width: 700,
+      height: 500,
+      position: 'center',
+      modal:true,
+      close:true,
+      move: true,
+      resize:true,
+      body: body
+    };
+
+    this.winColor = webix.ui(winConfig);
+    this.setElementColorForm();
+    this.winColor.show();
+  }
+
+  setElementColorForm() {
+
+    if (this.schemaColorUserList && this.schemaColorUserList.length >2) {
+
+      let values = JSON.parse(this.schemaColorUserList);
+
+      let formRowLayout = this.winColor.queryView({'localId': 'form-row-layout'});
+      for (let key in values) {
+        formRowLayout.addView(this.getElementColorForm(key));
+      }
+      this.winColor.queryView('form').setValues(values);
+    }
+  }
+
+  getElementColorForm(id) {
+    let scope = this;
+    return {
+      localId: 'element-color-'+id,
+      rows:[{
+        cols:[{
+            view:'combo',
+            name: id+'.operator',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Оператор',
+            value: '',
+            disabled: (id == 0) ? true : false,
+            options:[' ','and','or']
+          },
+          {
+            view:'combo',
+            name: id+'.field',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Выберите поле',
+            value: '',
+            options: this.table.config.columns
+          },
+          {
+            view:'combo',
+            name: id+'.comparison',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Тип сравнения',
+            value: '==',
+            options: ['==','>=','<=','!=']
+          },
+          {
+            view:'text',
+            name: id+'.value',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Значение',
+            value: ''
+          },
+          {
+            view:'colorpicker',
+            name: id+'.color',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Цвет',
+            value: ''
+          },
+          {
+            view:'icon',
+            icon: 'mdi mdi-close',
+            labelPosition: 'top',
+            labelWidth: 34,
+            click: function() {
+              scope.deleteElementColorForm('element-color-'+id)
+            }
+
+          }
+        ]
+      },
+        {
+          height: 20
+        }
+      ]
+
+    };
+  }
+
+  deleteElementColorForm(id) {
+    let formRowLayout = this.winColor.queryView({'localId': 'form-row-layout'});
+    let element = this.winColor.queryView({'localId': id});
+    formRowLayout.removeView(element);
+  }
+
+  getHeaderColorSetting() {
+    let scope = this;
+    return [
+      {
+        view:'form',
+        complexData:true,
+        scroll: 'auto',
+        elements:[
+          {
+            localId: 'form-row-layout',
+            rows:[
+            ]
+          },
+
+          {
+            cols: [
+              {},
+              {},
+              {
+                view: 'button',
+                label: '+',
+                localId: 'add-color-element',
+                css: 'webix_primary',
+                width: 40,
+                click: function() {
+                  let layout = this.getTopParentView().queryView({'localId':'form-row-layout'});
+                  let count = layout.getChildViews().length;
+                  layout.addView(scope.getElementColorForm(count));
+
+
+                }
+              },
+
+            ]
+          },
+          {},
+          {
+            cols: [
+              {},
+              {},
+              {
+                view: 'button',
+                label: 'Сохранить',
+                localId: 'save-color-setting',
+                css: 'webix_primary',
+                //width: 400,
+                click: function() {
+                  scope.doSaveColorSettingClick(this.getTopParentView().queryView('form').getValues());
+                  scope.winColor.close();
+                }
+              },
+
+            ]
+          }
+        ]
+      },
+    ]
+  }
+
+  doSaveColorSettingClick(values) {
+    let scope = this;
+    if (this.selectTypeValue) {
+      scope.schemaColorUserList =  JSON.stringify(values);
+      let url = this.app.config.apiRest.getUrl('put', "accounting/schema-table-user-lists",{},this.selectTypeValue);
+
+
+      webix.ajax().put(url, {
+        'color_setting': JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
