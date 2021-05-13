@@ -1033,6 +1033,7 @@ export default class InproduceView extends JetView{
             },
             on:{
               onItemClick:function (id) {
+
                 let response = webix.ajax().sync().get(scope.state.urlTableUsers, {filter:{"model": scope.state.model, 'list_id': id}});
                 let dataUser = JSON.parse(response.responseText);
                 scope.state['tableConfigColumn'] = dataUser.config.columns;
@@ -1044,6 +1045,7 @@ export default class InproduceView extends JetView{
 
                 showColumnTab.define('rows',scope.getHeaderShowColumns());
                 showColumnTab.reconstruct();
+                scope.attachEventShowColumns();
                 settingColumnTab.define('rows',scope.getHeaderSettingColumns());
                 settingColumnTab.reconstruct();
 
@@ -1132,7 +1134,7 @@ export default class InproduceView extends JetView{
       this.win = webix.ui(winConfig);
       this.contentMenu = this.ui(this.getContentMenu(),scope);
       this.contentMenu.attachTo(this.win.queryView({'localId':'menu-list'}));
-      this.attachEventShowColumns();
+
     //}
 
     this.win.show();
@@ -1141,7 +1143,7 @@ export default class InproduceView extends JetView{
   getHeaderShowColumns() {
     let scope = this;
 
-    return [
+    let showColumns =  [
       {
         view: "text",
         //width: '63',
@@ -1229,21 +1231,22 @@ export default class InproduceView extends JetView{
         ]
       }
     ];
+    return showColumns;
+
 
   }
 
   attachEventShowColumns() {
     let searchField = this.win.queryView({'localId':'search-show-columns'});
     let dataViewShowColumns = this.win.queryView({'localId':'dataview-show-columns'});
-
-    searchField.attachEvent('onChange', function(text) {
+    searchField.attachEvent('onChange', function(newValue, oldValue, config) {
       dataViewShowColumns.filter(function(obj){
-        return obj.column_id.toString().indexOf(text) != -1;
+        return obj.column_id.toString().indexOf(newValue) != -1;
       });
 
       if (dataViewShowColumns.count() == 0) {
         dataViewShowColumns.filter(function (obj) {
-          return obj.header.toString().indexOf(text) != -1;
+          return obj.header.toString().indexOf(newValue) != -1;
         });
       }
     })
