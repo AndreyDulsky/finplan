@@ -1,5 +1,6 @@
 import {JetView, plugins} from "webix-jet";
 import UpdateFormView from "core/updateFormView";
+import FormCommnetView from "views/comment/index";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
@@ -436,6 +437,8 @@ export default class InproduceView extends JetView{
     this.attachToolBarEvents();
 
     this.formEdit = this.ui(UpdateFormView);
+    this.formComment = this.ui(FormCommnetView);
+
 
   }
 
@@ -458,8 +461,8 @@ export default class InproduceView extends JetView{
       localId: 'table-layout',
       urlEdit: this.mode,
       css: "webix_header_border webix_data_border",
-      leftSplit: (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value : 0,
-      rightSplit: (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value : 0,
+      leftSplit: 0,
+      rightSplit: 0,
       select:"multiselect",
       resizeColumn: {headerOnly: true},
       //localId: 'order-table',
@@ -471,7 +474,7 @@ export default class InproduceView extends JetView{
       editable:true,
       editaction: "dblclick",
       sort:"multi",
-      drag: (!this.schemaTableSetting['access'] || this.schemaTableSetting['access']['can-drop'].value == 0) ? false :  "order",
+      drag: false,
       dragColumn:true,
       save: "api->accounting/"+this.getModelName(this.mode),
       scheme:{
@@ -506,6 +509,12 @@ export default class InproduceView extends JetView{
           }
           if (id.column == 'action-edit') {
             this.$scope.formEdit.showForm(this);
+          }
+          if (id.column == 'action-comment') {
+            let item = this.getItem(id);
+            //TODO: change A to configurate column for comment
+            this.$scope.formComment.showForm(this, item.A);
+
           }
         },
         onBeforeLoad:function(){
@@ -547,6 +556,10 @@ export default class InproduceView extends JetView{
     //layout.addView(table);
     this.table = webix.ui(tableConfig,layout,this.$$('table-layout') );
     this.setColorSettingForTable();
+    this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value : 0);
+    this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value : 0);
+    this.table.define('drag', (!this.schemaTableSetting['access'] || this.schemaTableSetting['access']['can-drop'].value == 0) ? false :  "order");
+
 
 
   }
@@ -564,7 +577,9 @@ export default class InproduceView extends JetView{
     if (paramsSort.length > 0) {
       params['sort'] = paramsSort;
     }
-
+    if (this.mode == 'order') {
+      params['expand'] = 'comment';
+    }
     scope.tableUrl = this.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.mode), params);
 
     webix.extend(this.table, webix.ProgressBar);
@@ -653,6 +668,7 @@ export default class InproduceView extends JetView{
   }
 
   getFilterParams() {
+
     let scope = this;
     this.format = webix.Date.dateToStr("%Y-%m-%d");
     this.dateFrom = this.$$("dateFrom");
@@ -767,7 +783,6 @@ export default class InproduceView extends JetView{
 
   setFilterSetting() {
     let scope = this;
-
     scope.$$('filter-field').data.options = [];
     scope.$$('filter-field').refresh();
     this.schemaTableUserFilter.forEach(function(item, key) {
@@ -1042,8 +1057,10 @@ export default class InproduceView extends JetView{
         localId: 'body-setting-layout',
         css: 'webix_primary',
         type: 'space',
+        //collapsed:true,
+        //view:"accordion",
+        //multi:true,
         cols:[
-
           {
             view:"menu",
             layout:"y",
@@ -1086,6 +1103,8 @@ export default class InproduceView extends JetView{
               }
             }
           },
+
+          {view:"resizer"},
           {
             rows:[
 
@@ -1187,7 +1206,8 @@ export default class InproduceView extends JetView{
           xCount:2,
           scroll: true,
           type: {
-            width:315,
+            //width:315,
+            width: 'auto',
             markCheckbox:function(obj,common){
               return "<span class='metadata_config_check webix_icon wxi-checkbox-"+(!obj.hidden?"marked":"blank")+" +square-o'></span>";
             },
@@ -1315,27 +1335,28 @@ export default class InproduceView extends JetView{
     return [{
       view:"datatable",
       css: "webix_header_border webix_data_border",
-      select:'cell',
+      select:'row',
       editable:true,
       editaction: "click",
       tooltip: true,
+      leftSplit: 2,
       borderless:false,
       columns: [
         {'id':'index', 'header': '#', 'hidden': false, 'width':40, 'css':{'background-color': '#F4F5F9'}},
-        {'id':'id', 'header': 'ID', 'hidden': true},
-        {'id':'column_id', 'header': 'Колонка', 'hidden':true},
+        //{'id':'id', 'header': 'ID', 'hidden': true},
+        //{'id':'column_id', 'header': 'Колонка', 'hidden':true},
         {'id':'header', 'header': 'Колонка', 'adjust':'all', 'css':{'background-color': '#F4F5F9'},tooltip:'#column_id#'},
         {'id':'sort_order', 'header':'Порядок', editor:'text',  'adjust':'all'},
         {'id':'header_filter_type', 'header':'Тип фильтра', editor:'select', 'options':optionsHeaderFilterType, 'adjust':'all'},
         {'id':'header_total_type', 'header':'Тип итого', editor:'select', 'options':optionsHeaderTotalType, 'adjust':'all'},
         {'id':'editor', 'header':'Редактор', editor:'select', 'options':optionsEditorType, 'adjust':'all'},
-        {'id':'format', 'header':'Формат колонки', editor:'select', 'options':optionsFormat, 'adjust':'all'},
-        {'id':'css_format', 'header':'Css Формат', editor:'popup', 'adjust':'all'},
+        {'id':'format', 'header':'Формат колонки', editor:'select', 'options':optionsFormat, 'adjust':'header'},
+        {'id':'css_format', 'header':'Css Формат', editor:'popup', 'adjust':'header'},
         {'id':'sort_type', 'header':'Тип сорт.', editor:'select', 'options':optionsSortType, 'adjust':'all'},
         {'id':'width', 'header':'Ширина', editor:'text', 'adjust':'all'},
         {'id':'adjust', 'header':'Рег.ширины', editor:'text', 'adjust':'all'},
-        {'id':'template', 'header':'Шаблон', editor:'popup', 'adjust':'all'},
-        {'id':'options', 'header':'Список', editor:'popup', 'adjust':'all'},
+        {'id':'template', 'header':'Шаблон', editor:'popup', 'adjust':'header'},
+        {'id':'options', 'header':'Список', editor:'popup', 'adjust':'header'},
         {'id':'use_filter', 'header':'Исп. в фильтре', editor:'text', 'adjust':'all'},
         {'id':'', 'header':'', 'fillspace':true},
 

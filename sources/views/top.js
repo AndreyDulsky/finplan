@@ -1,5 +1,5 @@
 import {JetView, plugins} from "webix-jet";
-
+import FormCommnetView from "views/comment/index";
 
 let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let formatTime = webix.Date.dateToStr("%H.%i");
@@ -170,12 +170,18 @@ export default class TopView extends JetView{
             }
           },
           {
-            view: "menu",
+            cols: [
+              {
+                view: "button",
+                label: "Показать все",
+                css: 'webix_primary',
+                click: function() { scope.formComment.showForm(this); scope.winComment.hide(); },
 
-            data: [
-              { value: "Показать все", href: "#!/top/comment"},
+              },
+              {}
             ]
-          },
+          }
+
         ]
 
       }
@@ -196,6 +202,8 @@ export default class TopView extends JetView{
         // code
       });
     }
+
+    this.formComment = this.ui(FormCommnetView);
 
 
 

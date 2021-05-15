@@ -385,7 +385,9 @@ export default class OrderSewingView extends JetView{
               cssFormat: function(id, obj) {
 
                 if (obj.product_id && obj.client_id && obj.cloth_id && obj.type_product && obj.size_id && obj.carcass_type_id && obj.leg_id && obj.bottom_id)
+
                   return {'color': 'green'};
+
                 return {};
               },
               "css": {"color": "black", "text-align": "right", "font-weight": 500},
