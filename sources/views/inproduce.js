@@ -1,6 +1,8 @@
 import {JetView, plugins} from "webix-jet";
-import UpdateFormView from "core/updateFormView";
+import FormEditView from "core/updateFormView";
 import FormCommnetView from "views/comment/index";
+import FormViewView from "views/order/check-work";
+
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
@@ -198,6 +200,8 @@ export default class InproduceView extends JetView{
     let state = webix.storage.local.get(hashMode+"_filter_state");
 
     let scope = this;
+    this.api = this.app.config.apiRest;
+
 
     return {
       localId:'layout',
@@ -424,6 +428,7 @@ export default class InproduceView extends JetView{
     this.use(plugins.UrlParam, ["mode"]);
     let mode = this.getParam('mode');
 
+
     this.mode = mode;
     this.state = {};
     this.stateFilter =  webix.storage.local.get(this.mode+"_filter_state");
@@ -436,8 +441,10 @@ export default class InproduceView extends JetView{
     this.setPage();
     this.attachToolBarEvents();
 
-    this.formEdit = this.ui(UpdateFormView);
+    this.formEdit = this.ui(FormEditView);
     this.formComment = this.ui(FormCommnetView);
+    this.formView = this.ui(FormViewView);
+
 
 
   }
@@ -510,6 +517,9 @@ export default class InproduceView extends JetView{
           if (id.column == 'action-edit') {
             this.$scope.formEdit.showForm(this);
           }
+          if (id.column == 'action-view') {
+            this.$scope.formView.showWindow({},this);
+          }
           if (id.column == 'action-comment') {
             let item = this.getItem(id);
             //TODO: change A to configurate column for comment
@@ -556,9 +566,6 @@ export default class InproduceView extends JetView{
     //layout.addView(table);
     this.table = webix.ui(tableConfig,layout,this.$$('table-layout') );
     this.setColorSettingForTable();
-    this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value : 0);
-    this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value : 0);
-    this.table.define('drag', (!this.schemaTableSetting['access'] || this.schemaTableSetting['access']['can-drop'].value == 0) ? false :  "order");
 
 
 
@@ -566,6 +573,12 @@ export default class InproduceView extends JetView{
 
   getDataTable() {
     let scope = this;
+
+    this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value : 0);
+    this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value : 0);
+    this.table.define('drag', (!this.schemaTableSetting['access'] || this.schemaTableSetting['access']['can-drop'].value == 0) ? false :  "order");
+
+
     scope.columns = [];
     let params = {
       'per-page' : 2000,
@@ -578,7 +591,7 @@ export default class InproduceView extends JetView{
       params['sort'] = paramsSort;
     }
     if (this.mode == 'order') {
-      params['expand'] = 'comment';
+      params['expand'] = 'comment,images';
     }
     scope.tableUrl = this.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.mode), params);
 
@@ -603,7 +616,9 @@ export default class InproduceView extends JetView{
 
       scope.table.config.columns = items.config.columns;
       scope.columns = items.config.columns;
+
       scope.table.refreshColumns();
+
       scope.table.parse(dataItem);
 
       scope.table.enable();
@@ -628,7 +643,8 @@ export default class InproduceView extends JetView{
             let per = eval(resultType);
             let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
             if (configColumn.collection) {
-              return configColumn.collection.getItem(per).value;
+              //id collection json or colellection "api->url"
+              return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
             } else {
               return eval(resultType);
             }
@@ -645,7 +661,6 @@ export default class InproduceView extends JetView{
         },
       });
       scope.table.openAll();
-
     });
   }
 
@@ -1351,6 +1366,7 @@ export default class InproduceView extends JetView{
         {'id':'header_total_type', 'header':'Тип итого', editor:'select', 'options':optionsHeaderTotalType, 'adjust':'all'},
         {'id':'editor', 'header':'Редактор', editor:'select', 'options':optionsEditorType, 'adjust':'all'},
         {'id':'format', 'header':'Формат колонки', editor:'select', 'options':optionsFormat, 'adjust':'header'},
+        {'id':'css', 'header':'Стиль', editor:'popup', 'adjust':'header'},
         {'id':'css_format', 'header':'Css Формат', editor:'popup', 'adjust':'header'},
         {'id':'sort_type', 'header':'Тип сорт.', editor:'select', 'options':optionsSortType, 'adjust':'all'},
         {'id':'width', 'header':'Ширина', editor:'text', 'adjust':'all'},
@@ -1685,21 +1701,21 @@ export default class InproduceView extends JetView{
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateTime') ==0) {
-        eval(" myObj.func = (obj) => { return formatDateTime(obj.trim()); }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateTime(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateTime(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDate') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDate(obj.trim())} catch (e) { debugger; } return  formatDate(obj.trim()); }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDate(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDate(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateHour') ==0) {
-        eval(" myObj.func = (obj) => { return formatDateHour(obj.trim()); }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateHour(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateHour(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateShort') ==0) {
-        eval(" myObj.func = (obj) => {  return formatDateShort(obj.trim()); }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateShort(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateShort(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
       if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('(obj,common,value)') ==0) {
