@@ -32,6 +32,7 @@ export default class App extends JetApp {
 			//start: "/top/start",
       access: "reader",
       apiRest: restObj,
+      statusView: '',
 			views: function(name) {
 				return localViews[name] || name;
 			}

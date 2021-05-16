@@ -144,6 +144,7 @@ export default class ClothDirectoryView extends JetView{
                         webix.dp(table).ignore(function(){
                           table.remove(id.row);
                         });
+                        return true;
                       }, function(){
                         webix.message("Ошибка! Запись не удалена!");
                       });

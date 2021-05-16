@@ -2,6 +2,7 @@ import {JetView, plugins} from "webix-jet";
 import FormEditView from "core/updateFormView";
 import FormCommnetView from "views/comment/index";
 import FormViewView from "views/order/check-work";
+import FormView from "core/formView";
 
 import "components/comboClose";
 import "components/comboDateClose";
@@ -421,12 +422,18 @@ export default class InproduceView extends JetView{
     this.initParam = true;
   }
 
-
-
   init(view) {
+
     this.initParam =false;
-    this.use(plugins.UrlParam, ["mode"]);
+    this.use(plugins.UrlParam, ["mode", "id"]);
+
     let mode = this.getParam('mode');
+
+    if (this.app.statusView) {
+      mode = this.app.statusView;
+      //this.app.statusView = '';
+    }
+
 
 
     this.mode = mode;
@@ -483,6 +490,7 @@ export default class InproduceView extends JetView{
       sort:"multi",
       drag: false,
       dragColumn:true,
+      math: true,
       save: "api->accounting/"+this.getModelName(this.mode),
       scheme:{
 
@@ -518,7 +526,32 @@ export default class InproduceView extends JetView{
             this.$scope.formEdit.showForm(this);
           }
           if (id.column == 'action-view') {
-            this.$scope.formView.showWindow({},this);
+            //this.$scope.formView =  this.$scope.ui(FormView);
+            let configColumn = this.$scope.table.getColumnConfig(id.column);
+            //this.$scope.formView.showWindow(configColumn['goto']);
+            if (configColumn['goto']) {
+
+              this.$scope.show('inproduce/'+configColumn['goto']+'/'+id.row);
+            } else {
+              this.$scope.formView.showWindow({},this);
+            }
+
+          }
+          if (id.column == 'action-delete') {
+            var table = this;
+            webix.confirm("Удалить запись?").then(function(result){
+              webix.dp(table).save(
+                id.row,
+                "delete"
+              ).then(function(obj){
+                webix.dp(table).ignore(function(){
+                  table.remove(id.row);
+                });
+              }, function(){
+                webix.message("Ошибка! Запись не удалена!");
+              });
+            });
+
           }
           if (id.column == 'action-comment') {
             let item = this.getItem(id);
@@ -576,7 +609,7 @@ export default class InproduceView extends JetView{
 
     this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value : 0);
     this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value : 0);
-    this.table.define('drag', (!this.schemaTableSetting['access'] || this.schemaTableSetting['access']['can-drop'].value == 0) ? false :  "order");
+    this.table.define('drag', (!this.schemaTableSetting['access'] || (!this.schemaTableSetting['access']['can-drop'] || this.schemaTableSetting['access']['can-drop'].value == 0) ) ? false :  "order");
 
 
     scope.columns = [];
@@ -667,6 +700,7 @@ export default class InproduceView extends JetView{
 
   getSortParams() {
     let params = '';
+
     if (this.filterDateRangeField) {
       params = '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]';
     }
@@ -754,7 +788,9 @@ export default class InproduceView extends JetView{
     //   filterParams["filter"]["or"] = [];
     // }
 
-
+    if (this.getParam("id")) {
+      filterParams["filter"]["and"] = [{'list_id': this.getParam("id")}];
+    }
 
 
     //filterParams["filter"]["or"].push(type);
@@ -1319,7 +1355,10 @@ export default class InproduceView extends JetView{
     let optionsFormat = [];
     let optionsSortType = [];
     let optionsEditorType = [];
+    let optionsFormEdit = [];
     let filterData = [];
+
+
 
 
 
@@ -1345,6 +1384,9 @@ export default class InproduceView extends JetView{
       if (item.id == 'editor') {
         optionsEditorType = item.options;
       }
+      if (item.id == 'form_edit') {
+        optionsFormEdit = item.options;
+      }
 
     });
     return [{
@@ -1360,7 +1402,7 @@ export default class InproduceView extends JetView{
         {'id':'index', 'header': '#', 'hidden': false, 'width':40, 'css':{'background-color': '#F4F5F9'}},
         //{'id':'id', 'header': 'ID', 'hidden': true},
         //{'id':'column_id', 'header': 'Колонка', 'hidden':true},
-        {'id':'header', 'header': 'Колонка', 'adjust':'all', 'css':{'background-color': '#F4F5F9'},tooltip:'#column_id#'},
+        {'id':'header', 'header': 'Колонка', 'adjust':'all', editor:'text', 'css':{'background-color': '#F4F5F9'},tooltip:'#column_id#'},
         {'id':'sort_order', 'header':'Порядок', editor:'text',  'adjust':'all'},
         {'id':'header_filter_type', 'header':'Тип фильтра', editor:'select', 'options':optionsHeaderFilterType, 'adjust':'all'},
         {'id':'header_total_type', 'header':'Тип итого', editor:'select', 'options':optionsHeaderTotalType, 'adjust':'all'},
@@ -1374,6 +1416,9 @@ export default class InproduceView extends JetView{
         {'id':'template', 'header':'Шаблон', editor:'popup', 'adjust':'header'},
         {'id':'options', 'header':'Список', editor:'popup', 'adjust':'header'},
         {'id':'use_filter', 'header':'Исп. в фильтре', editor:'text', 'adjust':'all'},
+        {'id':'math', 'header':'Math', editor:'popup', 'adjust':'all'},
+        {'id':'form_edit', 'header':'Форма редакт.', editor:'select', 'options':optionsFormEdit,'adjust':'all'},
+        {'id':'goto', 'header':'url', editor:'popup','adjust':'all'},
         {'id':'', 'header':'', 'fillspace':true},
 
       ],
@@ -1699,6 +1744,12 @@ export default class InproduceView extends JetView{
       let myObj = {
         func: {}
       }
+
+      if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('webix') ==0) {
+        eval(" myObj.func = (obj) => { return "+item.format+"(obj); }");// + item.format);
+        configColumns[key].numberFormat = "1111.00";//eval(item.format);
+      }
+
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateTime') ==0) {
         eval(" myObj.func = (obj) => { try {formatDateTime(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateTime(obj.trim()) : ''; }");// + item.format);

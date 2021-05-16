@@ -244,7 +244,10 @@ export default class UpdateFormView extends JetView {
       state.isUpdate = false;
       record.id = '';
     }
-    //debugger;
+
+    if (this.state.table.$scope.getParam('id')) {
+      record['list_id'] = this.state.table.$scope.getParam('id');
+    }
     webix.dp(state.table).save(
       (state.isUpdate) ? record.id : webix.uid(),
       (state.isUpdate) ? "update" : "insert",
