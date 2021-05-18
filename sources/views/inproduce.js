@@ -3189,7 +3189,7 @@ export default class InproduceView extends JetView{
     }
     // update css
     let columnSetting = JSON.parse(this.schemaColumnUserList);
-    let elementDeleteCategory = columnSetting[id].category;
+    let elementDeleteCategory = (columnSetting[id]) ? columnSetting[id].category : {};
     for (let key in elementDeleteCategory) {
       this.table.getColumnConfig(elementDeleteCategory[key].field).cssFormat = '';
 
@@ -3205,9 +3205,11 @@ export default class InproduceView extends JetView{
 
     // update css
     let columnSetting = JSON.parse(this.schemaColumnUserList);
-    let elementDelete = columnSetting[idCategory]['category'][id];
-    this.table.getColumnConfig(elementDelete.field).cssFormat = '';
-    this.table.refreshColumns();
+    if (columnSetting[idCategory]) {
+      let elementDelete = columnSetting[idCategory]['category'][id];
+      this.table.getColumnConfig(elementDelete.field).cssFormat = '';
+      this.table.refreshColumns();
+    }
 
     formRowLayout.removeView(element);
   }
