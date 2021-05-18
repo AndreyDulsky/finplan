@@ -395,6 +395,7 @@ export default class InproduceView extends JetView{
               labelWidth:100,
               options:[],
               width: 250,
+              hidden: true,
               on:{
                 onChange:function(newv){
                   scope.selectColumnSettingForTable(newv);
@@ -2898,17 +2899,19 @@ export default class InproduceView extends JetView{
     let selectBatch = this.$$('batch-column');
     let columnSetting = JSON.parse(this.schemaColumnUserList);
     let options = [];
-    let select = 0;
+    let select = "0";
     let i = 0;
 
     for (let key in columnSetting) {
       i++;
+
       if (i== 1) {
         select = (scope.selectColumnSettingId) ? scope.selectColumnSettingId : key;
       }
       let item = columnSetting[key];
       options.push({'id':key,'value':item.value})
     }
+    if (i==0) return;
     selectBatch.define('options', {
       body: {
         data: options
@@ -2916,7 +2919,7 @@ export default class InproduceView extends JetView{
     });
     if (i==0 || i==1) {
       selectBatch.hide();
-      return;
+
     } else {
       selectBatch.show();
     }
@@ -2934,8 +2937,9 @@ export default class InproduceView extends JetView{
 
     let columnSetting = JSON.parse(this.schemaColumnUserList);
 
+    let categories = {};
     for (let key in columnSetting) {
-      let categories = columnSetting[key].category;
+      categories = columnSetting[key].category;
       for (let keyCategory in categories) {
 
         let item = categories[keyCategory];
@@ -3069,7 +3073,10 @@ export default class InproduceView extends JetView{
                 width: 40,
                 click: function() {
                   let layout = this.getTopParentView().queryView({'localId':'form-subrow-layout'+id});
-                  let count = layout.getChildViews().length;
+                  let count = "0";
+                  if (layout.getChildViews().length > 0) {
+                    count = scope.getLasElementId(this,id);
+                  }
                   layout.addView(scope.getElementColumnForm(id, count));
 
 
@@ -3089,6 +3096,19 @@ export default class InproduceView extends JetView{
 
     }
 
+  }
+
+  getLasElementId(view,id) {
+    let values = view.getTopParentView().queryView('form').getValues();
+    let category = values[id];
+    let result = Object.keys(category.category)[Object.keys(category.category).length-1]*1+1;
+    return result.toString();
+  }
+
+  getLasCategoryId(view) {
+    let values = view.getTopParentView().queryView('form').getValues();
+    let result = Object.keys(values)[Object.keys(values).length-1]*1+1;
+    return result.toString();
   }
 
   getElementColumnForm(idCategory, id)  {
@@ -3147,7 +3167,7 @@ export default class InproduceView extends JetView{
             labelPosition: 'top',
             //labelWidth: 34,
             click: function() {
-              scope.deleteElementColumnForm('element-column-'+idCategory+'-'+id, idCategory)
+              scope.deleteElementColumnForm('element-column-'+idCategory+'-'+id, idCategory, id)
             }
 
           }
@@ -3167,12 +3187,28 @@ export default class InproduceView extends JetView{
     if (id == this.selectColumnSettingId) {
       this.selectColumnSettingId = null;
     }
+    // update css
+    let columnSetting = JSON.parse(this.schemaColumnUserList);
+    let elementDeleteCategory = columnSetting[id].category;
+    for (let key in elementDeleteCategory) {
+      this.table.getColumnConfig(elementDeleteCategory[key].field).cssFormat = '';
+
+    }
+    this.table.refreshColumns();
+
     formRowLayout.removeView(element);
   }
 
-  deleteElementColumnForm(idLayout, idCategory) {
+  deleteElementColumnForm(idLayout, idCategory, id) {
     let formRowLayout = this.winColumn.queryView({'localId': 'form-subrow-layout'+idCategory});
     let element = this.winColumn.queryView({'localId': idLayout});
+
+    // update css
+    let columnSetting = JSON.parse(this.schemaColumnUserList);
+    let elementDelete = columnSetting[idCategory]['category'][id];
+    this.table.getColumnConfig(elementDelete.field).cssFormat = '';
+    this.table.refreshColumns();
+
     formRowLayout.removeView(element);
   }
 
@@ -3204,7 +3240,10 @@ export default class InproduceView extends JetView{
                 width: 40,
                 click: function() {
                   let layout = this.getTopParentView().queryView({'localId':'form-row-layout'});
-                  let count = layout.getChildViews().length;
+                  let count = "0";
+                  if (layout.getChildViews().length > 0) {
+                    count = scope.getLasCategoryId(this);
+                  }
                   layout.addView(scope.getCategoryColumnForm(count));
                 }
               },
