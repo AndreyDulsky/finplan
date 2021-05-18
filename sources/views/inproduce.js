@@ -186,7 +186,7 @@ webix.ui.datafilter.mathColumn = webix.extend({
 }, webix.ui.datafilter.summColumn);
 
 function formatPercent(value){
-  return webix.i18n.numberFormat(value*100) + "%";
+  return value*100;
 }
 
 webix.editors.$popup = {
