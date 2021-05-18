@@ -338,6 +338,17 @@ export default class InproduceView extends JetView{
                   css:'small',
                   click: function() {
                     scope.showColorSetting();
+
+                  }
+                },
+                {
+                  view:"icon",
+                  icon:"mdi mdi-invert-colors",
+                  localId: "show-icon-color-column-setting",
+                  width: 30,
+                  css:'small',
+                  click: function() {
+                    scope.showColumnSetting();
                   }
                 },
               ]
@@ -378,14 +389,27 @@ export default class InproduceView extends JetView{
                 },
               ]
             },
+            { view:"richselect",
+              localId: "batch-column",
+              value:4,
+              labelWidth:100,
+              options:[],
+              width: 250,
+              on:{
+                onChange:function(newv){
+                  scope.selectColumnSettingForTable(newv);
 
-            {},
+                }
+              }
+            },
+
+
             {
               view:"richselect",
               value:4,
               labelWidth:100,
               options: [],
-              width: 200,
+              width: 250,
               hidden: false,
               localId: "select-type"
             },
@@ -652,9 +676,6 @@ export default class InproduceView extends JetView{
     //layout.addView(table);
     this.table = webix.ui(tableConfig,layout,this.$$('table-layout') );
     this.setColorSettingForTable();
-
-
-
   }
 
   getDataTable() {
@@ -702,8 +723,8 @@ export default class InproduceView extends JetView{
 
       scope.table.config.columns = items.config.columns;
       scope.columns = items.config.columns;
-
       scope.table.refreshColumns();
+      scope.setColumnSettingForTable();
 
       scope.table.parse(dataItem);
 
@@ -957,6 +978,7 @@ export default class InproduceView extends JetView{
     let idSelectType = '';
     scope.schemaTableUserFilter = [];
     let stateSelectType;
+
     if (this.getSelectTypeState()) {
       stateSelectType = this.getSelectTypeState();
       dataSelectType.data.forEach(function (item) {
@@ -966,18 +988,21 @@ export default class InproduceView extends JetView{
           scope.schemaFilterUserList = item.filter_setting;
           scope.schemaSortUserList = item.sort_setting;
           scope.schemaColorUserList = item.color_setting;
+          scope.schemaColumnUserList = item.column_setting;
 
         }
       });
       if (idSelectType == '') webix.storage.local.remove(this.mode+"_select_type_state");
     }
     dataSelectType.data.forEach(function (item) {
+
       if (idSelectType =='' && item.is_default == 1) {
         idSelectType = item.id;
         scope.schemaTableUserFilter = item.schemaTableUserFilter;
         scope.schemaFilterUserList = item.filter_setting;
         scope.schemaSortUserList = item.sort_setting;
         scope.schemaColorUserList = item.color_setting;
+        scope.schemaColumnUserList = item.column_setting;
 
       }
     });
@@ -996,6 +1021,7 @@ export default class InproduceView extends JetView{
         data: dataSelectType.data,
         on: {
           onItemClick: function (id) {
+
             let item = this.getItem(id);
             scope.selectTypeValue = id;
             scope.schemaTableSetting = scope.getSchemaTableSetting();
@@ -1003,7 +1029,9 @@ export default class InproduceView extends JetView{
             scope.schemaFilterUserList = item.filter_setting;
             scope.schemaSortUserList = item.sort_setting;
             scope.schemaColorUserList = item.color_setting;
+            scope.schemaColumnUserList = item.column_setting;
             scope.setColorSettingForTable();
+            scope.setColumnSettingForTable();
             scope.setTableSetting();
             scope.setFilterSetting();
             scope.getDataTable();
@@ -1168,7 +1196,7 @@ export default class InproduceView extends JetView{
           {
             view:"menu",
             layout:"y",
-            width:200,
+            width:250,
             select:true,
             localId: 'menu-list',
             onContext:{},
@@ -2591,7 +2619,7 @@ export default class InproduceView extends JetView{
   }
 
 
-  //setting color
+  //setting color row
   setColorSettingForTable() {
 
     let colorSetting = JSON.parse(this.schemaColorUserList);
@@ -2863,4 +2891,360 @@ export default class InproduceView extends JetView{
 
   }
 
+
+  //setting color column
+  setColumnSettingForTable() {
+    let scope = this;
+    let selectBatch = this.$$('batch-column');
+    let columnSetting = JSON.parse(this.schemaColumnUserList);
+    let options = [];
+    let select = 0;
+    let i = 0;
+
+    for (let key in columnSetting) {
+      i++;
+      if (i== 1) {
+        select = (scope.selectColumnSettingId) ? scope.selectColumnSettingId : key;
+      }
+      let item = columnSetting[key];
+      options.push({'id':key,'value':item.value})
+    }
+    selectBatch.define('options', {
+      body: {
+        data: options
+      },
+    });
+    if (i==0 || i==1) {
+      selectBatch.hide();
+      return;
+    } else {
+      selectBatch.show();
+    }
+    selectBatch.refresh();
+    selectBatch.setValue(select);
+    this.selectColumnSettingForTable(select);
+
+
+
+  }
+
+  selectColumnSettingForTable(id) {
+    let scope = this;
+    scope.selectColumnSettingId = id;
+
+    let columnSetting = JSON.parse(this.schemaColumnUserList);
+
+    for (let key in columnSetting) {
+      let categories = columnSetting[key].category;
+      for (let keyCategory in categories) {
+
+        let item = categories[keyCategory];
+        let cssFormat = '';
+        if (key == id) {
+          cssFormat = function (value, config) {
+            return item
+          };
+        }
+        scope.table.getColumnConfig(item.field).cssFormat = cssFormat;
+      }
+    }
+    scope.table.refreshColumns();
+  }
+
+  showColumnSetting() {
+    let scope = this;
+    let body = {
+      localId: 'body-setting-color-column-layout',
+      //css: 'webix_primary',
+      type: 'space',
+      cols:[
+        {
+          //type: 'form',
+          rows:[
+            {
+              rows: this.getHeaderColumnSetting()
+            },
+            {
+              padding: 10,
+              cols: [
+                {},
+                {},
+                {
+                  view: 'button',
+                  label: 'Сохранить',
+                  localId: 'save-column-setting',
+                  css: 'webix_primary',
+                  //width: 400,
+                  click: function() {
+                    scope.doSaveColumnSettingClick(this.getTopParentView().queryView('form').getValues());
+                    scope.winColumn.close();
+                  }
+                },
+
+              ]
+            }
+          ]
+        },
+
+      ]
+    }
+
+    let winConfig = {
+      view:"window",
+      head:"Настройки  столбцов",
+      width: 800,
+      height: 600,
+      position: 'center',
+      modal:true,
+      close:true,
+      move: true,
+      resize:true,
+      body: body
+    };
+
+    this.winColumn = webix.ui(winConfig);
+    this.setCategoryColumnForm();
+    this.winColumn.show();
+  }
+
+  setCategoryColumnForm() {
+
+    if (this.schemaColumnUserList && this.schemaColumnUserList.length >2) {
+
+      let values = JSON.parse(this.schemaColumnUserList);
+
+      let formRowLayout = this.winColumn.queryView({'localId': 'form-row-layout'});
+      for (let key in values) {
+        formRowLayout.addView(this.getCategoryColumnForm(key));
+        for (let keyCategory in values[key]['category']) {
+          let view = formRowLayout.queryView({'localId':'form-subrow-layout'+key});
+          view.addView(this.getElementColumnForm(key, keyCategory));
+        }
+      }
+      this.winColumn.queryView('form').setValues(values);
+    }
+  }
+
+  getCategoryColumnForm(id) {
+    let scope = this;
+    return {
+      localId: 'category-column-'+id,
+      //padding: {'right' : 20},
+      rows: [
+        {
+          type:'form',
+          rows:[{
+            cols:[
+              {
+                view:'text',
+                name: id+'.value',
+                labelWidth: 150,
+                labelPosition: 'top',
+                label:'Название расцветки',
+                value: ''
+              },
+              {
+                view:'icon',
+                icon: 'mdi mdi-close',
+                labelPosition: 'top',
+                labelWidth: 34,
+                click: function() {
+                  scope.deleteCategoryColumnForm('category-column-'+id, id);
+
+                }
+              }
+            ]
+          },
+          {
+            localId: 'form-subrow-layout'+id,
+            rows: []
+          },
+          {
+            cols: [
+              {
+                view: 'button',
+                label: '+',
+                localId: 'add-column-category',
+                css: 'webix_primary',
+                width: 40,
+                click: function() {
+                  let layout = this.getTopParentView().queryView({'localId':'form-subrow-layout'+id});
+                  let count = layout.getChildViews().length;
+                  layout.addView(scope.getElementColumnForm(id, count));
+
+
+                }
+              },
+              {},
+              {},
+
+            ]
+          },
+          ]
+        },
+        {
+          height:10
+        }
+      ]
+
+    }
+
+  }
+
+  getElementColumnForm(idCategory, id)  {
+    let scope = this;
+    return {
+      localId: 'element-column-'+idCategory+'-'+id,
+      rows:[{
+        cols:[
+          {
+            view:'combo',
+            name: idCategory+'.category.'+id+'.field',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Выберите колонку',
+            value: '',
+            options: this.table.config.columns
+          },
+          {
+            view:'combo',
+            name: idCategory+'.category.'+id+'.font-weight',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Стиль текста',
+            value: 'normal',
+            options: [{'id':'normal','value':'нормальный'},{'id':'500','value':'полужирный'},{'id':'700','value':'жирный'}]
+          },
+          {
+            view:'combo',
+            name: idCategory+'.category.'+id+'.text-align',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Выравнять текст',
+            value: 'left',
+            options: [{'id':'left','value':'по левому краю'},{'id':'center','value':'по середине'}, {'id':'right','value':'по правому краю'}]
+          },
+          {
+            view:'colorpicker',
+            name: idCategory+'.category.'+id+'.color',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Цвет текста',
+            value: ''
+          },
+          {
+            view:'colorpicker',
+            name: idCategory+'.category.'+id+'.background-color',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Цвет фона',
+            value: ''
+          },
+          {
+            view:'icon',
+            icon: 'mdi mdi-close',
+            css:'small',
+            labelPosition: 'top',
+            //labelWidth: 34,
+            click: function() {
+              scope.deleteElementColumnForm('element-column-'+idCategory+'-'+id, idCategory)
+            }
+
+          }
+        ]
+      },
+        {
+          height: 20
+        }
+      ]
+
+    };
+  }
+
+  deleteCategoryColumnForm(idLayout, id) {
+    let formRowLayout = this.winColumn.queryView({'localId': 'form-row-layout'});
+    let element = this.winColumn.queryView({'localId': idLayout});
+    if (id == this.selectColumnSettingId) {
+      this.selectColumnSettingId = null;
+    }
+    formRowLayout.removeView(element);
+  }
+
+  deleteElementColumnForm(idLayout, idCategory) {
+    let formRowLayout = this.winColumn.queryView({'localId': 'form-subrow-layout'+idCategory});
+    let element = this.winColumn.queryView({'localId': idLayout});
+    formRowLayout.removeView(element);
+  }
+
+  getHeaderColumnSetting() {
+    let scope = this;
+    return [
+      {
+        view:'form',
+        borderless: true,
+        complexData:true,
+        localId: 'form-column',
+        scroll: 'y',
+        elements:[
+          {
+            localId: 'form-row-layout',
+            rows:[
+            ]
+          },
+
+          {
+            cols: [
+              {},
+              {},
+              {
+                view: 'button',
+                label: '+',
+                localId: 'add-column-element',
+                css: 'webix_primary',
+                width: 40,
+                click: function() {
+                  let layout = this.getTopParentView().queryView({'localId':'form-row-layout'});
+                  let count = layout.getChildViews().length;
+                  layout.addView(scope.getCategoryColumnForm(count));
+                }
+              },
+
+            ]
+          },
+          {},
+
+        ]
+      },
+    ]
+  }
+
+  doSaveColumnSettingClick(values) {
+    let scope = this;
+    if (this.selectTypeValue) {
+
+      scope.schemaColumnUserList =  JSON.stringify(values);
+      let url = this.app.config.apiRest.getUrl('put', "accounting/schema-table-user-lists",{},this.selectTypeValue);
+
+
+      webix.ajax().put(url, {
+        'column_setting': JSON.stringify(values)
+      }, {
+        error: function (text, data, response) {
+          scope.showMessageError(data.json());
+        },
+        success: function (text, data, response) {
+          webix.message({
+            text: 'Данные успешно сохранены!',
+            type: "info",
+            expire: 4000,
+          });
+          scope.setColumnSettingForTable();
+
+        }
+      });
+
+    }
+
+
+  }
 }
