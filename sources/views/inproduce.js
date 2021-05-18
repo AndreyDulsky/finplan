@@ -136,6 +136,38 @@ webix.ui.datafilter.toolsContent = webix.extend({
   }
 }, webix.ui.datafilter.summColumn);
 
+webix.ui.datafilter.avgColumn = webix.extend({
+  refresh:function(master, node, value){
+    var result = 0;
+    var result2 = 0;
+    let _val = 0;
+    let _val2 = 0;
+    master.data.each(function (obj) {
+      if (obj.$group) return;
+      if (obj['$'+value.columnId]) {
+        var re = /([\[*\]]+)\s([А-ЯЁа-яё]+)/;
+        let formula = obj['$'+value.columnId];
+        formula= formula.replace(re, '$2, $1');
+        var re = /[\[^*\]']+/g;
+        var str = '(215)-901-8060';
+        value = str.replace(/[^\d]/g,'');
+        var newstr = formula.replace(re, '$2, $1');
+        debugger;
+
+
+      }
+
+      _val = obj['sum'];
+      _val2 = obj['sum_1'];
+      if (_val!='') result += _val*1;
+      if (_val2!='') result2 += _val2*1;
+    });
+
+    result = value.format((result/result2-1)*100);
+    node.innerHTML = result;
+  }
+}, webix.ui.datafilter.summColumn);
+
 webix.editors.$popup = {
   date:{
     view:"popup",
