@@ -2909,6 +2909,7 @@ export default class InproduceView extends JetView{
         select = (scope.selectColumnSettingId) ? scope.selectColumnSettingId : key;
       }
       let item = columnSetting[key];
+
       options.push({'id':key,'value':item.value})
     }
     if (i==0) return;
@@ -2938,6 +2939,7 @@ export default class InproduceView extends JetView{
     let columnSetting = JSON.parse(this.schemaColumnUserList);
 
     let categories = {};
+    let cssFormatSelect = {}
     for (let key in columnSetting) {
       categories = columnSetting[key].category;
       for (let keyCategory in categories) {
@@ -2945,12 +2947,18 @@ export default class InproduceView extends JetView{
         let item = categories[keyCategory];
         let cssFormat = '';
         if (key == id) {
-          cssFormat = function (value, config) {
+          cssFormatSelect[item.field] = function (value, config) {
             return item
           };
+
         }
+        //clear othe
         scope.table.getColumnConfig(item.field).cssFormat = cssFormat;
       }
+    }
+    // for last appply
+    for (let key in cssFormatSelect) {
+      scope.table.getColumnConfig(key).cssFormat = cssFormatSelect[key];
     }
     scope.table.refreshColumns();
   }
