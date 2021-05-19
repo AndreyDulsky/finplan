@@ -169,7 +169,7 @@ export default class CashesView extends JetView {
                 "height": 35
               }, {"label": "Контрагент", "view": "label",  hidden: (scope.app.config.access != "writer")}, {
                 "localId": "searchContragentCombo",
-                hidden: (scope.app.config.access != "writer"),
+                hidden: false,//(scope.app.config.access != "writer"),
                 "view": "combo-close",
                 "options": [],
                 "name": "contragent_id",
