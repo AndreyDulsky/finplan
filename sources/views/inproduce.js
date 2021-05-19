@@ -353,9 +353,11 @@ export default class InproduceView extends JetView{
                 },
               ]
             },
+
             {
               localId: "show-filter",
               hidden: true,
+
               cols:[
                 {
 
@@ -1008,15 +1010,6 @@ export default class InproduceView extends JetView{
       }
     });
 
-
-
-
-    if (length <= 1) {
-      this.selectType.hide();
-      this.selectTypeValue = idSelectType;
-      return;
-    }
-    this.selectType.show();
     this.selectType.define('options', {
       body: {
         data: dataSelectType.data,
@@ -1045,11 +1038,14 @@ export default class InproduceView extends JetView{
 
     this.selectType.refresh();
 
-
-
-
     this.selectType.setValue(idSelectType);
     this.selectTypeValue = idSelectType;
+
+    if (length == 1) {
+      this.selectType.hide();
+    } else {
+      this.selectType.show();
+    }
 
   }
 
@@ -1838,6 +1834,11 @@ export default class InproduceView extends JetView{
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
+      if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateShort') ==0) {
+        eval(" myObj.func = (obj) => { try {formatDateShort(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateShort(obj.trim()) : ''; }");// + item.format);
+        configColumns[key].format = myObj.func;//eval(item.format);
+      }
+
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDate') ==0) {
         eval(" myObj.func = (obj) => { try {formatDate(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDate(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
@@ -1847,10 +1848,7 @@ export default class InproduceView extends JetView{
         eval(" myObj.func = (obj) => { try {formatDateHour(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateHour(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
-      if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateShort') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateShort(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateShort(obj.trim()) : ''; }");// + item.format);
-        configColumns[key].format = myObj.func;//eval(item.format);
-      }
+
       if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('(obj,common,value)') ==0) {
         eval(" myObj.func = " + item.template);
         configColumns[key].template = myObj.func;
@@ -2895,12 +2893,20 @@ export default class InproduceView extends JetView{
 
   //setting color column
   setColumnSettingForTable() {
+
     let scope = this;
     let selectBatch = this.$$('batch-column');
     let columnSetting = JSON.parse(this.schemaColumnUserList);
     let options = [];
     let select = "0";
     let i = 0;
+
+    selectBatch.define('options', {
+      body: {
+        data: []
+      },
+    });
+    selectBatch.refresh();
 
     for (let key in columnSetting) {
       i++;
@@ -2912,21 +2918,23 @@ export default class InproduceView extends JetView{
 
       options.push({'id':key,'value':item.value})
     }
-    if (i==0) return;
+
     selectBatch.define('options', {
       body: {
         data: options
       },
     });
+
+    selectBatch.refresh();
+    selectBatch.setValue(select);
+    this.selectColumnSettingForTable(select);
+
     if (i==0 || i==1) {
       selectBatch.hide();
 
     } else {
       selectBatch.show();
     }
-    selectBatch.refresh();
-    selectBatch.setValue(select);
-    this.selectColumnSettingForTable(select);
 
 
 
@@ -2952,13 +2960,17 @@ export default class InproduceView extends JetView{
           };
 
         }
-        //clear othe
-        scope.table.getColumnConfig(item.field).cssFormat = cssFormat;
+        if (scope.table.getColumnConfig(item.field)) {
+          //clear other
+          scope.table.getColumnConfig(item.field).cssFormat = cssFormat;
+        }
       }
     }
     // for last appply
     for (let key in cssFormatSelect) {
-      scope.table.getColumnConfig(key).cssFormat = cssFormatSelect[key];
+      if (scope.table.getColumnConfig(key)) {
+        scope.table.getColumnConfig(key).cssFormat = cssFormatSelect[key];
+      }
     }
     scope.table.refreshColumns();
   }
