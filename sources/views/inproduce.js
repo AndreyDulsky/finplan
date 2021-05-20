@@ -1028,9 +1028,10 @@ export default class InproduceView extends JetView{
             scope.setColorSettingForTable();
             //scope.setColumnSettingForTable();
 
-            scope.getDataTable();
             scope.setTableSetting();
             scope.setFilterSetting();
+            scope.getDataTable();
+
             scope.putSelectTypeState(id);
           }
         }
