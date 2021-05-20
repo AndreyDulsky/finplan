@@ -729,6 +729,7 @@ export default class InproduceView extends JetView{
       scope.table.refreshColumns();
       scope.setColumnSettingForTable();
 
+
       scope.table.parse(dataItem);
 
       scope.table.enable();
@@ -1025,10 +1026,11 @@ export default class InproduceView extends JetView{
             scope.schemaColorUserList = item.color_setting;
             scope.schemaColumnUserList = item.column_setting;
             scope.setColorSettingForTable();
-            scope.setColumnSettingForTable();
+            //scope.setColumnSettingForTable();
+
+            scope.getDataTable();
             scope.setTableSetting();
             scope.setFilterSetting();
-            scope.getDataTable();
             scope.putSelectTypeState(id);
           }
         }
@@ -1200,7 +1202,7 @@ export default class InproduceView extends JetView{
             data: this.state['dataList'],
             ready:function(){
               this.select(scope.state.listId);
-              this.callEvent("onItemClick", [scope.state.listId]);
+              //this.callEvent("onItemClick", [scope.state.listId]);
 
             },
             on:{
@@ -2896,17 +2898,13 @@ export default class InproduceView extends JetView{
 
     let scope = this;
     let selectBatch = this.$$('batch-column');
-    let columnSetting = JSON.parse(this.schemaColumnUserList);
+    let columnSetting = {};
     let options = [];
     let select = "0";
     let i = 0;
+    this.schemaColumnUserListObject = JSON.parse(this.schemaColumnUserList);
 
-    selectBatch.define('options', {
-      body: {
-        data: []
-      },
-    });
-    selectBatch.refresh();
+    columnSetting = this.schemaColumnUserListObject;
 
     for (let key in columnSetting) {
       i++;
@@ -2925,7 +2923,7 @@ export default class InproduceView extends JetView{
       },
     });
 
-    selectBatch.refresh();
+
     selectBatch.setValue(select);
     this.selectColumnSettingForTable(select);
 
@@ -2935,6 +2933,7 @@ export default class InproduceView extends JetView{
     } else {
       selectBatch.show();
     }
+    selectBatch.refresh();
 
 
 
@@ -2943,35 +2942,41 @@ export default class InproduceView extends JetView{
   selectColumnSettingForTable(id) {
     let scope = this;
     scope.selectColumnSettingId = id;
+    //debugger;
 
-    let columnSetting = JSON.parse(this.schemaColumnUserList);
+    let columnSetting = this.schemaColumnUserListObject;
 
     let categories = {};
     let cssFormatSelect = {}
     for (let key in columnSetting) {
       categories = columnSetting[key].category;
       for (let keyCategory in categories) {
-
+        console.log(keyCategory);
         let item = categories[keyCategory];
         let cssFormat = '';
         if (key == id) {
-          cssFormatSelect[item.field] = function (value, config) {
-            return item
-          };
+          cssFormatSelect[item.field] = item;
+          scope.table.getColumnConfig(item.field).css = item;
 
-        }
-        if (scope.table.getColumnConfig(item.field)) {
-          //clear other
-          scope.table.getColumnConfig(item.field).cssFormat = cssFormat;
+          // function (value, config) {
+          //   return item
+          // };
+
+        } else {
+          let columnConfig = scope.table.getColumnConfig(item.field);
+          if (columnConfig) {
+            //clear other
+            columnConfig.css = cssFormat;
+          }
         }
       }
     }
     // for last appply
-    for (let key in cssFormatSelect) {
-      if (scope.table.getColumnConfig(key)) {
-        scope.table.getColumnConfig(key).cssFormat = cssFormatSelect[key];
-      }
-    }
+    // for (let key in cssFormatSelect) {
+    //   if (scope.table.getColumnConfig(key)) {
+    //     scope.table.getColumnConfig(key).css = cssFormatSelect[key];
+    //   }
+    // }
     scope.table.refreshColumns();
   }
 
