@@ -572,6 +572,7 @@ export default class InproduceView extends JetView{
       dragColumn:true,
       math: true,
       save: "api->accounting/"+this.getModelName(this.mode),
+      //owCss:"#css#",
       scheme:{
 
       },
@@ -2958,18 +2959,19 @@ export default class InproduceView extends JetView{
         let item = categories[keyCategory];
         let cssFormat = '';
         if (key == id) {
+          //item['border-left'] = '1px #bbb solid';
+          //item['border-right'] = '1px #bbb solid';
           cssFormatSelect[item.field] = item;
-          scope.table.getColumnConfig(item.field).css = item;
-
-          // function (value, config) {
-          //   return item
-          // };
+          scope.table.getColumnConfig(item.field).cssFormat = function (value, config) {
+            return item
+          };
+          //scope.table.getColumnConfig(item.field).css = {'border-left' : '1px #bbb solid', 'border-right' : '1px #bbb solid'};
 
         } else {
           let columnConfig = scope.table.getColumnConfig(item.field);
           if (columnConfig) {
             //clear other
-            columnConfig.css = cssFormat;
+            columnConfig.cssFormat = cssFormat;
           }
         }
       }
