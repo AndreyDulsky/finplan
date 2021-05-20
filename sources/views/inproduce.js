@@ -1204,6 +1204,7 @@ export default class InproduceView extends JetView{
             ready:function(){
               this.select(scope.state.listId);
               //this.callEvent("onItemClick", [scope.state.listId]);
+              scope.attachEventShowColumns();
 
             },
             on:{
@@ -1418,6 +1419,7 @@ export default class InproduceView extends JetView{
     let searchField = this.win.queryView({'localId':'search-show-columns'});
     let dataViewShowColumns = this.win.queryView({'localId':'dataview-show-columns'});
     searchField.attachEvent('onChange', function(newValue, oldValue, config) {
+
       dataViewShowColumns.filter(function(obj){
         return obj.column_id.toString().indexOf(newValue) != -1;
       });
