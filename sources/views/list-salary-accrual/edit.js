@@ -179,7 +179,7 @@ export default class UpdateFormView extends JetView {
         },
         {
           view:"toolbar", paddingY:0,  elements:[
-            { view:"icon", icon: 'mdi mdi-plus', autowidth:true, click: () =>  this.doClickCancel()},
+            { view:"icon", icon: 'mdi mdi-plus', autowidth:true, click: () =>  this.doClickAdd()},
             { view:"icon", icon: 'mdi mdi-refresh', autowidth:true, click: () =>  this.doClickFillAll()},
             { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
             {},
@@ -378,6 +378,8 @@ export default class UpdateFormView extends JetView {
 
   }
 
+
+
   doClickCancel() {
     let state = this.state;
     state.win.close();
@@ -419,18 +421,18 @@ export default class UpdateFormView extends JetView {
           //table.addRowCss(dataEmployees[row.employee_id]['id'], "webix_invalid_cell");
 
         } else {
-          let changes= [];
-          for (var keyRow in row) {
-
-            if (parseFloat(row[keyRow]) && Math.round(row[keyRow]) != Math.round(dataEmployees[row['employee_id']][keyRow])) {
-              //console.log(Math.round(row[keyRow])+'='+Math.round(dataEmployees[row['employee_id']][keyRow]));
-              changes.push(keyRow);
-            }
-          }
-          table.updateItem(dataEmployees[row.employee_id]['id'], row);
-          for (var keyChanges in changes) {
-            table.addCellCss(dataEmployees[row.employee_id]['id'], changes[keyChanges], "webix_editing_cell");
-          }
+          // let changes= [];
+          // for (var keyRow in row) {
+          //
+          //   if (parseFloat(row[keyRow]) && Math.round(row[keyRow]) != Math.round(dataEmployees[row['employee_id']][keyRow])) {
+          //     //console.log(Math.round(row[keyRow])+'='+Math.round(dataEmployees[row['employee_id']][keyRow]));
+          //     changes.push(keyRow);
+          //   }
+          // }
+          // table.updateItem(dataEmployees[row.employee_id]['id'], row);
+          // for (var keyChanges in changes) {
+          //   table.addCellCss(dataEmployees[row.employee_id]['id'], changes[keyChanges], "webix_editing_cell");
+          // }
         }
       }
       table.editCell(1, "employee_name", true, true);
