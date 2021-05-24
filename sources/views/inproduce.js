@@ -556,14 +556,14 @@ export default class InproduceView extends JetView{
       view: "treetable",
       localId: 'table-layout',
       urlEdit: this.mode,
-      css: "webix_header_border webix_data_border",
-      leftSplit: 0,
-      rightSplit: 0,
+      css: "webix_header_border webix_data_border ",
+      leftSplit: 15,
+      //rightSplit: 0,
       select:"multiselect",
       resizeColumn: {headerOnly: true},
       //localId: 'order-table',
       multiselect: true,
-      scroll: true,
+      //scroll: true,
       clipboard: "selection",
       //blockselect: true,
       tooltip: true,
@@ -680,6 +680,8 @@ export default class InproduceView extends JetView{
     //this.table = table;
     //webix.extend(this.table, webix.ProgressBar);
     //layout.addView(table);
+
+
     this.table = webix.ui(tableConfig,layout,this.$$('table-layout') );
     this.setColorSettingForTable();
   }
@@ -687,8 +689,8 @@ export default class InproduceView extends JetView{
   getDataTable() {
     let scope = this;
 
-    this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value : 0);
-    this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value : 0);
+    this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
+    this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value*1 : 0);
     this.table.define('drag', (!this.schemaTableSetting['access'] || (!this.schemaTableSetting['access']['can-drop'] || this.schemaTableSetting['access']['can-drop'].value == 0) ) ? false :  "order");
 
 
