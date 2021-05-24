@@ -20,7 +20,7 @@
 	firebase.initializeApp({
 		databaseURL: "https://webix-demo.firebaseio.com/"
 	});
-	
+
 	//create firebase connection, and assign it to webix
 	var db = firebase.database();
 	var proxy = webix.proxy("firebase", db.ref("tasks"))

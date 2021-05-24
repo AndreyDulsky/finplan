@@ -661,7 +661,7 @@ export default class StartView extends JetView{
                   let formatYear = webix.Date.dateToStr("%y");
                   let parseAE = webix.Date.strToDate("%d.%m.%y");
                   let year = formatYear(new Date());
-                  let dateCloth = parserDateCloth(item.K + '.' + year);
+                  let dateCloth = parserDate(item.K);
                   let dateAE = parseAE(item.AE);
                   if (dateCloth > dateAE) {
                     item.$css = "highlight-red";

@@ -223,11 +223,13 @@ let formatDate = webix.Date.dateToStr("%d.%m.%y");
 let formatDateHour = webix.Date.dateToStr("%d.%m.%y %H:00");
 let formatDateShort = webix.Date.dateToStr("%d.%m");
 let formatDateTimeDb = webix.Date.dateToStr("%Y-%m-%d %H:%i");
+let formatMonthYear = webix.Date.dateToStr("%M %y");
 
 let formatDateTime = webix.Date.dateToStr("%d.%m.%y %H:%i");
 var parserDate = webix.Date.strToDate("%Y-%m-%d");
 var parserDateTime = webix.Date.strToDate("%Y-%m-%d %H:%i");
 var parserDateTimeGroup = webix.Date.strToDate("%d.%m.%y %H:%i");
+
 
 
 function custom_checkbox(obj, common, value){
@@ -1105,7 +1107,7 @@ export default class InproduceView extends JetView{
     let configSource = this.table.getColumnConfig(sourceId);
     let configTarget = this.table.getColumnConfig(targetId);
     let sengent = 1;
-    if (configTarget.sort_order < configSource.sort_order) sengent = -1;
+    if (configTarget.sort_order < configSource.sort_order) sengent = -50;
     configSource.sort_order = configTarget.sort_order+sengent*1;
     let url = this.app.config.apiRest.getUrl('get',"accounting/schema-table-users/"+configSource.rowId);
     webix.ajax().put(url, {"sort_order": configTarget.sort_order+sengent*1, "id":configSource.rowId}, function(text, data, request) {
@@ -1799,7 +1801,7 @@ export default class InproduceView extends JetView{
   getModelName(mode) {
     let end = mode[mode.length-1];
     if (end == 'y') {
-      return mode.replace('y','ies');
+      return mode.replace(/y$/,'ies');
     }
     return mode+'s';
   }
@@ -1832,6 +1834,12 @@ export default class InproduceView extends JetView{
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('webix') ==0) {
         eval(" myObj.func = (obj) => { return "+item.format+"(obj); }");// + item.format);
         configColumns[key].numberFormat = "1111.00";//eval(item.format);
+      }
+
+      if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatMonthYear') ==0) {
+        eval(" myObj.func = (obj) => { return "+item.format+"(obj); }");// + item.format);
+        //configColumns[key].numberFormat = "1111.00";//eval(item.format);
+        configColumns[key].format = myObj.func;
       }
 
 

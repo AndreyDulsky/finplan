@@ -12,12 +12,13 @@ var config = {
   //databaseURL: "https://fluttershare-e36c3.firebaseio.com",
   //storageBucket: "bucket.appspot.com"
 };
-firebase.initializeApp(config);
 
-var db = firebase.firestore();
-db.settings({ timestampsInSnapshots:true });
+//firebase.initializeApp(config);
 
-webix.firestore = db;
+//var db = firebase.firestore();
+//db.settings({ timestampsInSnapshots:true });
+
+//webix.firestore = db;
 
 let formatDateTime = webix.Date.dateToStr("%Y-%m-%d %H:%i:%s");
 export default class App extends JetApp {
@@ -28,7 +29,7 @@ export default class App extends JetApp {
 		const defaults = {
 			id: APPNAME,
 			version: VERSION,
-			debug: false,//!PRODUCTION,
+			debug: true,//!PRODUCTION,
 			//start: "/top/start",
       access: "reader",
       apiRest: restObj,
