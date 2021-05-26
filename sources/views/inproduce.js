@@ -1108,7 +1108,7 @@ export default class InproduceView extends JetView{
   eventSetColumnUserSort(sourceId, targetId, event) {
     let configSource = this.table.getColumnConfig(sourceId);
     let configTarget = this.table.getColumnConfig(targetId);
-    let sengent = 1;
+    let sengent = 50;
     if (configTarget.sort_order < configSource.sort_order) sengent = -50;
     configSource.sort_order = configTarget.sort_order+sengent*1;
     let url = this.app.config.apiRest.getUrl('get',"accounting/schema-table-users/"+configSource.rowId);

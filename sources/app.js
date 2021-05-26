@@ -6,19 +6,16 @@ import localViews from  "helpers/localviews";
 import {ApiRest} from "models/restModel";
 
 var config = {
-  apiKey: "AIzaSyDAIceh55czzBRgGdNyxS6tA4UJHjGK2II",
+  //apiKey: "AIzaSyDAIceh55czzBRgGdNyxS6tA4UJHjGK2II",
   //authDomain: "fluttershare-e36c3.firebaseio.com",
-  projectId: "fluttershare-e36c3",
+  //projectId: "fluttershare-e36c3",
   //databaseURL: "https://fluttershare-e36c3.firebaseio.com",
   //storageBucket: "bucket.appspot.com"
 };
 
-//firebase.initializeApp(config);
 
-//var db = firebase.firestore();
-//db.settings({ timestampsInSnapshots:true });
 
-//webix.firestore = db;
+
 
 let formatDateTime = webix.Date.dateToStr("%Y-%m-%d %H:%i:%s");
 export default class App extends JetApp {
