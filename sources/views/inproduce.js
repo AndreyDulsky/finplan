@@ -1858,7 +1858,7 @@ export default class InproduceView extends JetView{
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDate') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDate(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDate(obj.trim()) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDate(obj)} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDate(obj) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
