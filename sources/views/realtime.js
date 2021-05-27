@@ -573,9 +573,9 @@ export default class InproduceView extends JetView{
       drag: false,
       dragColumn:true,
       math: true,
-      save: "api->accounting/"+this.getModelName(this.mode),
+      save: "firebase->transaction",//+this.getModelName(this.mode),
       //owCss:"#css#",
-      url: "firebase->transaction",
+      //url: "firebase->transaction",
       scheme:{
 
       },
@@ -718,13 +718,19 @@ export default class InproduceView extends JetView{
       hide: false
     });
     scope.filter = scope.getFilterParams();
+    let refConfig = webix.firebase.ref("configTableUser/transaction/config/columns");
 
-    webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
+
+
+    refConfig.get().then(function(data) {
       scope.table.clearAll();
-      let items = data.json();
+      let items = {'config': {}};//data.json();
+      items['config']['columns'] = data.val();
 
-      let dataItem = (items.data)?items.data:items.items;
-      scope.dataItem = dataItem;
+
+      //let dataItem = (items.data)?items.data:items.items;
+
+      //scope.dataItem = dataItem;
       //debugger;
       //items.config.columns = webix.DataDriver.json.toObject(items.config.columns);
 
@@ -734,50 +740,60 @@ export default class InproduceView extends JetView{
       scope.columns = items.config.columns;
       scope.table.refreshColumns();
       scope.setColumnSettingForTable();
+      scope.table.define('url', 'firebase->transaction');
+      // var dataTable = new webix.DataCollection({
+      //   url:"firebase->transaction",
+      //   save: "firebase->transaction"
+      // });
+      //let refDataItem = webix.firebase.ref("transaction");
+      scope.table.waitData.then(function(dataItem) {
 
+        scope.dataItem = scope.table.data.serialize();
+        scope.table.parse(scope.dataItem);
+        scope.table.enable();
+        scope.table.hideProgress();
+        let resultType= '';
+        if (scope.schemaTableSetting.group['group-by'].type) {
+          resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
+        } else {
+          let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
 
-      scope.table.parse(dataItem);
+          resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
+        }
 
-      scope.table.enable();
-      scope.table.hideProgress();
+        scope.table.group({
+          by: function (obj) {
+            return eval(resultType);
+          },
+          map: {
+            'property_value':[function (obj) {
 
-      let resultType= '';
-      if (scope.schemaTableSetting.group['group-by'].type) {
-        resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
-      } else {
-        let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
-
-        resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
-      }
-
-      scope.table.group({
-        by: function (obj) {
-          return eval(resultType);
-        },
-        map: {
-          'property_value':[function (obj) {
-
-            let per = eval(resultType);
-            let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
-            if (configColumn.collection) {
-              //id collection json or colellection "api->url"
-              return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
-            } else {
-              return eval(resultType);
-            }
-          }],
-          'property_title':['A'],
-          'index':['','string'],
-          'I':['','string'],
-          'G':['G','sum'],
-          'value_sum':['value_sum','median'],
-          'L':['','string'],
-          'N':['','string'],
-          'O':['','string'],
-          'P':['','string']
-        },
+              let per = eval(resultType);
+              let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+              if (configColumn.collection) {
+                //id collection json or colellection "api->url"
+                return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
+              } else {
+                return eval(resultType);
+              }
+            }],
+            'property_title':['A'],
+            'index':['','string'],
+            'I':['','string'],
+            'G':['G','sum'],
+            'value_sum':['value_sum','median'],
+            'L':['','string'],
+            'N':['','string'],
+            'O':['','string'],
+            'P':['','string']
+          },
+        });
+        scope.table.openAll();
       });
-      scope.table.openAll();
+
+
+
+
     });
   }
 
@@ -1107,14 +1123,13 @@ export default class InproduceView extends JetView{
   }
 
   eventSetColumnUserSort(sourceId, targetId, event) {
-
-    let scope = this;
     let configSource = this.table.getColumnConfig(sourceId);
     let configTarget = this.table.getColumnConfig(targetId);
-
-    let url = this.app.config.apiRest.getUrl('get',"accounting/schema-table-user/order");//+configSource.rowId);
-    webix.ajax().get(url, {"sort_order": configSource.sort_order, "id":configSource.rowId, 'target_sort_order':configTarget.sort_order,
-      'list_id' : scope.selectTypeValue }, function(text, data, request) {
+    let sengent = 50;
+    if (configTarget.sort_order < configSource.sort_order) sengent = -50;
+    configSource.sort_order = configTarget.sort_order+sengent*1;
+    let url = this.app.config.apiRest.getUrl('get',"accounting/schema-table-users/"+configSource.rowId);
+    webix.ajax().put(url, {"sort_order": configTarget.sort_order+sengent*1, "id":configSource.rowId}, function(text, data, request) {
       scope.showMessageResult(data.json(), request, false)
     });
 

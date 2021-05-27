@@ -15,7 +15,7 @@ var config = {
 
 
 
-
+webix.firebase = firebase.database();
 
 let formatDateTime = webix.Date.dateToStr("%Y-%m-%d %H:%i:%s");
 export default class App extends JetApp {

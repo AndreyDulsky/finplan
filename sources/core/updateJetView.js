@@ -342,9 +342,16 @@ export default class UpdateJetView extends JetView {
 
   doClickSave() {
     let state = this.state;
+
     if (!state.formEdit.validate()) return;
 
     let record = state.formEdit.getValues();
+
+    if (record['$count']!= 'undefined') delete record['$count'];
+    if (record['$level']!= 'undefined') delete record['$level'];
+    if (record['$parent']!= 'undefined') delete record['$parent'];
+
+
     record.account = { name: this.$$("account").getText() };
 
     //record.contragent = { name: this.$$("account").getText() };
@@ -369,7 +376,13 @@ export default class UpdateJetView extends JetView {
           parts[key][keyPart] = record[keyPart];
         }
       }
+      if (parts[key]['$count']!= 'undefined') delete parts[key]['$count'];
+      if (parts[key]['$level']!= 'undefined') delete parts[key]['$level'];
+      if (parts[key]['$parent']!= 'undefined') delete parts[key]['$parent'];
+      if (parts[key]['$part_procent']!= 'undefined') delete parts[key]['$part_procent'];
+
     }
+
     record.data = parts;
 
     webix.dp(state.table).save(
@@ -381,7 +394,8 @@ export default class UpdateJetView extends JetView {
 
         (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
         //state.table.group("transaction_id");
-        state.table.select(obj.id);
+
+        if (obj && obj.id) state.table.select(obj.id);
         let parentId =  state.table.getSelectedId();
 
         if (obj.data.length > 1 ) {

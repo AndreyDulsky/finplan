@@ -436,7 +436,7 @@ export default class CashesView extends JetView {
                 // }),
 
                 //"api->accounting/transactions",
-                save: "api->accounting/transactions",
+                save: "firebase->transaction",//"api->accounting/transactions",
                 //datafetch:50, // 200 records
                 //loadahead:50,
 
