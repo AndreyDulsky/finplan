@@ -2988,12 +2988,14 @@ export default class InproduceView extends JetView{
         }
       }
     }
-    // for last appply
-    // for (let key in cssFormatSelect) {
-    //   if (scope.table.getColumnConfig(key)) {
-    //     scope.table.getColumnConfig(key).css = cssFormatSelect[key];
-    //   }
-    // }
+    ///for last appply
+    for (let key in cssFormatSelect) {
+      if (scope.table.getColumnConfig(key)) {
+        scope.table.getColumnConfig(key).cssFormat = function (value, config) {
+          return cssFormatSelect[key];
+        };
+      }
+    }
     scope.table.refreshColumns();
   }
 
