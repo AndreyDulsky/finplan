@@ -123,9 +123,9 @@ export default class UpdateFormView extends JetView {
       return state.tableRecord;
     }
     return {
-      date_operation: new Date(),
-      is_committed : 1,
-      type_operation: 2
+      //date_operation: new Date(),
+      //is_committed : 1,
+      //type_operation: 2
     }
   }
 
@@ -244,6 +244,9 @@ export default class UpdateFormView extends JetView {
       state.isUpdate = false;
       record.id = '';
     }
+    if (record['action-edit']!= 'undefined') delete record['action-edit'];
+    if (record['action-view']!= 'undefined') delete record['action-view'];
+    if (record['action-delete']!= 'undefined') delete record['action-delete'];
 
     if (this.state.table.$scope.getParam('id')) {
       record['list_id'] = this.state.table.$scope.getParam('id');

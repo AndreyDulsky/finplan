@@ -350,6 +350,10 @@ export default class UpdateJetView extends JetView {
     if (record['$count']!= 'undefined') delete record['$count'];
     if (record['$level']!= 'undefined') delete record['$level'];
     if (record['$parent']!= 'undefined') delete record['$parent'];
+    if (record['action-edit']!= 'undefined') delete record['action-edit'];
+    if (record['action-view']!= 'undefined') delete record['action-view'];
+    if (record['action-delete']!= 'undefined') delete record['action-delete'];
+
 
 
     record.account = { name: this.$$("account").getText() };

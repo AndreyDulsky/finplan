@@ -5,6 +5,7 @@
 
 webix.proxy.firebase = {
   $proxy:true,
+
   /*
   some.load("firebase->ref");
   or
@@ -16,8 +17,16 @@ webix.proxy.firebase = {
     //decode string reference if necessary
     if (typeof this.source == "object")
       this.collection = this.source;
-    else
+    else {
       this.collection = this.collection || webix.firebase.ref(this.source);
+
+      if (this.params) {
+        if (this.params['orderByChild']) this.collection = this.collection.orderByChild(this.params['orderByChild']).equalTo(this.params.equalTo).limitToLast(this.params['limitToLast']);
+
+      }
+    }
+
+
 
     var data = webix.promise.defer();
 
@@ -200,6 +209,7 @@ webix.proxy.firebase = {
 */
 
 webix.attachEvent("onSyncUnknown", function(target, source){
+  debugger;
   var fb = window.firebase || webix.firebase;
   if (fb && source instanceof fb.database.Reference){
 

@@ -574,8 +574,9 @@ export default class InproduceView extends JetView{
       dragColumn:true,
       math: true,
       save: "api->accounting/"+this.getModelName(this.mode),
+      //save: "firebase->accounting/"+this.mode,//this.getModelName(this.mode),
       //owCss:"#css#",
-      url: "firebase->transaction",
+      //url: "firebase->transaction",
       scheme:{
 
       },
@@ -1848,12 +1849,12 @@ export default class InproduceView extends JetView{
 
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateTime') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateTime(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateTime(obj.trim()) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateTime(obj.trim())} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateTime(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateShort') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateShort(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateShort(obj.trim()) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateShort(obj.trim())} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateShort(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
@@ -1863,7 +1864,7 @@ export default class InproduceView extends JetView{
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateHour') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateHour(obj.trim())} catch (e) { debugger; } return  (obj) ? formatDateHour(obj.trim()) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateHour(obj.trim())} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateHour(obj.trim()) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 

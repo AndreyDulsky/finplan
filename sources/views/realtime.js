@@ -528,7 +528,7 @@ export default class InproduceView extends JetView{
       });
 
     this.setPage();
-    this.attachToolBarEvents();
+    //this.attachToolBarEvents();
 
     this.formEdit = this.ui(FormEditView);
     this.formComment = this.ui(FormCommnetView);
@@ -550,6 +550,16 @@ export default class InproduceView extends JetView{
 
   //general
   getTable() {
+
+    let companyId = '87tYxy9nkl6Nfwk035E0';
+    let mode = this.mode;
+    if (this.mode == 'company-room') {
+      mode = 'company/'+companyId+'/rooms';
+    }
+    if (this.mode == 'department') {
+      mode = 'company/'+companyId+'/departments';
+    }
+
     let layout = this.$$("body-layout");
     let scope = this;
     let tableConfig = {
@@ -557,7 +567,7 @@ export default class InproduceView extends JetView{
       localId: 'table-layout',
       urlEdit: this.mode,
       css: "webix_header_border webix_data_border ",
-      leftSplit: 15,
+      //leftSplit: 15,
       //rightSplit: 0,
       select:"multiselect",
       resizeColumn: {headerOnly: true},
@@ -573,9 +583,11 @@ export default class InproduceView extends JetView{
       drag: false,
       dragColumn:true,
       math: true,
-      save: "firebase->transaction",//+this.getModelName(this.mode),
+      //save: "firebase->accounting/"+this.mode,
+      save: "firestore->"+mode,
       //owCss:"#css#",
       //url: "firebase->transaction",
+
       scheme:{
 
       },
@@ -684,15 +696,15 @@ export default class InproduceView extends JetView{
 
 
     this.table = webix.ui(tableConfig,layout,this.$$('table-layout') );
-    this.setColorSettingForTable();
+    //this.setColorSettingForTable();
   }
 
   getDataTable() {
     let scope = this;
 
-    this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
-    this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value*1 : 0);
-    this.table.define('drag', (!this.schemaTableSetting['access'] || (!this.schemaTableSetting['access']['can-drop'] || this.schemaTableSetting['access']['can-drop'].value == 0) ) ? false :  "order");
+    //this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
+    //this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value*1 : 0);
+    //this.table.define('drag', (!this.schemaTableSetting['access'] || (!this.schemaTableSetting['access']['can-drop'] || this.schemaTableSetting['access']['can-drop'].value == 0) ) ? false :  "order");
 
 
     scope.columns = [];
@@ -709,6 +721,7 @@ export default class InproduceView extends JetView{
     if (this.mode == 'order') {
       params['expand'] = 'comment,images';
     }
+
     scope.tableUrl = this.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.mode), params);
 
     webix.extend(this.table, webix.ProgressBar);
@@ -717,15 +730,17 @@ export default class InproduceView extends JetView{
       type:"icon",
       hide: false
     });
-    scope.filter = scope.getFilterParams();
-    let refConfig = webix.firebase.ref("configTableUser/transaction/config/columns");
+    //scope.filter = scope.getFilterParams();
+    let refConfig = webix.firebase.ref("configTableUser/"+this.mode+"/config/columns");
 
 
 
     refConfig.get().then(function(data) {
+
       scope.table.clearAll();
       let items = {'config': {}};//data.json();
       items['config']['columns'] = data.val();
+
 
 
       //let dataItem = (items.data)?items.data:items.items;
@@ -734,13 +749,28 @@ export default class InproduceView extends JetView{
       //debugger;
       //items.config.columns = webix.DataDriver.json.toObject(items.config.columns);
 
-      items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
 
-      scope.table.config.columns = items.config.columns;
-      scope.columns = items.config.columns;
-      scope.table.refreshColumns();
-      scope.setColumnSettingForTable();
-      scope.table.define('url', 'firebase->transaction');
+      if (items['config']['columns']!=null) {
+
+        items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
+        scope.table.config.columns = items.config.columns;
+        scope.columns = items.config.columns;
+        scope.table.refreshColumns();
+        //scope.setColumnSettingForTable();
+      } else {
+        //scope.table.define('autoConfig', true);
+      }
+      //scope.table.define('url', 'firebase->accounting/'+scope.mode);
+      let mode = scope.mode;
+      let companyId = '87tYxy9nkl6Nfwk035E0';
+      if (scope.mode == 'company-room') {
+        mode = 'company/'+companyId+'/rooms';
+      }
+      if (scope.mode == 'department') {
+        mode = 'company/'+companyId+'/departments';
+      }
+      scope.table.define('url', 'firestore->'+mode);
+
       // var dataTable = new webix.DataCollection({
       //   url:"firebase->transaction",
       //   save: "firebase->transaction"
@@ -748,47 +778,47 @@ export default class InproduceView extends JetView{
       //let refDataItem = webix.firebase.ref("transaction");
       scope.table.waitData.then(function(dataItem) {
 
-        scope.dataItem = scope.table.data.serialize();
-        scope.table.parse(scope.dataItem);
+        //scope.dataItem = scope.table.data.serialize();
+        //scope.table.parse(scope.dataItem);
         scope.table.enable();
         scope.table.hideProgress();
-        let resultType= '';
-        if (scope.schemaTableSetting.group['group-by'].type) {
-          resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
-        } else {
-          let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+        // let resultType= '';
+        // if (scope.schemaTableSetting.group['group-by'].type) {
+        //   resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
+        // } else {
+        //   let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+        //
+        //   resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
+        // }
 
-          resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
-        }
-
-        scope.table.group({
-          by: function (obj) {
-            return eval(resultType);
-          },
-          map: {
-            'property_value':[function (obj) {
-
-              let per = eval(resultType);
-              let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
-              if (configColumn.collection) {
-                //id collection json or colellection "api->url"
-                return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
-              } else {
-                return eval(resultType);
-              }
-            }],
-            'property_title':['A'],
-            'index':['','string'],
-            'I':['','string'],
-            'G':['G','sum'],
-            'value_sum':['value_sum','median'],
-            'L':['','string'],
-            'N':['','string'],
-            'O':['','string'],
-            'P':['','string']
-          },
-        });
-        scope.table.openAll();
+        // scope.table.group({
+        //   by: function (obj) {
+        //     return eval(resultType);
+        //   },
+        //   map: {
+        //     'property_value':[function (obj) {
+        //
+        //       let per = eval(resultType);
+        //       let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+        //       if (configColumn.collection) {
+        //         //id collection json or colellection "api->url"
+        //         return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
+        //       } else {
+        //         return eval(resultType);
+        //       }
+        //     }],
+        //     'property_title':['A'],
+        //     'index':['','string'],
+        //     'I':['','string'],
+        //     'G':['G','sum'],
+        //     'value_sum':['value_sum','median'],
+        //     'L':['','string'],
+        //     'N':['','string'],
+        //     'O':['','string'],
+        //     'P':['','string']
+        //   },
+        // });
+        // scope.table.openAll();
       });
 
 
@@ -981,22 +1011,22 @@ export default class InproduceView extends JetView{
     this.selectType = this.$$("select-type");
     let response = webix.ajax().sync().get(this.state['urlTableUserLists'],{filter:{'model': this.model}, 'expand':'schemaTableUserFilter'});
     let dataSelectType = JSON.parse(response.responseText);
-    if (dataSelectType['errors']) {
-      for (var prop in dataSelectType.errors) {
-        webix.message({
-          text:prop+':'+dataSelectType.errors[prop],
-          type:"error",
-          expire: -1,
-        });
-
-      }
-      webix.alert({
-        title:"Ошибка",
-        ok:"Ок",
-        text:"Обратитесь к администратору системы"
-      });
-      throw new Error();
-    }
+    // if (dataSelectType['errors']) {
+    //   for (var prop in dataSelectType.errors) {
+    //     webix.message({
+    //       text:prop+':'+dataSelectType.errors[prop],
+    //       type:"error",
+    //       expire: -1,
+    //     });
+    //
+    //   }
+    //   webix.alert({
+    //     title:"Ошибка",
+    //     ok:"Ок",
+    //     text:"Обратитесь к администратору системы"
+    //   });
+    //   throw new Error();
+    // }
     this.dataSelectType = dataSelectType;
 
     let length = dataSelectType.data.length;

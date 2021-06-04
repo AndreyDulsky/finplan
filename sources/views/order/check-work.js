@@ -248,7 +248,7 @@ export default class CheckFormView extends JetView {
 
             cells:[
               { id:"Описание", paddingY: 30, labelWidth : 250, rows:[
-
+                { "template":"Параметры товара", "type" :"section"},
                 {
                   view: 'text',
                   label : "№",
@@ -305,6 +305,9 @@ export default class CheckFormView extends JetView {
                   name: "P",
                   labelWidth : 150
                 },
+                { "template":"Коэффициенты", "type" :"section"},
+                //{ "template":"Время, мин", "type" :"section"},
+
                 {
                   view: 'text',
                   label : "Коэф.обивки",
@@ -329,7 +332,7 @@ export default class CheckFormView extends JetView {
                   name: "CI",
                   labelWidth : 150
                 },
-
+                { "template":"Примечания", "type" :"section"},
                 {
                   view: 'textarea',
                   name: 'T',

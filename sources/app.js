@@ -16,6 +16,9 @@ var config = {
 
 
 webix.firebase = firebase.database();
+webix.firestore = firebase.firestore();
+webix.firestore.settings({ timestampsInSnapshots:true });
+
 
 let formatDateTime = webix.Date.dateToStr("%Y-%m-%d %H:%i:%s");
 export default class App extends JetApp {
@@ -61,6 +64,7 @@ export default class App extends JetApp {
             editor = dp.config.master.getEditor();
 
           dataChange = update.data;
+
           return webix.ajax().put(restObj.getUrl('put', this.source, this.params, id), dataChange, {
             error:function(text, data, XmlHttpRequest){
               if (view._in_edit_mode == 1) {
