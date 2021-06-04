@@ -591,22 +591,6 @@ export default class InproduceView extends JetView{
         },
         onItemClick:function(id, e, trg) {
 
-          if (id.column == 'action-delete') {
-            var table = this;
-            webix.confirm("Удалить запись?").then(function(result){
-              webix.dp(table).save(
-                id.row,
-                "delete"
-              ).then(function(obj){
-                webix.dp(table).ignore(function(){
-                  table.remove(id.row);
-                });
-              }, function(){
-                webix.message("Ошибка! Запись не удалена!");
-              });
-            });
-
-          }
           if (id.column == 'action-edit') {
             this.$scope.formEdit.showForm(this);
           }
