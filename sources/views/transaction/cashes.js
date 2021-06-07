@@ -100,8 +100,8 @@ export default class CashesView extends JetView {
               "margin": 1,
               "scroll": "auto",
               "elements": [{"label": "Тип", "view": "label"}, {
-                hidden: scope.app.config.access,
-                disabled: (scope.app.config.access != "writer"),
+                //hidden: scope.app.config.access,
+                //disabled: (scope.app.config.access != "writer"),
 
                 "cols": [{
                   "view": "checkbox",

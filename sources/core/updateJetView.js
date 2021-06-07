@@ -300,6 +300,7 @@ export default class UpdateJetView extends JetView {
   attachClickEvents() {
     let scope = this;
     webix.attachEvent("onClick", function(element, b, c) {
+
       if (!element.target) {
         return;
       }
@@ -347,6 +348,7 @@ export default class UpdateJetView extends JetView {
 
     let record = state.formEdit.getValues();
 
+
     if (record['$count']!= 'undefined') delete record['$count'];
     if (record['$level']!= 'undefined') delete record['$level'];
     if (record['$parent']!= 'undefined') delete record['$parent'];
@@ -389,11 +391,14 @@ export default class UpdateJetView extends JetView {
 
     record.data = parts;
 
-    webix.dp(state.table).save(
+    let per = webix.dp(state.table).save(
       (state.isUpdate) ? record.id : webix.uid(),
       (state.isUpdate) ? "update" : "insert",
       record
-    ).then(function(obj){
+    );
+
+    per.then(function(obj){
+
       webix.dp(state.table).ignore(function(){
 
         (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);

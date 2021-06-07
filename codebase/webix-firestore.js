@@ -13,6 +13,7 @@ webix.proxy.firestore = {
   url:"firebase->ref"
   */
   load:function(view, callback){
+
     if (this._unsubscribe){
       this.release();
     }
@@ -23,6 +24,14 @@ webix.proxy.firestore = {
       this.collection = this.source;
     else
       this.collection = this.collection || webix.firestore.collection(this.source);
+
+    if (this.params) {
+      if (this.params['orderBy']) this.collection = this.collection
+        .where(this.params['where'].field, this.params['where'].operator, this.params['where'].value)
+        //.orderBy(this.params['orderBy'].field, this.params['orderBy'].direction)
+        .limit(this.params['limit']);
+
+    }
 
     this._unsubscribe = this.collection.onSnapshot(function(query) {
       if (query.metadata.hasPendingWrites) return;
@@ -48,7 +57,6 @@ webix.proxy.firestore = {
               break;
           }
         });
-
         //batch adding
         if (queue.length){
           data.resolve(queue);
