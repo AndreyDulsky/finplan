@@ -243,7 +243,7 @@ function columnGroupTemplate(obj, common, item){
 
   if (obj.$group) return common.treetable(obj, common) + obj.property_value;
 
-  return item;
+  return  common.icon(obj)+common.folder(obj, common)+' '+item;
 }
 
 
@@ -268,6 +268,16 @@ export default class InproduceView extends JetView{
           view: "toolbar",
           padding: 10,
           cols:[
+            {
+              view:"icon",
+              //type:"icon",
+              icon: 'mdi mdi-keyboard-backspace',
+              autowidth:true,
+              value :true,
+              localId: 'btn-back',
+              click: function() {  window.history.back();}
+
+            },
             {
               type:"header",
               localId: 'table-title',
@@ -539,6 +549,7 @@ export default class InproduceView extends JetView{
   }
 
   setPage() {
+    this.showGoToBack();
     this.model = this.capitalizeFirstLetter(this.mode);
     this.setSelectType();
     this.schemaTableSetting = this.getSchemaTableSetting();
@@ -546,6 +557,7 @@ export default class InproduceView extends JetView{
     this.setFilterSetting();
     this.getTable();
     this.getDataTable();
+
   }
 
   //general
@@ -3316,5 +3328,14 @@ export default class InproduceView extends JetView{
     }
 
 
+  }
+
+  showGoToBack() {
+    let id = this.getParam('id');
+    if (id) {
+      this.$$('btn-back').show();
+    } else {
+      this.$$('btn-back').hide();
+    }
   }
 }
