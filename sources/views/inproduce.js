@@ -1801,7 +1801,10 @@ export default class InproduceView extends JetView{
 
   getModelName(mode) {
     let end = mode[mode.length-1];
-    if (end == 'y') {
+    let word = mode.split('-');
+    word = word[word.length-1];
+
+    if (end == 'y' && word.length > 3) {
       return mode.replace(/y$/,'ies');
     }
     return mode+'s';
