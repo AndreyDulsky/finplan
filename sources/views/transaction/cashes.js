@@ -418,9 +418,9 @@ export default class CashesView extends JetView {
                       "header": "",
                       "width": 50,
                       "template": "{common.trashIcon()}",
-                      hidden: (scope.app.config.access != "writer")
+                      hidden: false
                     },
-                    {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}", hidden: (scope.app.config.access != "writer")}
+                    {"id": "action-edit", "header": "", "width": 50, "template": "{common.editIcon()}", hidden: false}
                   ],
                 // url: this.app.config.apiRest.getUrl('get','accounting/transactions',{
                 //   "expand":"contragent,category,project,account,data",

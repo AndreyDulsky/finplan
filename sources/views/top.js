@@ -160,91 +160,95 @@ export default class TopView extends JetView{
       'limit' : 50
     };
     //webix.proxy.firestore.source = webix.firestore.ref('messages/'+userService.firebase_uid+'/Jgy8bWLyxQWUX81tL7Pb')
-    winComment = {
-      view:"popup",
-      width:500,
-      id: "commentPopup",
-      body: {
-        rows: [
+    if (userService.type == 0 || userService.type == 10) {
+      winComment = {
+        view: "popup",
+        width: 500,
+        id: "commentPopup",
+        body: {
+          rows: [
 
-          {
-            view: "list",
-            localId: 'commentList',
-            type: {
-              height: 67,
-              template: function(obj) {
-                return formatDateTime(new Date(obj.createdAt))+' '+obj.finPlanUserName+'<br/>'+ '№'+obj.finPlanOrderNo+' - '+obj.message;
+            {
+              view: "list",
+              localId: 'commentList',
+              type: {
+                height: 67,
+                template: function (obj) {
+                  return formatDateTime(new Date(obj.createdAt)) + ' ' + obj.finPlanUserName + '<br/>' + '№' + obj.finPlanOrderNo + ' - ' + obj.message;
+                },
+                // template: function(obj) {
+                //   return formatDate(obj.time_comment)+' '+formatTime(obj.time_comment)+' '+obj.user_name+'<br/>'+ '№'+((obj.order_no) ? obj.order_no : '')+' - '+obj.comment;
+                // },
               },
-              // template: function(obj) {
-              //   return formatDate(obj.time_comment)+' '+formatTime(obj.time_comment)+' '+obj.user_name+'<br/>'+ '№'+((obj.order_no) ? obj.order_no : '')+' - '+obj.comment;
-              // },
-            },
-            //data: data,
-            url: webix.proxy("firestore", 'messages/'+userService.firebase_uid+'/Jgy8bWLyxQWUX81tL7Pb'),//'firestore->messages/'+userService.firebase_uid+'/Jgy8bWLyxQWUX81tL7Pb',//webix.proxy("firebase", 'accounting/comment'),//'firebase->accounting/comment',
-            on: {
-              onAfterAdd: function(data, params) {
+              //data: data,
+              url: webix.proxy("firestore", 'messages/' + userService.firebase_uid + '/Jgy8bWLyxQWUX81tL7Pb'),//'firestore->messages/'+userService.firebase_uid+'/Jgy8bWLyxQWUX81tL7Pb',//webix.proxy("firebase", 'accounting/comment'),//'firebase->accounting/comment',
+              on: {
+                onAfterAdd: function (data, params) {
 
-                scope.setCommentsFireBase(this.count());
-              },
-              onAfterLoad: function(data, params) {
-                scope.setCommentsFireBase(this.count());
-              },
-              onAfterDelete: function(data, params) {
-                scope.setCommentsFireBase(this.count());
-              },
-              onSelectChange: function() {
-                debugger;
-                scope.setCommentsFireBase(this.count());
-              },
-              onItemClick: function (id, e, trg) {
+                  scope.setCommentsFireBase(this.count());
+                },
+                onAfterLoad: function (data, params) {
+                  scope.setCommentsFireBase(this.count());
+                },
+                onAfterDelete: function (data, params) {
+                  scope.setCommentsFireBase(this.count());
+                },
+                onSelectChange: function () {
+                  debugger;
+                  scope.setCommentsFireBase(this.count());
+                },
+                onItemClick: function (id, e, trg) {
 
-                let item = this.getItem(id);
-                //let urlMessage = scope.app.config.apiRest.getUrl('get', 'accounting/comment/comment-view-ok', {'id': id});
-                this.getParentView().hide();
-                 //webix.firebase.ref("accounting/comment/"+item.uid+"/users_view/"+userService.user_id).set(true);
+                  let item = this.getItem(id);
+                  //let urlMessage = scope.app.config.apiRest.getUrl('get', 'accounting/comment/comment-view-ok', {'id': id});
+                  this.getParentView().hide();
+                  //webix.firebase.ref("accounting/comment/"+item.uid+"/users_view/"+userService.user_id).set(true);
 
-                webix.firestore.collection('messages').doc(userService.firebase_uid).collection('Jgy8bWLyxQWUX81tL7Pb').doc(id).set({isMessageRead: true});
-                scope.setComments(item, -1);
-                // this.remove(item.id);
-                // for (let key in dataList) {
-                //   if (dataList[key]['uid'] == item['uid']) {
-                //     dataList.splice(key, 1);
-                //   }
-                // }
-                // webix.ajax().get(urlMessage).then(function (data) {
-                //   //scope.setComments(data.json());
-                // });
+                  webix.firestore.collection('messages').doc(userService.firebase_uid).collection('Jgy8bWLyxQWUX81tL7Pb').doc(id).set({isMessageRead: true});
+                  scope.setComments(item, -1);
+                  // this.remove(item.id);
+                  // for (let key in dataList) {
+                  //   if (dataList[key]['uid'] == item['uid']) {
+                  //     dataList.splice(key, 1);
+                  //   }
+                  // }
+                  // webix.ajax().get(urlMessage).then(function (data) {
+                  //   //scope.setComments(data.json());
+                  // });
 
+                }
               }
+            },
+            {
+              height: 30,
+              cols: [
+                {
+                  view: "button",
+                  label: "Показать все",
+                  hidden: ((userService.type == 0 || userService.type == 10)) ? false : true,
+                  css: 'webix_primary',
+                  click: function () {
+                    scope.formComment.showForm(this);
+                    scope.winComment.hide();
+                  },
+
+                },
+                {},
+                {}
+              ]
             }
-          },
-          {
-            height: 30,
-            cols: [
-              {
-                view: "button",
-                label: "Показать все",
-                hidden: ((userService.type == 0 || userService.type == 10)) ? false : true,
-                css: 'webix_primary',
-                click: function() { scope.formComment.showForm(this); scope.winComment.hide(); },
 
-              },
-              {},
-              {}
-            ]
-          }
+          ]
 
-        ]
+        }
 
-      }
-
-    };
-    this.winComment = this.ui(winComment);
+      };
+      this.winComment = this.ui(winComment);
 
 
-
-    let commentPopup = $$('commentPopup');
-    let commentList = commentPopup.queryView('list');
+      let commentPopup = $$('commentPopup');
+      let commentList = commentPopup.queryView('list');
+    }
 
 
 
