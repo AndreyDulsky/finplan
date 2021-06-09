@@ -391,13 +391,11 @@ export default class UpdateJetView extends JetView {
 
     record.data = parts;
 
-    let per = webix.dp(state.table).save(
+    webix.dp(state.table).save(
       (state.isUpdate) ? record.id : webix.uid(),
       (state.isUpdate) ? "update" : "insert",
       record
-    );
-
-    per.then(function(obj){
+    ).then(function(obj){
 
       webix.dp(state.table).ignore(function(){
 

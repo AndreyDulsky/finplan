@@ -21,7 +21,7 @@ webix.GroupMethods.median = function(prop, data){
     groupDelimiter:",",
     groupSize:3,
     decimalDelimiter:".",
-    decimalSize:2
+    decimalSize:0
   });
 };
 
@@ -51,11 +51,11 @@ webix.ui.datafilter.totalColumn = webix.extend({
     result = webix.i18n.numberFormat(result,{
       groupDelimiter:"`",
       groupSize:3,
-      decimalDelimiter:",",
+      decimalDelimiter:".",
       decimalSize:2
     })
-    if (value.format)
-      result = value.format(result);
+    //if (value.format)
+      //result = value.format(result);
     if (value.template)
       result = value.template({ value: result });
     node.style.textAlign = "right";

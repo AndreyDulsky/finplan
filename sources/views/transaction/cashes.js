@@ -482,13 +482,11 @@ export default class CashesView extends JetView {
                     if (id.column == 'action-delete') {
                       var table = this;
                       webix.confirm("Удалить запись?").then(function(result){
-                        debugger;
 
                         webix.dp(table).save(
                           id.row,
                           "delete"
                         ).then(function(obj){
-                          debugger;
                           webix.dp(table).ignore(function(){
                             table.remove(id.row);
                           });
