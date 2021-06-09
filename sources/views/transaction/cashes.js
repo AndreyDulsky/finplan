@@ -436,7 +436,7 @@ export default class CashesView extends JetView {
                 // }),
 
                 //"api->accounting/transactions",
-                save: "firebase->transaction",//"api->accounting/transactions",
+                save: "api->accounting/transactions",//"firebase->transaction",//"
                 //datafetch:50, // 200 records
                 //loadahead:50,
 
@@ -482,10 +482,13 @@ export default class CashesView extends JetView {
                     if (id.column == 'action-delete') {
                       var table = this;
                       webix.confirm("Удалить запись?").then(function(result){
+                        debugger;
+
                         webix.dp(table).save(
                           id.row,
                           "delete"
                         ).then(function(obj){
+                          debugger;
                           webix.dp(table).ignore(function(){
                             table.remove(id.row);
                           });

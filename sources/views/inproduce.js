@@ -620,7 +620,7 @@ export default class InproduceView extends JetView{
           }
           if (id.column == 'action-delete') {
             var table = this;
-            webix.confirm("Удалить запись?").then(function(result){
+            webix.confirm("Удалить запись?").then(function(result) {
               webix.dp(table).save(
                 id.row,
                 "delete"
