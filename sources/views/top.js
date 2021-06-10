@@ -243,6 +243,7 @@ export default class TopView extends JetView{
         }
 
       };
+      this.winComment = this.ui(winComment);
       let commentPopup = $$('commentPopup');
       let commentList = commentPopup.queryView('list');
     } else {
@@ -252,13 +253,14 @@ export default class TopView extends JetView{
           id: "commentPopup",
           body: {}
         };
+      this.winComment = this.ui(winComment);
 
 
 
 
 
     }
-    this.winComment = this.ui(winComment);
+
 
 
 
