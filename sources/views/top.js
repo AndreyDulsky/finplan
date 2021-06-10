@@ -160,7 +160,7 @@ export default class TopView extends JetView{
       'limit' : 50
     };
     //webix.proxy.firestore.source = webix.firestore.ref('messages/'+userService.firebase_uid+'/Jgy8bWLyxQWUX81tL7Pb')
-    if (userService.type == 0 || userService.type == 10) {
+    if (userService.firebase_uid !='') {
       winComment = {
         view: "popup",
         width: 500,
@@ -243,13 +243,22 @@ export default class TopView extends JetView{
         }
 
       };
-      this.winComment = this.ui(winComment);
-
-
       let commentPopup = $$('commentPopup');
       let commentList = commentPopup.queryView('list');
-    }
+    } else {
 
+        winComment = {
+          view: "popup",
+          id: "commentPopup",
+          body: {}
+        };
+
+
+
+
+
+    }
+    this.winComment = this.ui(winComment);
 
 
 
