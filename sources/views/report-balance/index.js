@@ -153,15 +153,24 @@ export default class ReportCashFlowView extends JetView{
     table.attachEvent("onBeforeEditStop", function(state, editor, ignoreUpdate){
       let record = {};
       //if(editor.column === "value"){
+
         record = table.getItem(editor.row);
 
         let recordEdit = {'value': eval(state.value.replace('=',''))};
         let id = record.ids[editor.column];
         //table.refresh(editor.row);
-        tableUrl = scope.app.config.apiRest.getUrl('get',"accounting/report-balances/"+id);
-        webix.ajax().put( tableUrl, recordEdit ).then(function(data) {
-          webix.message('Данные сохранены!');
-        });
+        if (id) {
+          tableUrl = scope.app.config.apiRest.getUrl('get', "accounting/report-balances/" + id);
+          webix.ajax().put(tableUrl, recordEdit).then(function (data) {
+            webix.message('Данные сохранены!');
+          });
+        } else {
+          recordEdit = {'value': eval(state.value.replace('=','')), 'date_balance' :editor.column, 'category_id' : editor.row,  'type' : 'parent_balance_id'  };
+          tableUrl = scope.app.config.apiRest.getUrl('get', "accounting/report-balances");
+          webix.ajax().post(tableUrl, recordEdit).then(function (data) {
+            webix.message('Данные сохранены!');
+          });
+        }
       //}
 
     });
