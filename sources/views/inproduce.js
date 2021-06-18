@@ -614,7 +614,7 @@ export default class InproduceView extends JetView{
               this.$scope.show('inproduce/register-account-subconto?account_id='+item.account_id+'&subconto1_value=' + item.subconto1_value);
             }
             if (Object.keys(this.$scope.urlParams).length == 0) {
-              this.$scope.show('inproduce/register-account?account_id=' + item.account_id+'&schema-table-user-id=76');
+              this.$scope.show('inproduce/register-account?account_id=' + item.account_id+'&schema-table-user-id=196');
             }
 
           }
