@@ -504,10 +504,14 @@ export default class InproduceView extends JetView{
     };
   }
 
-  urlChange(view,id,id1){
+  urlChange(view,url){
+
     var id = this.getParam("mode", true);
     var mode = this.getParam("mode", true);
     this.mode = mode;
+    if (url[1]) {
+      this.urlParams = url[1].params;
+    }
     if (this.initParam) {
       this.setPage();
     }
@@ -517,7 +521,7 @@ export default class InproduceView extends JetView{
   init(view) {
 
     this.initParam =false;
-    this.use(plugins.UrlParam, ["mode", "id"]);
+    this.use(plugins.UrlParam, ["mode", "id", "account_id"]);
 
     let mode = this.getParam('mode');
 
@@ -525,6 +529,7 @@ export default class InproduceView extends JetView{
       mode = this.app.statusView;
       //this.app.statusView = '';
     }
+
 
 
 
@@ -570,6 +575,7 @@ export default class InproduceView extends JetView{
       urlEdit: this.mode,
       css: "webix_header_border webix_data_border ",
       leftSplit: 15,
+      //spans:true,
       //rightSplit: 0,
       select:"multiselect",
       resizeColumn: {headerOnly: true},
@@ -600,6 +606,18 @@ export default class InproduceView extends JetView{
         onAfterColumnDrop : function() {
           //webix.storage.local.put("start-table", this.getState());
 
+        },
+        onItemDblClick:function(id, e, trg) {
+          let item = this.getItem(id);
+          if (item.account_id) {
+            if (this.$scope.urlParams['account_id']) {
+              this.$scope.show('inproduce/register-account-subconto?account_id='+item.account_id+'&subconto1_value=' + item.subconto1_value);
+            }
+            if (Object.keys(this.$scope.urlParams).length == 0) {
+              this.$scope.show('inproduce/register-account?account_id=' + item.account_id+'&schema-table-user-id=76');
+            }
+
+          }
         },
         onItemClick:function(id, e, trg) {
 
@@ -703,8 +721,28 @@ export default class InproduceView extends JetView{
     if (paramsSort.length > 0) {
       params['sort'] = paramsSort;
     }
+
     if (this.mode == 'order') {
       params['expand'] = 'comment,images';
+    }
+
+
+    let url = new URL(location.href.replace('/#!',''));
+
+    let searchParams = new URLSearchParams(url.search);
+    if (!this.urlParams && (searchParams.get('account_id') || searchParams.get('subconto1_value'))) {
+
+      this.urlParams = [];
+      if (searchParams.get('account_id')) this.urlParams['account_id'] = searchParams.get('account_id');
+      if (searchParams.get('subconto1_value'))  this.urlParams['subconto1_value'] = searchParams.get('subconto1_value');
+      if (searchParams.get('schema-table-user-id')) this.urlParams['schema-table-user-id'] = searchParams.get('schema-table-user-id');
+
+    }
+
+    if (this.urlParams) {
+      for (let key in this.urlParams) {
+        params[key] = this.urlParams[key];
+      }
     }
     scope.tableUrl = this.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.mode), params);
 
