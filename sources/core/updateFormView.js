@@ -133,7 +133,7 @@ export default class UpdateFormView extends JetView {
   renderForm(elementsCount) {
     let state  = this.state;
     //render first time
-    //if (elementsCount === 0 ) {
+    if (elementsCount === 0 ) {
       state.formConfig = state.formData.data.configForm;
       webix.ui(
         state.formConfig,
@@ -144,7 +144,7 @@ export default class UpdateFormView extends JetView {
 
       //atach events for first render
       this.attachFormEvents();
-    //}
+    }
 
   }
 

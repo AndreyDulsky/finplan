@@ -154,6 +154,7 @@ export default class OrderCalculationRuleView extends JetView{
                     });
 
                   } else {
+
                     this.$scope.cashEdit.showForm(this);
                   }
                 },

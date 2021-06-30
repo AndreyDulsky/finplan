@@ -301,7 +301,7 @@ export default class UpdateJetView extends JetView {
     let scope = this;
     webix.attachEvent("onClick", function(element, b, c) {
 
-      if (!element.target) {
+      if (!element['target']) {
         return;
       }
       if (element.target.classList.value === "show-combo-value-break") {
@@ -401,19 +401,19 @@ export default class UpdateJetView extends JetView {
 
         (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
         //state.table.group("transaction_id");
-
+        debugger;
         if (obj && obj.id) state.table.select(obj.id);
         let parentId =  state.table.getSelectedId();
 
-        if (obj.data.length > 1 ) {
+        if (obj.data && obj.data.length > 1 ) {
           for (let key in obj.data) {
             (state.isUpdate) ? state.table.updateItem(record.data[key].id, obj.data[key]) : state.table.add(obj.data[key],0, parentId);
           }
         }
         if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
 
-        state.table.sort("date_operation", "desc", "string");
-        state.table.markSorting("date_operation", "desc");
+        //state.table.sort("date_operation", "desc", "string");
+        //state.table.markSorting("date_operation", "desc");
 
       });
 
