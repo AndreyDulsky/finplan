@@ -1886,12 +1886,12 @@ export default class InproduceView extends JetView{
 
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateTime') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateTime(obj.trim())} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateTime(obj.trim()) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateTime(obj)} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateTime(obj) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateShort') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateShort(obj.trim())} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateShort(obj.trim()) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateShort(obj)} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateShort(obj) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
@@ -1901,7 +1901,7 @@ export default class InproduceView extends JetView{
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateHour') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateHour(obj.trim())} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateHour(obj.trim()) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateHour(obj)} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateHour(obj) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
