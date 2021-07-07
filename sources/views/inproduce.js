@@ -1886,12 +1886,12 @@ export default class InproduceView extends JetView{
 
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateTime') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateTime(obj)} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateTime(obj) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateTime(obj)} catch (e) { debugger; obj = obj.trim(); } return  (obj!='' && obj!=null) ? formatDateTime(obj) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
       if (item.format && typeof configColumns[key].format != 'function' && item.format.indexOf('formatDateShort') ==0) {
-        eval(" myObj.func = (obj) => { try {formatDateShort(obj)} catch (e) { debugger; } return  (obj!='' && obj!=null) ? formatDateShort(obj) : ''; }");// + item.format);
+        eval(" myObj.func = (obj) => { try {formatDateShort(obj)} catch (e) { debugger; obj = obj.trim();} return  (obj!='' && obj!=null) ? formatDateShort(obj) : ''; }");// + item.format);
         configColumns[key].format = myObj.func;//eval(item.format);
       }
 
@@ -2357,7 +2357,7 @@ export default class InproduceView extends JetView{
             labelPosition: 'top',
             label:'Тип сравнения',
             value: '=',
-            options: ['=','>=','<=','in']
+            options: ['=','>=','<=','in', '!=']
 
           },
           {
