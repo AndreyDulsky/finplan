@@ -53,6 +53,8 @@ export default class EmployeeSalaryView extends JetView{
                 {},
                 { view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
                 { view:"icon", icon: 'mdi mdi-microsoft-excel', autowidth:true, click: () =>  this.doClickToExcel()},
+                { view:"icon", icon: 'mdi mdi-save', autowidth:true, click: () =>  this.doClickToSave()},
+
                 { "label": "", "view": "search-close", "width": 300,  "align" :"right", localId: 'form-search'  },
                 {
                   view:"icon",
@@ -255,6 +257,18 @@ export default class EmployeeSalaryView extends JetView{
       }
     });
 
+  }
+
+  doClickToSave() {
+    let table = this.$$("card-employee-table");
+    webix.toPNG(table, {
+      download:false
+    }).then(function(blob){
+      //process raw data
+      //let blob1 = new Blob(blob, {type:"application/png"});
+      webix.html.download(blob, "myfile.pdf");
+      debugger;
+    });
   }
 
 }

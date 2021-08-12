@@ -899,7 +899,8 @@ export default class InproduceView extends JetView{
 
     if (this.filterField.isVisible() && this.filterInputValue!='') {
       //type[this.filterFieldValue] =  {">=": this.dateFromValue, '<=': this.dateToValue};
-      type[this.filterFieldValue] =  this.filterInputValue;
+      type[this.filterFieldValue] = {};
+      type[this.filterFieldValue]['like'] =  this.filterInputValue;
       filterParams["filter"]["or"] = [type];
     }
     //
@@ -1241,6 +1242,7 @@ export default class InproduceView extends JetView{
             width:250,
             select:true,
             localId: 'menu-list',
+            scroll: true,
             onContext:{},
             data: this.state['dataList'],
             ready:function(){
