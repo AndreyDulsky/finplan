@@ -519,7 +519,7 @@ export default class InproduceView extends JetView{
   }
 
   init(view) {
-
+    let scope = this;
     this.initParam =false;
     this.use(plugins.UrlParam, ["mode", "id", "account_id"]);
 
@@ -548,6 +548,29 @@ export default class InproduceView extends JetView{
     this.formEdit = this.ui(FormEditView);
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
+
+    this.lastXHR = [];
+    webix.attachEvent("onBeforeAjax", function(mode, url, params, xhr,
+                                               headers, file, promise){
+      if (scope.lastXHR.length > 0) {
+        scope.lastXHR.forEach(function(item) {
+          console.log('set abort = ');
+          console.log(item);
+          item.abort();
+        });
+        scope.lastXHR = [];
+
+      }
+      scope.lastXHR.push(xhr);
+
+      console.log('set onBeforeAjax xhr = ');
+      console.log(xhr);
+      promise.then(function() {
+        scope.lastXHR = [];
+      }, function(){
+        scope.lastXHR = [];
+      });
+    });
 
 
 
@@ -753,6 +776,7 @@ export default class InproduceView extends JetView{
       hide: false
     });
     scope.filter = scope.getFilterParams();
+
 
     webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
       scope.table.clearAll();
