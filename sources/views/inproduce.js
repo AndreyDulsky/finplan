@@ -549,26 +549,27 @@ export default class InproduceView extends JetView{
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
 
-    this.lastXHR = [];
+    this.lastXHR = {};
     webix.attachEvent("onBeforeAjax", function(mode, url, params, xhr,
                                                headers, file, promise){
-      if (scope.lastXHR.length > 0) {
-        scope.lastXHR.forEach(function(item) {
+      if (Object.keys(scope.lastXHR).length > 0) {
+        for (let key in scope.lastXHR) {
+          let item = scope.lastXHR[key];
+          console.log(item.readyState);
           console.log('set abort = ');
           console.log(item);
           item.abort();
-        });
-        scope.lastXHR = [];
-
+        };
       }
-      scope.lastXHR.push(xhr);
+
+      scope.lastXHR[url]=xhr;
 
       console.log('set onBeforeAjax xhr = ');
       console.log(xhr);
       promise.then(function() {
-        scope.lastXHR = [];
-      }, function(){
-        scope.lastXHR = [];
+        delete scope.lastXHR[url];
+      }, function() {
+        delete scope.lastXHR[url];
       });
     });
 
