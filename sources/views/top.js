@@ -105,8 +105,9 @@ export default class TopView extends JetView{
 
 		};
 
-		let menuPermissions = webix.storage.local.get("wjet_permission");
-		(menuPermissions) ? menu['data'] = menuPermissions :  menu['data'] = {};
+
+		//let menuPermissions = webix.storage.local.get("wjet_permission");
+		//(menuPermissions) ? menu['data'] = menuPermissions :  menu['data'] = {};
 
 		//menu['data'].push({ value:"Настройки", id:"settings",  icon:"mdi mdi-tools" },)
     //menu['data'].push({ value:"Открытые отчеты", id:"info", icon:"mdi mdi-folder-open", data:[], hidden: true })
@@ -133,10 +134,15 @@ export default class TopView extends JetView{
 	init(){
     this.use(plugins.Menu, "top:menu");
 		let scope = this;
-    let isLogged = 'http://admin.startsell.biz/api/users/is-logged';
+
     let urlSummaryAccount = this.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount');
+    let isLogged = this.app.config.apiRest.getUrl('get','users/is-logged-token');
+
     webix.ajax().get( isLogged).then(function(data) {
-      //debugger;
+      let result = data.json();
+      webix.storage.local.put("wjet_permission", result.user['permissions_finplan']);
+      scope.$$("top:menu").define('data', result.user['permissions_finplan']);
+      //(result.user['permissions_finplan']) ? menu['data'] = result.user['permissions_finplan'] :  menu['data'] = {};
       //scope.setTotalAccounts(data.json());
     });
     let user = webix.storage.local.get("wjet_user");
