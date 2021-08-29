@@ -248,8 +248,12 @@ export default class UpdateFormView extends JetView {
     if (record['action-view']!= 'undefined') delete record['action-view'];
     if (record['action-delete']!= 'undefined') delete record['action-delete'];
 
+
     if (this.state.table.$scope.getParam('id')) {
       record['list_id'] = this.state.table.$scope.getParam('id');
+    }
+    if (this.state.table.listId) {
+      record['list_id'] = this.state.table.listId;
     }
     webix.dp(state.table).save(
       (state.isUpdate) ? record.id : webix.uid(),

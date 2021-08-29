@@ -2,6 +2,8 @@ import {JetView, plugins} from "webix-jet";
 import FormEditView from "core/updateFormView";
 import FormCommnetView from "views/comment/index";
 import FormViewView from "views/order/check-work";
+import WindowDirectoryView from "core/window/WindowDirectoryView";
+
 import FormView from "core/formView";
 
 import "components/comboClose";
@@ -246,6 +248,33 @@ function columnGroupTemplate(obj, common, item){
   return  common.icon(obj)+common.folder(obj, common)+' '+item;
 }
 
+webix.editors.buttonEditor = {
+  focus:function(){
+    this.getInputNode(this.node).focus();
+    this.getInputNode(this.node).select();
+  },
+  getValue:function(){
+    return this.getInputNode(this.node).refValue;
+  },
+  setValue:function(value, obj){
+    let name = '';
+    let item = this.config.collection.getItem(value);
+    if (item) {
+      name = item.value;
+    }
+    this.getInputNode(this.node).value =  name;//value;
+    this.getInputNode(this.node).refValue =  value;
+
+  },
+  getInputNode:function(){
+    return this.node.firstChild;
+  },
+  render:function(){
+    return webix.html.create("div", {
+      "class":"webix_dt_editor"
+    }, "<input type='text' disabled='disabled' /><button class='editor-button' style='position: absolute;margin: 1px; right:0; height:25px;'>...</button>");
+  }
+}
 
 export default class InproduceView extends JetView{
   config(){
@@ -546,6 +575,7 @@ export default class InproduceView extends JetView{
     this.attachToolBarEvents();
 
     this.formEdit = this.ui(FormEditView);
+    this.windowDirectory = this.ui(WindowDirectoryView);
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
 
@@ -711,6 +741,14 @@ export default class InproduceView extends JetView{
         onSelectChange: function(id, e, trg){
 
         },
+      },
+      onClick:{
+        "editor-button":function(ev, id,obj, obj1){
+
+          let editor = this.getEditState();
+          this.$scope.windowDirectory.showWindow({},this, editor);
+          return false; // blocks the default click behavior
+        }
       }
     };
 
@@ -1567,6 +1605,7 @@ export default class InproduceView extends JetView{
         {'id':'adjust', 'header':'Рег.ширины', editor:'text', 'adjust':'all'},
         {'id':'template', 'header':'Шаблон', editor:'popup', 'adjust':'header'},
         {'id':'options', 'header':'Список', editor:'popup', 'adjust':'header'},
+        {'id':'options_url', 'header':'Url справочника', editor:'popup','adjust':'all'},
         {'id':'use_filter', 'header':'Исп. в фильтре', editor:'text', 'adjust':'all'},
         {'id':'math', 'header':'Math', editor:'popup', 'adjust':'all'},
         {'id':'form_edit', 'header':'Форма редакт.', editor:'select', 'options':optionsFormEdit,'adjust':'all'},

@@ -239,6 +239,12 @@ export default class EmployeeSalaryView extends JetView{
                     'employee_name' : ['employee_name'],
                     'department_id' : ['department_id'],
                     'remainder' : ['remainder','sum'],
+                    'pay_plan_1' : ['pay_plan_1','sum'],
+                    'pay_plan_2' : ['pay_plan_2','sum'],
+                    'pay_plan_3' : ['pay_plan_3','sum'],
+                    'pay_plan_4' : ['pay_plan_4','sum'],
+
+
                     'salary' : ['salary','sum'],
                     'transaction_sum' : ['transaction_sum','sum'],
                     'dept_start_month' : ['dept_start_month','sum'],

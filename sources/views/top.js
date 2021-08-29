@@ -133,10 +133,12 @@ export default class TopView extends JetView{
 	init(){
     this.use(plugins.Menu, "top:menu");
 		let scope = this;
+    let isLogged = 'http://admin.startsell.biz/api/users/is-logged';
     let urlSummaryAccount = this.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount');
-    // webix.ajax().get( urlSummaryAccount).then(function(data) {
-    //   scope.setTotalAccounts(data.json());
-    // });
+    webix.ajax().get( isLogged).then(function(data) {
+      //debugger;
+      //scope.setTotalAccounts(data.json());
+    });
     let user = webix.storage.local.get("wjet_user");
     let userId = user.user_id;
 
