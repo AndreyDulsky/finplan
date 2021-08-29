@@ -956,6 +956,9 @@ webix.protoUI({
     if (end == 'y' && word.length > 3) {
       return mode.replace(/y$/,'ies');
     }
+    if (end == 's' && word.length > 3) {
+      return mode.replace(/s$/,'ses');
+    }
     return mode+'s';
   },
 
