@@ -363,15 +363,16 @@ export default class UpdateFormView extends JetView {
 
       } else {
         tableUrlUpdate = scope.app.config.apiRest.getUrl("put","accounting/document-salary-accruals", {},row.id);
-        webix.ajax().put(tableUrlUpdate, row).then(function(data){
+        webix.ajax().sync().put(tableUrlUpdate, row).then(function(data){
           record = state.formEdit.getValues();
-          state.win.close();
+
           state.table.updateItem(record.id, record);
         });
       }
 
 
     });
+    state.win.close();
     //record = state.formEdit.getValues();
     //state.table.updateItem(listId, record);
 

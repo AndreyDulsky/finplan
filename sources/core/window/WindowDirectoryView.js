@@ -55,7 +55,7 @@ export default class WindowDirectoryView extends JetView {
         //state.top = state.height/2;
 
         state.top = 38*2;
-        state.width = state.maxWidth / 2;
+        state.width = state.maxWidth / 1.5;
         state.height = state.maxHeight/1.2;
         state.left = 44*2;
       },
@@ -82,7 +82,7 @@ export default class WindowDirectoryView extends JetView {
 
 
 
-  showWindow(obj, table, editor, view) {
+  showWindow(obj, table, editor, view, type) {
 
     let scope = this;
     let state  = this.state;
@@ -96,7 +96,7 @@ export default class WindowDirectoryView extends JetView {
     state.windowBody =  this.$$("windowBody");
     state.win = this.$$("windowDirectory");
 
-    this.directoryUrl = state.table.$scope.app.config.apiRest.getUrl('get',"accounting/"+state.editor.config.options_url);
+    //this.directoryUrl = state.table.$scope.app.config.apiRest.getUrl('get',"accounting/"+state.editor.config.options_url);
 
     let config = {
       view: "table-dynamic",
@@ -127,12 +127,17 @@ export default class WindowDirectoryView extends JetView {
         formView: view.formView,
         formComment: view.formComment,
         windowDirectory: view.windowDirectory,
-        cachePrefix: 'directory'
+        type: type
 
       },
-      stateCache : webix.storage.local.get(state.editor.config.options_url_edit+'_directory'+"_filter_state"),
+      stateCache : webix.storage.local.get(state.editor.config.options_url_edit+'_'+type+"_filter_state"),
 
     };
+
+    if (state.editor.config.filter) {
+      //webix.storage.local.put(state.editor.config.options_url_edit + '_' + type + "_filter_state", state.editor.config.filter);
+      config.state.params.id = state.editor.config.filter['filterInput'];
+    }
     webix.ui(
       config,
       state.windowBody

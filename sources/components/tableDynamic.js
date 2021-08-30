@@ -397,7 +397,7 @@ webix.protoUI({
                   {
                     view: "select",
                     labelWidth: 100,
-                    value: (this.stateCache) ? this.stateCache.dateFrom : "",
+                    value: (this.stateCache) ? this.stateCache.filterField : "",
                     options: [],
                     hidden: false,
                     localId: "filter-field"
@@ -499,7 +499,10 @@ webix.protoUI({
         }]
       }
     ];
+
+    this.stateFilter =  webix.storage.local.get(this.state.params.mode+"_"+this.state.type+"_filter_state");
     this.$ready.push(this.setPage);
+
     //this.$ready.push(this.attachToolBarEvents());
 
     //this.setPage();
@@ -587,7 +590,7 @@ webix.protoUI({
   },
 
   putFilterState() {
-    webix.storage.local.put(this.state.params.mode+'_'+this.state.cachePrefix+"_filter_state", {
+    webix.storage.local.put(this.state.params.mode+'_'+this.state.type+"_filter_state", {
       dateFrom:this.dateFrom.getValue(),
       dateTo:this.dateTo.getValue(),
       filterField: this.filterField.getValue(),
@@ -659,7 +662,7 @@ webix.protoUI({
 
         }
       });
-      if (idSelectType == '') webix.storage.local.remove(this.state.params.mode+'_'+this.state.cachePrefix+"_select_type_state");
+      if (idSelectType == '') webix.storage.local.remove(this.state.params.mode+'_'+this.state.type+"_select_type_state");
     }
     dataSelectType.data.forEach(function (item) {
 
@@ -716,7 +719,7 @@ webix.protoUI({
   },
 
   getSelectTypeState() {
-    let stateCache = webix.storage.local.get(this.state.params.mode+'_'+this.state.cachePrefix+"_select_type_state");
+    let stateCache = webix.storage.local.get(this.state.params.mode+'_'+this.state.type+"_select_type_state");
     if (stateCache)
       return stateCache.selectType;
     return false;
@@ -792,6 +795,7 @@ webix.protoUI({
     });
 
     scope.getEl('filter-field').refresh();
+
     if (scope.stateFilter) {
       scope.getEl('filter-field').setValue(scope.stateFilter.filterField);
     }
@@ -840,7 +844,7 @@ webix.protoUI({
         onItemDblClick:function(id, e, trg) {
           let item = this.getItem(id);
 
-          if (scope.state.cachePrefix == 'directory') {
+          if (scope.state.type == 'directory') {
             this.$scope.selectRecord(item);
             this.$scope.hideWindow();
           }
@@ -858,6 +862,19 @@ webix.protoUI({
 
           if (id.column == 'action-edit') {
             scope.state.formEdit.showForm(this);
+          }
+          if (id.column == 'action-view-window') {
+            let configColumn = scope.table.getColumnConfig(id.column);
+            let objConfig = {
+              'config':{
+                'options_url' : scope.getModelName(configColumn.goto),
+                'options_url_edit': configColumn.goto,
+                'header': [{'text':'Specification'}],
+                'filter': {"filterField":"list_id","filterInput":id.row}
+              }
+            };
+            scope.state.windowDirectory.showWindow({},scope.table, objConfig, scope.state.scope, 'document');
+
           }
           if (id.column == 'action-view') {
             //this.$scope.formView =  this.$scope.ui(FormView);
@@ -921,7 +938,7 @@ webix.protoUI({
       onClick:{
         "editor-button":function(ev, id,obj, obj1){
           let editor = this.getEditState();
-          scope.state.windowDirectory.showWindow({},scope.table, editor, scope.state.scope);
+          scope.state.windowDirectory.showWindow({},scope.table, editor, scope.state.scope,'directory');
           return false; // blocks the default click behavior
         }
       }
@@ -1077,7 +1094,7 @@ webix.protoUI({
       }
 
       scope.table.openAll();
-      if (scope.state.cachePrefix == 'directory') {
+      if (scope.state.type == 'directory') {
         scope.table.select(scope.$scope.state.editor.value);
         scope.table.showItem(scope.$scope.state.editor.value*1);
       }
@@ -1166,7 +1183,7 @@ webix.protoUI({
 
     }
 
-    if (this.filterField.isVisible() && this.filterInputValue!='') {
+    if (this.filterField != '' && this.filterInputValue!='') {
       //type[this.filterFieldValue] =  {">=": this.dateFromValue, '<=': this.dateToValue};
       type[this.filterFieldValue] = {};
       type[this.filterFieldValue]['like'] =  this.filterInputValue;
@@ -1954,7 +1971,7 @@ webix.protoUI({
   },
 
   doSaveBaseSettingClick() {
-    let url = this.app.config.apiRest.getUrl('get',"accounting/schema-table-user-list/save-to-base-setting");
+    let url = this.state.apiRest.getUrl('get',"accounting/schema-table-user-list/save-to-base-setting");
     let response = webix.ajax().sync().get(url, {'listId': this.state.listId, 'model':this.state.model});
     let dataJson = JSON.parse(response.responseText);
     this.showMessageError(dataJson);
@@ -3219,7 +3236,7 @@ webix.protoUI({
   },
 
   doDeleteMenuPrintClick(id, menu) {
-    let url = this.app.config.apiRest.getUrl('delete',"accounting/schema-print-user-lists",{},id);
+    let url = this.state.apiRest.getUrl('delete',"accounting/schema-print-user-lists",{},id);
     let response = webix.ajax().sync().del(url);
     if (response.status == 204) {
       menu.remove(id);
@@ -3231,7 +3248,7 @@ webix.protoUI({
   },
 
   doRenamePrintClick(id, context) {
-    let url = this.app.config.apiRest.getUrl('put',"accounting/schema-print-user-lists",{},id);
+    let url = this.state.apiRest.getUrl('put',"accounting/schema-print-user-lists",{},id);
 
 
     webix.prompt({
@@ -3265,7 +3282,7 @@ webix.protoUI({
   },
 
   doDefaultMenuPrintClick(id, context) {
-    let url = this.app.config.apiRest.getUrl('get',"accounting/schema-print-user-list/set-default",{'id':id});
+    let url = this.state.apiRest.getUrl('get',"accounting/schema-print-user-list/set-default",{'id':id});
     let response = webix.ajax().sync().get(url);
     let dataJson = JSON.parse(response.responseText);
     if (dataJson.success == true) {
@@ -3313,22 +3330,23 @@ webix.protoUI({
   },
 
   beforeDropChangeData(record, date, context) {
-
     let table = this.table;
     let field = this.schemaTableSetting.group['group-by'].value;
-
+    let scope = this;
     let sel = table.getSelectedId(true);
     context.source.forEach(item => {
       table.getItem(item)[field] = formatDateTimeDb(parserDateTimeGroup(date));
       table.refresh(item);
-      table.updateItem(item, table.getItem(item))
+      //table.sync().updateItem(item, table.getItem(item));
+      let url = this.state.apiRest.getUrl("put","accounting/"+scope.getModelName(scope.state.params.mode),{},item);
+      var xhr = webix.ajax().sync().put(url,table.getItem(item));
     });
     return true;
 
   },
 
   putSelectTypeState(value) {
-    webix.storage.local.put(this.state.params.mode+'_'+this.state.cachePrefix+"_select_type_state", {
+    webix.storage.local.put(this.state.params.mode+'_'+this.state.type+"_select_type_state", {
       selectType: value
     });
   }
