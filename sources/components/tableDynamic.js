@@ -882,7 +882,7 @@ webix.protoUI({
             //this.$scope.formView.showWindow(configColumn['goto']);
             if (configColumn['goto']) {
 
-              scope.$scope.show('main/'+configColumn['goto']+'/'+id.row);
+              scope.$scope.show('inproduce/'+configColumn['goto']+'/'+id.row);
             } else {
               scope.state.formView.showWindow({},this);
             }
