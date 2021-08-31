@@ -1202,6 +1202,11 @@ webix.protoUI({
         scope.table.showItem(scope.$scope.state.editor.value*1);
       }
 
+      if (webix.storage.local.get("finplan_version") != items.config.version_frontend) {
+
+        scope.versionReloadPage(items.config.version_frontend);
+      }
+
 
     });
   },
@@ -3481,6 +3486,28 @@ webix.protoUI({
         expire: -1,
       });
     }
+  },
+
+  versionReloadPage(scriptVersion) {
+    //let version = webix.storage.local.get("finplan_version");
+    //let list = document.querySelectorAll('[rel="main-script"]');
+
+    //let scriptSrc = list[0].getAttribute('src');
+    //let scriptParams = scriptSrc.split('?');
+    //let scriptVersions = scriptParams[1].split('=');
+    //let scriptVersion = scriptVersions[1];
+
+
+      //version = scriptVersion;
+    webix.storage.local.put("finplan_version", scriptVersion);
+    webix.modalbox({
+      title: "Доступна новая версия "+scriptVersion,
+      buttons:["Обновить"],
+      text: "Обновите страницу",
+    }).then(result => {
+      location.reload(true);
+    });
+
   }
 
 }, webix.ui.layout);
