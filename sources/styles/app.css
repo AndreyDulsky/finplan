@@ -306,3 +306,7 @@ i.mdi:hover{
     font-size:15px;
 }
 
+.webix_cell.marker{
+    background:#ffd;
+}
+

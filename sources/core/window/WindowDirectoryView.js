@@ -138,6 +138,8 @@ export default class WindowDirectoryView extends JetView {
       //webix.storage.local.put(state.editor.config.options_url_edit + '_' + type + "_filter_state", state.editor.config.filter);
       config.state.params.id = state.editor.config.filter['filterInput'];
     }
+    state.win.getHead().getChildViews()[0].setHTML(state.editor.config.header[0].text);
+    state.win.show();
     webix.ui(
       config,
       state.windowBody
@@ -147,9 +149,9 @@ export default class WindowDirectoryView extends JetView {
     //scope.attachFormEvents();
 
     //set title window
-    state.win.getHead().getChildViews()[0].setHTML(state.editor.config.header[0].text);
 
-    state.win.show();
+
+    //state.win.show();
 
   }
 

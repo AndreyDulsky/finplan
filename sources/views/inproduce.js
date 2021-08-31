@@ -328,7 +328,7 @@ export default class InproduceView extends JetView{
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
     this.windowDirectory = this.ui(WindowDirectoryView);
-
+    let type = 'table';
     let config = {
       view: "table-dynamic",
       state: {
@@ -357,10 +357,10 @@ export default class InproduceView extends JetView{
         formView: this.formView,
         formComment: this.formComment,
         windowDirectory: this.windowDirectory,
-        cachePrefix: '',
+        type: type,
 
       },
-      stateCache : webix.storage.local.get(this.mode+"_filter_state"),
+      stateCache : webix.storage.local.get(this.mode+'_'+type+"_filter_state"),
 
     };
     this.table = webix.ui(config, this.$$('layout') );

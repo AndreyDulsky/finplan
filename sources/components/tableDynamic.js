@@ -268,6 +268,10 @@ webix.editors.buttonEditor = {
   }
 }
 
+// webix.UIManager.addHotKey("Ctrl+V", function() {
+//   webix.message("Ctrl+V for any");
+// });
+
 webix.protoUI({
   name:"table-dynamic",
   defaults: {
@@ -488,6 +492,7 @@ webix.protoUI({
             click: function() { scope.doRefresh() }
 
           },
+
           {},
         ]
       },
@@ -911,9 +916,11 @@ webix.protoUI({
 
           }
         },
+
         onBeforeLoad:function(){
           //this.showOverlay("Loading...");
         },
+
         onBeforeDrop:function(context, e){
           let record = this.getItem(context.start);
           let recordSource = this.getItem(context.parent);
@@ -935,6 +942,7 @@ webix.protoUI({
 
         },
       },
+
       onClick:{
         "editor-button":function(ev, id,obj, obj1){
           let editor = this.getEditState();
@@ -953,6 +961,34 @@ webix.protoUI({
 
 
     this.table = webix.ui(tableConfig,layout,this.getEl('table-layout') );
+
+    this.table.attachEvent("onKeyPress", function(code, e){
+      //debugger;
+      if (this.contextMenuSearchKey)
+        this.contextMenuSearchKey.destructor();
+
+      let selectItem = scope.table.getSelectedId();
+      //debugger;
+      var obj = webix.UIManager.getFocus();
+
+      if (selectItem && selectItem.column) {
+        if ((code == 70 && e.ctrlKey == true) || (code == 70 && e.metaKey==true)) {
+          let offset = webix.html.offset(scope.table.getColumnConfig(selectItem.column).node);
+          this.contextMenuSearchKey = webix.ui(scope.getSearchFieldByKeyPress(selectItem.column, e.key, offset));
+          this.contextMenuSearchKey.show();
+          this.contextMenuSearchKey.queryView({'localId': 'search-by-key-field'}).focus();
+        }
+
+      }
+      return false;
+
+    });
+
+    webix.attachEvent("onFocusChange", function(mode){
+      //debugger;
+      // logic
+    });
+
     this.table.attachEvent("onColumnResize", function(id,newWidth,oldWidth,user_action) {
       scope.eventSetColumnUserSize(id,newWidth,oldWidth,user_action);
     });
@@ -962,6 +998,64 @@ webix.protoUI({
     });
 
     this.setColorSettingForTable();
+
+  },
+
+  getSearchFieldByKeyPress(column, key, offset) {
+    let scope = this;
+    return {
+      view:"context",
+      localId: "search-by-key",
+      position:function(state){
+        state.left = offset.x+20; // fixed values
+        state.top = offset.y;
+      },
+      body:{
+        width: 150,
+        view:"text",
+        //label:"CTRL+F",
+        //labelWidth:55,
+        value: '',
+        localId: 'search-by-key-field',
+        on:{
+          onEnter: function() {
+            // this.getParentView().close();
+            // scope.table.clearCss("marker", true);
+            // scope.table.refresh();
+            let value = this.getValue().toLowerCase();
+            let table = scope.table;
+            table.clearCss("marker", true);
+
+            if (value && value.length > 2) {
+              let res = table.find(function(obj) {
+                if (obj[column]) {
+                  return obj[column].toLowerCase().indexOf(value) != -1;
+                } else {
+                  return false;
+                }
+              });
+
+              if (res.length > 0) {
+                res.forEach(function(item) {
+                  table.addCss(item.id,  "marker", false);
+
+                });
+                let target = table.getIndexById(res[0].id);
+                let rowH = table.config.rowHeight;
+                table.scrollTo(0, target*rowH-(rowH*10));
+              }
+            }
+            this.getParentView().close();
+            //scope.table.clearCss("marker", true);
+            table.refresh();
+          },
+          onTimedKeyPress:function(){
+
+          }
+        }
+      },
+      master:scope.table
+    };
 
   },
 
@@ -3349,6 +3443,35 @@ webix.protoUI({
     webix.storage.local.put(this.state.params.mode+'_'+this.state.type+"_select_type_state", {
       selectType: value
     });
+  },
+
+  showMessageResult(data, request, showSuccess) {
+
+    if (data.errors ) {
+      for (var prop in data.errors) {
+        webix.message({
+          text:prop+':'+data.errors[prop],
+          type:"error",
+          expire: -1,
+        });
+      }
+    }
+
+    if (request.status == 200  && !data.errors && showSuccess) {
+      webix.message({
+        text: 'Данные cохранены',
+        type: 'info',
+        expire: 1000,
+      });
+    }
+
+    if (request.status == 204) {
+      webix.message({
+        text: 'Ошибка! Данные не сохранены',
+        type: 'error',
+        expire: -1,
+      });
+    }
   }
 
 }, webix.ui.layout);
