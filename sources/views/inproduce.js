@@ -311,6 +311,29 @@ export default class InproduceView extends JetView{
   }
 
   init(view) {
+
+
+    let version = webix.storage.local.get("finplan_version");
+    let list = document.querySelectorAll('[rel="main-script"]');
+
+    let scriptSrc = list[0].getAttribute('src');
+    let scriptParams = scriptSrc.split('?');
+    let scriptVersions = scriptParams[1].split('=');
+    let scriptVersion = scriptVersions[1];
+
+    console.log(scriptVersion);
+    console.log(version);
+    if (version != scriptVersion) {
+      //version = scriptVersion;
+      webix.storage.local.put("finplan_version", scriptVersion);
+      webix.modalbox({
+        title: "Доступна новая версия "+scriptVersion,
+        buttons:["Обновить"],
+        text: "Обновите страницу",
+      }).then(result => {
+        location.reload(true);
+      });
+    }
     let scope = this;
     this.initParam =false;
     this.use(plugins.UrlParam, ["mode", "id", "account_id"]);

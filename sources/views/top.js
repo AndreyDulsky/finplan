@@ -43,7 +43,7 @@ export default class TopView extends JetView{
             //   $$("menu").hide();
           	}
         },
-				{ view:"label", label:"ФинПлан"}, // label:this.app.config.name }
+				{ view:"label", label:"ФинПлан "+webix.storage.local.get("finplan_version")}, // label:this.app.config.name }
 				{
           width: 380,
 					cols: [
