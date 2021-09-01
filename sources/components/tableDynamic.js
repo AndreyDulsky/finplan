@@ -524,7 +524,6 @@ webix.protoUI({
     //this.setPage();
   },
   setPage() {
-
     this.showGoToBack();
     this.model = this.capitalizeFirstLetter(this.state.params.mode);
     this.setSelectType();
@@ -534,8 +533,6 @@ webix.protoUI({
     this.getTable();
     this.getDataTable();
     this.attachToolBarEvents();
-
-
   },
 
   attachToolBarEvents() {
@@ -985,10 +982,7 @@ webix.protoUI({
 
     });
 
-    webix.attachEvent("onFocusChange", function(mode){
-      //debugger;
-      // logic
-    });
+
 
     this.table.attachEvent("onColumnResize", function(id,newWidth,oldWidth,user_action) {
       scope.eventSetColumnUserSize(id,newWidth,oldWidth,user_action);
