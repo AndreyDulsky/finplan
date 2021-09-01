@@ -132,7 +132,11 @@ export default class TopView extends JetView{
 	}
 
 	init(){
-    this.use(plugins.Menu, "top:menu");
+    this.use(plugins.Menu, "top:menu", {
+      // urls:{
+      //   "cloth-directory":"../cloth-directory/index"
+      // }
+    });
 		let scope = this;
 
     let urlSummaryAccount = this.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount');
@@ -142,6 +146,7 @@ export default class TopView extends JetView{
       let result = data.json();
       webix.storage.local.put("wjet_permission", result.user['permissions_finplan']);
       scope.$$("top:menu").define('data', result.user['permissions_finplan']);
+      scope.$$("top:menu").refresh();
       //(result.user['permissions_finplan']) ? menu['data'] = result.user['permissions_finplan'] :  menu['data'] = {};
       //scope.setTotalAccounts(data.json());
     });

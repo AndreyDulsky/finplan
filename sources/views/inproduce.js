@@ -296,7 +296,6 @@ export default class InproduceView extends JetView{
   }
 
   urlChange(view,url){
-
     var id = this.getParam("mode", true);
     var mode = this.getParam("mode", true);
 
@@ -371,6 +370,7 @@ export default class InproduceView extends JetView{
     this.lastXHR = {};
     webix.attachEvent("onBeforeAjax", function(mode, url, params, xhr,
                                                headers, file, promise){
+
       if (Object.keys(scope.lastXHR).length > 0) {
         for (let key in scope.lastXHR) {
           let item = scope.lastXHR[key];
@@ -400,8 +400,7 @@ export default class InproduceView extends JetView{
       id: this.getParam('id'),
       account_id : this.getParam('account_id')
     };
-    this.table.state.stateCache  = webix.storage.local.get(this.mode+"_filter_state");
-
+    this.table.stateCache  = webix.storage.local.get(this.mode+"_table_filter_state");
     this.table.setPage();
 
   }

@@ -533,6 +533,7 @@ webix.protoUI({
     this.getTable();
     this.getDataTable();
     this.attachToolBarEvents();
+
   },
 
   attachToolBarEvents() {
@@ -967,7 +968,7 @@ webix.protoUI({
 
       let selectItem = scope.table.getSelectedId();
       //debugger;
-      var obj = webix.UIManager.getFocus();
+      //var obj = webix.UIManager.getFocus();
 
       if (selectItem && selectItem.column) {
         if ((code == 70 && e.ctrlKey == true) || (code == 70 && e.metaKey==true)) {
@@ -975,10 +976,11 @@ webix.protoUI({
           this.contextMenuSearchKey = webix.ui(scope.getSearchFieldByKeyPress(selectItem.column, e.key, offset));
           this.contextMenuSearchKey.show();
           this.contextMenuSearchKey.queryView({'localId': 'search-by-key-field'}).focus();
+          return false;
         }
 
       }
-      return false;
+      //return code;
 
     });
 
