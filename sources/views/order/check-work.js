@@ -172,32 +172,32 @@ export default class CheckFormView extends JetView {
         editable:true,
         editaction: "dblclick",
         resizeColumn: { headerOnly:true },
-        columns:[
-          //{ id:"id", header:"ID", width: 50},
-          { id:"sort_order", header:"№ пор.", width: 50, editor:"text"},
-          { id:"name", header:"Наименование", width: 150,
-            // template: function(obj, common) {
-            //   if (obj.$group) return common.treetable(obj, common) + obj.department.name;
-            //   return common.icon(obj)+obj.name;
-            // }
-          },
-          { id:"department_id", header:"Подразделение", width: 100,
-            collection: state.table.$scope.app.config.apiRest.getCollection('accounting/departments',{'per-page': -1})
-          },
-          { id:"employee_name", header:"Исполнитель", width: 100, editor:"text"},
-          { id:"status", header:"Статус", width: 50, editor:"text"},
-          { id:"date_fact_start", header:"Дата.факт.старт", width: 120},
-          { id:"date_fact_end", header:"Дата.факт.оконч.", width: 120},
-
-          { id:"time_work", header:"Время", width: 80},
-          { id:"description", header:"Описание", width: 80, editor:"text"},
-          {
-            "id": "action-delete",
-            "header": "",
-            "width": 50,
-            "template": "{common.trashIcon()}"
-          },
-        ],
+        // columns:[
+        //   { id:"id", header:"ID", width: 50},
+        //   // { id:"sort_order", header:"№ пор.", width: 50, editor:"text"},
+        //   { id:"name", header:"Наименование", width: 150,
+        //     // template: function(obj, common) {
+        //     //   if (obj.$group) return common.treetable(obj, common) + obj.department.name;
+        //     //   return common.icon(obj)+obj.name;
+        //     // }
+        //   },
+        //   // { id:"department_id", header:"Подразделение", width: 100,
+        //   //   //collection: state.table.$scope.app.config.apiRest.getCollection('accounting/departments',{'per-page': -1})
+        //   // },
+        //   // { id:"employee_name", header:"Исполнитель", width: 100, editor:"text"},
+        //   // { id:"status", header:"Статус", width: 50, editor:"text"},
+        //   // { id:"date_fact_start", header:"Дата.факт.старт", width: 120},
+        //   // { id:"date_fact_end", header:"Дата.факт.оконч.", width: 120},
+        //   //
+        //   // { id:"time_work", header:"Время", width: 80},
+        //   // { id:"description", header:"Описание", width: 80, editor:"text"},
+        //   // {
+        //   //   "id": "action-delete",
+        //   //   "header": "",
+        //   //   "width": 50,
+        //   //   "template": "{common.trashIcon()}"
+        //   // },
+        // ],
         url: state.table.$scope.app.config.apiRest.getUrl('get',"accounting/order-works", {
           'filter':'{"order_id":"'+record['id']+'"}',
           'expand' : 'department',
