@@ -839,6 +839,30 @@ webix.protoUI({
       },
       ready: function() {
         //scope.attachToolBarEvents()
+        webix.ui({
+          view:"contextmenu",
+          data: ["Редактировать"],
+          on:{
+            onItemClick:function(id){
+              var context = this.getContext();
+              scope.queryView({localId:'table-layout'}).unselect();
+              scope.queryView({localId:'table-layout'}).select(context.id.row, context.id.column,true);
+              if (id == 'Редактировать') {
+                scope.state.formUpdateOrderView.showForm(scope.queryView({localId:'table-layout'}));
+              }
+              if (id == 'Копировать') {
+
+                var grid = scope.queryView({localId:'table-layout'});
+
+                // let clipboard = document.getElementsByClassName("webix_clipbuffer")[0].value;
+                // grid.callEvent("onKeyPress", [
+                //   clipboard,
+                //   {ctrlKey:true,target:grid.$view}
+                // ]);
+              }
+            }
+          }
+        }).attachTo(this);
       },
       on:{
         onAfterColumnDrop : function() {

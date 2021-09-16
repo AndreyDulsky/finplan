@@ -2,6 +2,7 @@ import {JetView, plugins} from "webix-jet";
 import FormEditView from "core/updateFormView";
 import FormCommnetView from "views/comment/index";
 import FormViewView from "views/order/check-work";
+import UpdateFormOrderView from "core/updateFormOrderView";
 import WindowDirectoryView from "core/window/WindowDirectoryView";
 import TableDynamic from  "components/tableDynamic";
 
@@ -327,6 +328,8 @@ export default class InproduceView extends JetView{
     this.formEdit = this.ui(FormEditView);
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
+    this.formUpdateOrderView = this.ui(UpdateFormOrderView);
+
     this.windowDirectory = this.ui(WindowDirectoryView);
     let type = 'table';
     let config = {
@@ -356,6 +359,8 @@ export default class InproduceView extends JetView{
         formEdit: this.formEdit,
         formView: this.formView,
         formComment: this.formComment,
+        formUpdateOrderView: this.formUpdateOrderView,
+
         windowDirectory: this.windowDirectory,
         type: type,
 
