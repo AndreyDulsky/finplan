@@ -389,34 +389,116 @@ export default class UpdateFormOrderView extends JetView {
     if (!state.formEdit.validate()) return;
 
     let record = state.formEdit.getValues();
+    //console.log(map); // Map { foo: "bar", baz: 42 }
+    //let record = JSON.stringify(state.formEdit.getValues(), null, 2).toJSON();
     if (copy) {
       state.isUpdate = false;
       record.id = '';
     }
     //debugger;
-    webix.dp(state.table).save(
-      (state.isUpdate) ? record.id : webix.uid(),
-      (state.isUpdate) ? "update" : "insert",
-      record
-    ).then(function(obj){
-      webix.dp(state.table).ignore(function(){
 
-        (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
+    let url = this.apiRest.getUrl('create', 'accounting/orders');
+    if (state.isUpdate)
+      url = this.apiRest.getUrl('put', 'accounting/orders', {}, record.id);
 
-        state.table.select(obj.id);
 
-        if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
-
-        //state.table.sort("name", "asc", "string");
-        //state.table.markSorting("name", "asc");
-
-      });
-
-      state.table.refresh();
-      state.win.hide();
-    }, function(){
-      webix.message("Ошибка! Данные не сохранены!");
+    let fieldsSave = Object.keys(state.formEdit.elements);
+    let recordSave = {};
+    fieldsSave.forEach(function(item, key) {
+        recordSave[item] = record[item];
     });
+    if (state.isUpdate) {
+      webix.ajax().put(url, recordSave, {
+        error: function (text, data, response) {
+          //scope.showMessageError(data.json());
+        },
+        success: function (text, data, response) {
+          let obj = data.json();
+          webix.dp(state.table).ignore(function(){
+
+            (state.isUpdate) ? state.table.updateItem(recordSave.id, obj) : state.table.add(obj,0);
+
+            state.table.select(obj.id);
+
+            if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
+
+            //state.table.sort("name", "asc", "string");
+            //state.table.markSorting("name", "asc");
+
+          });
+          webix.message({
+            text: 'Данные успешно сохранены!',
+            type: "info",
+            expire: 4000,
+          });
+
+          if (!state.isUpdate) {
+            state.table.scrollTo(0, 0)
+          }
+          ;
+          state.table.refresh();
+          state.win.hide();
+        }
+      });
+    } else {
+      webix.ajax().post(url, recordSave, {
+        error: function (text, data, response) {
+          //scope.showMessageError(data.json());
+        },
+        success: function (text, data, response) {
+          let obj = data.json();
+          webix.dp(state.table).ignore(function(){
+
+            (state.isUpdate) ? state.table.updateItem(recordSave.id, obj) : state.table.add(obj,0);
+
+            state.table.select(obj.id);
+
+            if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
+
+            //state.table.sort("name", "asc", "string");
+            //state.table.markSorting("name", "asc");
+
+          });
+          webix.message({
+            text: 'Данные успешно сохранены!',
+            type: "info",
+            expire: 4000,
+          });
+
+
+          if (!state.isUpdate) {
+            state.table.scrollTo(0, 0)
+          }
+          state.table.refresh();
+          state.win.hide();
+        }
+      });
+    }
+
+    // webix.dp(state.table).save(
+    //   (state.isUpdate) ? record.id : webix.uid(),
+    //   (state.isUpdate) ? "update" : "insert",
+    //   recordSave
+    // ).then(function(obj){
+    //   webix.dp(state.table).ignore(function(){
+    //
+    //     (state.isUpdate) ? state.table.updateItem(recordSave.id, obj) : state.table.add(obj,0);
+    //     debugger;
+    //
+    //     state.table.select(obj.id);
+    //
+    //     if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
+    //
+    //     //state.table.sort("name", "asc", "string");
+    //     //state.table.markSorting("name", "asc");
+    //
+    //   });
+    //   debugger;
+    //   state.table.refresh();
+    //   state.win.hide();
+    // }, function(){
+    //   webix.message("Ошибка! Данные не сохранены!");
+    // });
   }
 
   setPrice() {

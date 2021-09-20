@@ -841,18 +841,17 @@ webix.protoUI({
         //scope.attachToolBarEvents()
         webix.ui({
           view:"contextmenu",
-          data: ["Редактировать"],
+          data: ["Добавить","Редактировать"],
           on:{
             onItemClick:function(id){
               var context = this.getContext();
               scope.queryView({localId:'table-layout'}).unselect();
               scope.queryView({localId:'table-layout'}).select(context.id.row, context.id.column,true);
-              if (id == 'Редактировать') {
-                scope.state.formUpdateOrderView.showForm(scope.queryView({localId:'table-layout'}));
-              }
-              if (id == 'Копировать') {
+              if (id == 'Добавить') {
 
-                var grid = scope.queryView({localId:'table-layout'});
+                let grid = scope.queryView({localId:'table-layout'});
+                grid.unselectAll();
+                scope.state.formUpdateOrderView.showForm(scope.queryView({localId:'table-layout'}));
 
                 // let clipboard = document.getElementsByClassName("webix_clipbuffer")[0].value;
                 // grid.callEvent("onKeyPress", [
@@ -860,6 +859,10 @@ webix.protoUI({
                 //   {ctrlKey:true,target:grid.$view}
                 // ]);
               }
+              if (id == 'Редактировать') {
+                scope.state.formUpdateOrderView.showForm(scope.queryView({localId:'table-layout'}));
+              }
+
             }
           }
         }).attachTo(this);
@@ -889,7 +892,11 @@ webix.protoUI({
         onItemClick:function(id, e, trg) {
 
           if (id.column == 'action-edit') {
-            scope.state.formEdit.showForm(this);
+            if (scope.state.params.mode == 'order') {
+              scope.state.formUpdateOrderView.showForm(this);
+            } else {
+              scope.state.formEdit.showForm(this);
+            }
           }
           if (id.column == 'action-view-window') {
             let configColumn = scope.table.getColumnConfig(id.column);
@@ -3089,7 +3096,12 @@ webix.protoUI({
   doAddClick() {
     this.table.unselect();
     this.table.listId = this.state.params.id;
-    this.state.formEdit.showForm(this.table);
+    if (this.state.params.mode == 'order') {
+      this.table.unselectAll();
+      this.state.formUpdateOrderView.showForm(this.table);
+    } else {
+      this.state.formEdit.showForm(this.table);
+    }
   },
 
   doClickOpenAll() {
