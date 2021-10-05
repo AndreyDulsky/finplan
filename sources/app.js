@@ -93,7 +93,7 @@ export default class App extends JetApp {
                   webix.message({
                     text:prop+':'+result.errors[prop],
                     type:"error",
-                    expire: -1,
+                    expire: 1000,
                   });
 
                 }
@@ -121,7 +121,7 @@ export default class App extends JetApp {
                   webix.message({
                     text:prop+':  '+result.changeData[prop]['old']+' Изменено на: '+result.changeData[prop]['new']+' User:'+result.changeData[prop]['user'],
                     type:"error",
-                    expire: -1,
+                    expire: 1000,
                   });
 
                 }

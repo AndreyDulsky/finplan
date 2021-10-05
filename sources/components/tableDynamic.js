@@ -634,7 +634,7 @@ webix.protoUI({
         webix.message({
           text:prop+':'+dataSelectType.errors[prop],
           type:"error",
-          expire: -1,
+          expire: 1000,
         });
 
       }
@@ -3447,7 +3447,7 @@ webix.protoUI({
         webix.message({
           text:prop+':'+dataJson.errors[prop],
           type:"error",
-          expire: -1,
+          expire: 2000,
         });
 
       }
@@ -3468,10 +3468,17 @@ webix.protoUI({
     let sel = table.getSelectedId(true);
     context.source.forEach(item => {
       table.getItem(item)[field] = formatDateTimeDb(parserDateTimeGroup(date));
-      table.refresh(item);
+
       //table.sync().updateItem(item, table.getItem(item));
       let url = this.state.apiRest.getUrl("put","accounting/"+scope.getModelName(scope.state.params.mode),{},item);
       var xhr = webix.ajax().sync().put(url,table.getItem(item));
+
+      if (xhr.status == 200) {
+        let result = JSON.parse(xhr.response);
+        table.getItem(item)['updated'] = result['updated'];
+      }
+      table.refresh(item);
+
     });
     return true;
 
@@ -3490,7 +3497,7 @@ webix.protoUI({
         webix.message({
           text:prop+':'+data.errors[prop],
           type:"error",
-          expire: -1,
+          expire: 1000,
         });
       }
     }
