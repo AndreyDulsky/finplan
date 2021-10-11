@@ -260,6 +260,9 @@ export default class UpdateFormOrderView extends JetView {
     let comboOptionsId = this.$$("option");
     let inputOptionsName = this.$$("form_option_name");
 
+    let comboManagerId = this.$$("manager");
+    let inputCityName = this.$$("form_city");
+
     let comboProductTypeId = this.$$("product_type");
 
     btnSave.attachEvent("onItemClick", function(newValue) {
@@ -296,6 +299,13 @@ export default class UpdateFormOrderView extends JetView {
 
     comboContragentId.attachEvent("onChange", function(newValue) {
       inputContragentName.setValue(comboContragentId.getText());
+      let item = comboContragentId.getPopup().getList().getItem(comboContragentId.getValue());
+      if (!comboManagerId.getValue()) {
+        comboManagerId.setValue(item.manager_id);
+      }
+      if (!inputCityName.getValue()) {
+        inputCityName.setValue(item.city);
+      }
       scope.setPrice();
 
     });

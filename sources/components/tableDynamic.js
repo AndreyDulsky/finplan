@@ -604,7 +604,9 @@ webix.protoUI({
 
   showGoToBack() {
     let id = this.state.params.id;
-    if (id) {
+    let window = this.state.params.window;
+
+    if (id && !window) {
       this.getEl('btn-back').show();
     } else {
       this.getEl('btn-back').hide();
@@ -876,8 +878,11 @@ webix.protoUI({
           let item = this.getItem(id);
 
           if (scope.state.type == 'directory') {
-            this.$scope.selectRecord(item);
-            this.$scope.hideWindow();
+
+            //scope.getParentView().config.scope.selectRecord(item);
+            scope.config.$scope.selectRecord(item)
+            //scope.getParentView().config.scope.hideWindow();
+            scope.config.$scope.hideWindow();
           }
           if (item.account_id) {
             if (this.$scope.urlParams['account_id']) {
@@ -908,7 +913,12 @@ webix.protoUI({
                 'filter': {"filterField":"list_id","filterInput":id.row}
               }
             };
-            scope.state.windowDirectory.showWindow({},scope.table, objConfig, scope.state.scope, 'document');
+            let gotoType = 'table';
+
+            if (configColumn.goto_type == 'document') {
+              gotoType = 'document';
+            }
+            scope.state.windowDirectory.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
 
           }
           if (id.column == 'action-view') {
@@ -1088,6 +1098,7 @@ webix.protoUI({
   },
 
   getModelName(mode) {
+
     let end = mode[mode.length-1];
     let word = mode.split('-');
     word = word[word.length-1];
@@ -1216,9 +1227,10 @@ webix.protoUI({
       }
 
       scope.table.openAll();
+
       if (scope.state.type == 'directory') {
-        scope.table.select(scope.$scope.state.editor.value);
-        scope.table.showItem(scope.$scope.state.editor.value*1);
+        scope.table.select(scope.state.scope.state.editor.value);
+        scope.table.showItem(scope.state.scope.state.editor.value*1);
       }
 
       if (webix.storage.local.get("finplan_version") != items.config.version_frontend) {
@@ -2048,6 +2060,7 @@ webix.protoUI({
         {'id':'math', 'header':'Math', editor:'popup', 'adjust':'all'},
         {'id':'form_edit', 'header':'Форма редакт.', editor:'select', 'options':optionsFormEdit,'adjust':'all'},
         {'id':'goto', 'header':'url', editor:'popup','adjust':'all'},
+        {'id':'goto_type', 'header':'url_type', editor:'popup','adjust':'all'},
         {'id':'', 'header':'', 'fillspace':true},
 
       ],

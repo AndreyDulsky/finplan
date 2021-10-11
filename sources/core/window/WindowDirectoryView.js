@@ -43,41 +43,13 @@ export default class WindowDirectoryView extends JetView {
     //
     // });
 
-    return {
-      localId: "windowDirectory",
-      view: "window",
-      position: function (state) {
-        //state.left = 44;
-        //state.top = 34;
-        //state.width = state.maxWidth/2;
-        //state.height = state.maxHeight/2;
-        //state.left = state.width/2;
-        //state.top = state.height/2;
-
-        state.top = 38*2;
-        state.width = state.maxWidth / 1.5;
-        state.height = state.maxHeight/1.2;
-        state.left = 44*2;
-      },
-      //width: 500,
-      resize: true,
-      move: true,
-      scroll: true,
-      head: "Справочник",
-      close: true,
-      modal: true,
-      body: {
-        localId: "windowBody"
-        //view: this.tableSetting
-
-      }
-    }
+    return {}
 
 
   }
 
   init(view, url) {
-
+    this.state.wins = [];
   }
 
 
@@ -93,20 +65,25 @@ export default class WindowDirectoryView extends JetView {
     state.isUpdate = isUpdate;
     state.table = table;
     state.editor = editor;
-    state.windowBody =  this.$$("windowBody");
-    state.win = this.$$("windowDirectory");
+    state.windowNumber = this.state.wins.length;
+
+
+    //state.windowBody =  this.$$("windowBody");
+    //state.win = this.$$("windowDirectory");
 
     //this.directoryUrl = state.table.$scope.app.config.apiRest.getUrl('get',"accounting/"+state.editor.config.options_url);
 
     let config = {
       view: "table-dynamic",
       localId: "windowBody",
+      $scope : scope,
       state: {
         scope : scope,
         params: {
           mode: state.editor.config.options_url_edit,
           id: this.getParam('id'),
-          account_id : this.getParam('account_id')
+          account_id : this.getParam('account_id'),
+          window: true
         },
         apiRest: this.app.config.apiRest,
         urlTableUserLists: this.app.config.apiRest.getUrl('get',"accounting/schema-table-user-lists",
@@ -138,12 +115,121 @@ export default class WindowDirectoryView extends JetView {
       //webix.storage.local.put(state.editor.config.options_url_edit + '_' + type + "_filter_state", state.editor.config.filter);
       config.state.params.id = state.editor.config.filter['filterInput'];
     }
+
+
+    let count = 25*this.state.wins.length;
+
+    let countLeft = count;
+    let countTop = count;
+
+    let configDocument = {};
+    if (type == 'document') {
+      configDocument = {
+        //view: 'toolbar',
+        // margin:{
+        //   top:10, bottom:10, left:10, right:10
+        // },
+        type: 'space',
+        borderless:true,
+        cols: [
+          {},
+
+          {
+            "view": "button",
+            "label": "Отмена",
+            "localId": "btn_cancel",
+            "css": "webix_transparent",
+            "align": "right",
+            "width": 120,
+            click: function(){
+              scope.hideWindow();
+            }
+          }, {
+            "view": "button",
+            "localId": "btn_save",
+            "css": "webix_primary",
+            "label": "Сохранить",
+            "align": "right",
+            "width": 120
+          }
+
+          // {
+          //   width: 10
+          // },
+        ]
+      }
+    }
+    let rows = [];
+    rows.push(config);
+    if (Object.keys(configDocument).length > 0) {
+      rows.push(configDocument);
+    }
+
+    state.win = webix.ui({
+      scope: this,
+      localId: "windowDirectory",
+      view: "window",
+      position: function (state) {
+        state.top = 38*2+countTop;
+        state.width = state.maxWidth / 1.5;
+        state.height = state.maxHeight/1.2;
+        state.left = 44*2+countLeft;
+      },
+      head:{
+        cols:[
+          { template:"Title", type:"header", borderless:true},
+          {
+            view:"icon", icon:"mdi mdi-fullscreen", tooltip:"Развернуть окно", click:function() {
+
+            if (this.getParentView().getParentView().config.fullscreen){
+
+              this.getParentView().getParentView().define({
+                fullscreen: false, position: function (state) {
+                  state.top = 38*2+countTop;
+                  state.width = state.maxWidth / 1.5;
+                  state.height = state.maxHeight/1.2;
+                  state.left = 44*2+countLeft;
+                } });
+              this.define({icon:"mdi mdi-fullscreen", tooltip:"Развернуть окно"});
+            }
+            else {
+
+              this.define({icon:"mdi mdi-fullscreen-exit", tooltip:"Сверуть окно"});
+              this.getParentView().getParentView().define({
+                fullscreen: true, top:0, left:0, position:false
+              });
+            }
+            this.refresh();
+            this.getParentView().getParentView().resize();
+          }
+          },
+          {view:"icon", icon:"wxi-close", tooltip:"Close window", click: function(){
+            scope.hideWindow();
+          }}
+        ]
+      },
+      //width: 500,
+      fullscreen:false,
+      resize: true,
+      move: true,
+      scroll: true,
+      //head: "Справочник",
+      close: true,
+      modal: true,
+      body: {
+        type: 'space',
+        css: 'webix_primary',
+        rows: rows
+      }
+    });
+
     state.win.getHead().getChildViews()[0].setHTML(state.editor.config.header[0].text);
+    state.wins.push(state.win);
     state.win.show();
-    webix.ui(
-      config,
-      state.windowBody
-    );
+    // webix.ui(
+    //   config,
+    //   state.windowBody
+    // );
     //state.formEdit.setValues(record);
 
     //scope.attachFormEvents();
@@ -167,7 +253,11 @@ export default class WindowDirectoryView extends JetView {
 
   hideWindow() {
     let state  = this.state;
-    state.win.hide();
+
+    let windowNumber = state.wins.pop();
+
+    windowNumber.hide();
+
   }
 
   attachFormEvents() {
@@ -215,7 +305,7 @@ export default class WindowDirectoryView extends JetView {
       });
 
       state.table.refresh();
-      state.win.hide();
+      state.win.close();
     }, function(){
       webix.message("Ошибка! Данные не сохранены!");
     });
