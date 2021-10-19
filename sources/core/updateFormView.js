@@ -133,7 +133,7 @@ export default class UpdateFormView extends JetView {
   renderForm(elementsCount) {
     let state  = this.state;
     //render first time
-    if (elementsCount === 0 ) {
+    //if (elementsCount === 0 ) {
       state.formConfig = state.formData.data.configForm;
       webix.ui(
         state.formConfig,
@@ -141,10 +141,10 @@ export default class UpdateFormView extends JetView {
       );
 
       //this.attachFormParamsElements();
-
+    //if (elementsCount === 0 ) {
       //atach events for first render
       this.attachFormEvents();
-    }
+    //}
 
   }
 
@@ -242,6 +242,7 @@ export default class UpdateFormView extends JetView {
     let record = state.formEdit.getValues();
     if (copy) {
       state.isUpdate = false;
+      record.flag_copy = record.id;
       record.id = '';
     }
     if (record['action-edit']!= 'undefined') delete record['action-edit'];

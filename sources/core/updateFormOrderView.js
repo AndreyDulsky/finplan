@@ -136,7 +136,7 @@ export default class UpdateFormOrderView extends JetView {
 
     let state  = this.state;
     //render first time
-    if (elementsCount === 0 ) {
+
       state.formConfig = state.formData.data.configForm;
       webix.ui(
         state.formConfig,
@@ -144,10 +144,10 @@ export default class UpdateFormOrderView extends JetView {
       );
 
       //this.attachFormParamsElements();
-
+    //if (elementsCount === 0 ) {
       //atach events for first render
       this.attachFormEvents();
-    }
+    //}
   }
 
   bindCollection(result) {

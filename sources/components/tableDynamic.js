@@ -897,7 +897,7 @@ webix.protoUI({
         onItemClick:function(id, e, trg) {
 
           if (id.column == 'action-edit') {
-            if (scope.state.params.mode == 'order') {
+            if (scope.state.params.mode == 'order' || scope.state.params.mode == 'order-management') {
               scope.state.formUpdateOrderView.showForm(this);
             } else {
               scope.state.formEdit.showForm(this);
@@ -3109,7 +3109,7 @@ webix.protoUI({
   doAddClick() {
     this.table.unselect();
     this.table.listId = this.state.params.id;
-    if (this.state.params.mode == 'order') {
+    if (this.state.params.mode == 'order' || this.state.params.mode == 'order-management') {
       this.table.unselectAll();
       this.state.formUpdateOrderView.showForm(this.table);
     } else {
