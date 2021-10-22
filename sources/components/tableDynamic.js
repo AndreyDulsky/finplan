@@ -25,7 +25,6 @@ webix.ui.datafilter.totalColumn = webix.extend({
     master.data.each(function (obj) {
       if (obj.$group) return;
 
-
       _val = obj[value.columnId];
       if (value.columnId == 'coefMoney') {
         _val = obj.G/7860;
@@ -178,6 +177,8 @@ webix.ui.datafilter.mathColumn = webix.extend({
     node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
+
+
 
 function formatPercent(value){
   return value*100;
@@ -457,6 +458,94 @@ webix.protoUI({
         ]
       },
       {
+        localId: "layoutDocument",
+        hidden: (this.state.type != 'document') ? true : false,
+        rows:
+          [{
+
+            view: 'form',
+            //scroll : "true",
+            localId: "formDocument",
+
+            elements: [
+              {
+                "margin": 10,
+                cols: [
+                  {
+
+                    "label": "ID",
+                    "name": "id",
+                    "localId": "list_id",
+                    "value": this.state.params.id,
+                    "placeholder": "ID",
+                    "view": "text",
+                    "height": 38,
+                    "labelWidth": 50,
+                    "width": 150,
+                    disabled: true,
+                    invalidMessage: "Значение не может быть пустым!"
+                  },
+                  {
+
+                    "name": "date_document",
+                    view: "datepicker",
+                    localId: 'date_document',
+                    //inputWidth:150,
+                    label: 'Дата',
+                    labelWidth: 50,
+                    width: 180,
+                    value: (this.state.parent) ? this.state.parent.getSelectedItem().date_document : new Date(),
+                    required: true,
+                    invalidMessage: "Значение не может быть пустым!"
+                  },
+                  {
+
+                    "name": "date_created",
+                    view: "datepicker",
+                    localId: 'date_created',
+                    //inputWidth:150,
+                    label: 'Дата',
+                    labelWidth: 50,
+                    width: 180,
+                    value: (this.state.parent) ? this.state.parent.getSelectedItem().created : new Date(),
+                    required: true,
+                    invalidMessage: "Значение не может быть пустым!",
+                    hidden: true
+                  },
+                  {
+
+                    "name": "type_document",
+                    view: "text",
+                    localId: 'type_document',
+                    label: 'Тип документа',
+                    labelWidth: 50,
+                    width: 180,
+                    value: (this.state.parent) ? this.state.parent.getSelectedItem().type_document : '',
+                    disabled: true,
+                    format: '1 111,00',
+                    invalidMessage: "Значение не может быть пустым!",
+                    hidden: true
+                  },
+                  {
+                    "name": "sum",
+                    view: "text",
+                    localId: 'sum',
+                    label: 'Сумма',
+                    labelWidth: 50,
+                    width: 180,
+                    value: (this.state.parent) ? this.state.parent.getSelectedItem().sum : 0,
+                    disabled: true,
+                    format: '1 111.00',
+                    invalidMessage: "Значение не может быть пустым!"
+                  },
+                  {}
+                ]
+              }
+            ]
+          }]
+
+      },
+      {
         view: "toolbar",
         localId: "show-toolbar",
         height: 30,
@@ -490,6 +579,14 @@ webix.protoUI({
             autowidth: true,
             value: true,
             click: function() { scope.doRefresh() }
+
+          },
+          {
+            view: "icon",
+            icon: 'mdi mdi-calculator',
+            autowidth: true,
+            value: true,
+            click: () =>  scope.doClickFillAll()
 
           },
 
@@ -534,6 +631,67 @@ webix.protoUI({
     this.getDataTable();
     this.attachToolBarEvents();
 
+  },
+
+  doClickFillAll(employeeId = '') {
+    let state = this.state;
+    let table = this.table;
+    let formatDate = webix.Date.dateToStr("%Y-%m-%d");
+    let dateDocument = this.state.parent.getSelectedItem().date_document;
+    let params = {
+      sort: 'employee_name',
+      dateDocument: formatDate(dateDocument),
+      filter1: '{"date_carpenter":{">=": "01.02.21", "<=":"28.02.21"}}',
+      employee: "Василенко Роман"
+      //filter: '{"AE":{">=":"'+dateToValue+'"}}'
+    };
+    if (employeeId) {
+      params['employee_id'] = employeeId;
+    }
+    let tableUrl = this.state.apiRest.getUrl('get',"accounting/employee-time-work/get-salary-by-days", params);
+    let scope =this;
+    webix.ajax().get(tableUrl).then(function(data){
+      //table.clearAll();
+      let dataJson = data.json().data;
+      let dataEmployees = [];
+      table.data.each(function(row){
+        dataEmployees[row.employee_id] = row;
+      });
+
+
+      let row;
+      for (var key in dataJson) {
+
+        row = dataJson[key];
+        delete row['id'];
+        if (!dataEmployees[row['employee_id']]) {
+          row.$css = 'webix_editing_cell';
+          webix.dp(table).ignore(function(){
+            table.add(row);
+          });
+
+          //table.addRowCss(dataEmployees[row.employee_id]['id'], "webix_invalid_cell");
+
+        } else {
+          if (employeeId!='') {
+            let changes= [];
+            for (var keyRow in row) {
+
+              if (parseFloat(row[keyRow]) && Math.round(row[keyRow]) != Math.round(dataEmployees[row['employee_id']][keyRow])) {
+                //console.log(Math.round(row[keyRow])+'='+Math.round(dataEmployees[row['employee_id']][keyRow]));
+                changes.push(keyRow);
+              }
+            }
+            table.updateItem(dataEmployees[row.employee_id]['id'], row);
+            for (var keyChanges in changes) {
+              table.addCellCss(dataEmployees[row.employee_id]['id'], changes[keyChanges], "webix_editing_cell");
+            }
+          }
+        }
+      }
+      table.editCell(1, "employee_id", true, true);
+
+    });
   },
 
   attachToolBarEvents() {
@@ -1216,12 +1374,12 @@ webix.protoUI({
             'property_title': ['A'],
             'index': ['', 'string'],
             'I': ['', 'string'],
-            'G': ['G', 'sum'],
-            'value_sum': ['value_sum', 'median'],
-            'L': ['', 'string'],
-            'N': ['', 'string'],
-            'O': ['', 'string'],
-            'P': ['', 'string']
+            // //'G': ['G', 'sum'],
+            // 'value_sum': ['value_sum', 'median'],
+             'L': ['', 'string'],
+             'N': ['', 'string'],
+             'O': ['', 'string'],
+             'P': ['', 'string']
           },
         });
       }

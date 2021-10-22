@@ -79,6 +79,7 @@ export default class WindowDirectoryView extends JetView {
       $scope : scope,
       state: {
         scope : scope,
+        parent: table,
         params: {
           mode: state.editor.config.options_url_edit,
           id: this.getParam('id'),
@@ -150,7 +151,11 @@ export default class WindowDirectoryView extends JetView {
             "css": "webix_primary",
             "label": "Сохранить",
             "align": "right",
-            "width": 120
+            "width": 120,
+            click: function(){
+              scope.doClickSave();
+            }
+
           }
 
           // {
@@ -226,6 +231,44 @@ export default class WindowDirectoryView extends JetView {
     state.win.getHead().getChildViews()[0].setHTML(state.editor.config.header[0].text);
     state.wins.push(state.win);
     state.win.show();
+
+    var res = webix.promise.defer();
+    res.resolve(state.win.getBody()).then(function(result, res1) {
+      debugger;
+      let res2 = state.win.getBody().queryView({'localId':'table-layout'});
+      scope.setSumByTableRows();
+      res2.data.attachEvent("onDataUpdate", function(id, data, old){
+        scope.setSumByTableRows()
+      });
+      res2.data.attachEvent("onAfterAdd", function(id, data, old){
+        scope.setSumByTableRows()
+      });
+      res2.data.attachEvent("onAfterDelete", function(id){
+        scope.setSumByTableRows()
+      });
+      res2.data.attachEvent("onItemClick", function(id){
+        debugger;
+      });
+      // res2.waitData.then(function(){
+      //   //res2.openAll();
+      //   res2.data.attachEvent("onDataUpdate", function(id, data, old){
+      //     scope.setSumByTableRows()
+      //   });
+      //   res2.data.attachEvent("onAfterAdd", function(id, data, old){
+      //     scope.setSumByTableRows()
+      //   });
+      //   res2.data.attachEvent("onAfterDelete", function(id){
+      //     scope.setSumByTableRows()
+      //   });
+      //   res2.data.attachEvent("onItemClick", function(id){
+      //     debugger;
+      //   });
+      //   // when we have data, do some actions
+      //   scope.setSumByTableRows();
+      // });
+
+
+    });
     // webix.ui(
     //   config,
     //   state.windowBody
@@ -276,39 +319,204 @@ export default class WindowDirectoryView extends JetView {
 
 
   doClickSave(copy = false) {
+    this.doSaveTable();
+    // let state = this.state;
+    // if (!state.formEdit.validate()) return;
+    //
+    // let record = state.formEdit.getValues();
+    // if (copy) {
+    //   state.isUpdate = false;
+    //   record.id = '';
+    // }
+    // //debugger;
+    // webix.dp(state.table).save(
+    //   (state.isUpdate) ? record.id : webix.uid(),
+    //   (state.isUpdate) ? "update" : "insert",
+    //   record
+    // ).then(function(obj){
+    //   webix.dp(state.table).ignore(function(){
+    //
+    //     (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
+    //
+    //     state.table.select(obj.id);
+    //
+    //     if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
+    //
+    //     //state.table.sort("name", "asc", "string");
+    //     //state.table.markSorting("name", "asc");
+    //
+    //   });
+    //
+    //   state.table.refresh();
+    //   state.win.close();
+    // }, function(){
+    //   webix.message("Ошибка! Данные не сохранены!");
+    // });
+  }
+
+  setSumByTableRows() {
+    let state  = this.state;
+    let scope = this;
+    let res2 = state.win.getBody().queryView({'localId':'table-layout'});
+    let sum = 0;
+    // res2.data.each(function(row){
+    //   debugger;
+    //   sum = sum + parseFloat(row.salary);
+    // });
+
+    res2.data.each(function(row){
+      debugger;
+      if (row) {
+        sum = sum + parseFloat(row.salary);
+      }
+    });
+    state.table.getSelectedItem()['sum'] = sum;
+    let form = state.win.getBody().queryView({'localId':'formDocument'});
+    form.setValues(state.table.getSelectedItem());
+
+  }
+
+  doSaveTable() {
+
+    let scope =this;
+    let isUpdate = true;
+
+    let tableDynamic = this.state.win.getBody().queryView({'localId':'windowBody'});
+    let table = this.state.win.getBody().queryView({'localId':'table-layout'});
+    let tableUrl = tableDynamic.config.state.apiRest.getUrl("create","accounting/document-salary-accruals");
+    let tableUrlUpdate = tableDynamic.config.state.apiRest.getUrl("put","accounting/document-salary-accruals");
+    let dateDocument = this.state.win.getBody().queryView({'localId':'date_document'}).getValue();
+    let sumDocument = this.state.win.getBody().queryView({'localId':'sum'}).getValue();
+    let tableListUrl = tableDynamic.config.state.apiRest.getUrl("create","accounting/list-salary-accrual-schemas");
+    let listId = (tableDynamic.config.state.parent.getSelectedItem()) ? tableDynamic.config.state.parent.getSelectedItem().id : null;
+    let tableListUrlUpdate = tableDynamic.config.state.apiRest.getUrl("put","accounting/list-salary-accrual-schemas",{'expand':'data'},listId );
+    let rowList = {};
+
 
     let state = this.state;
+    state.formEdit = state.win.getBody().queryView({'localId':'formDocument'});
     if (!state.formEdit.validate()) return;
-
+    //
     let record = state.formEdit.getValues();
-    if (copy) {
-      state.isUpdate = false;
-      record.id = '';
-    }
-    //debugger;
-    webix.dp(state.table).save(
-      (state.isUpdate) ? record.id : webix.uid(),
-      (state.isUpdate) ? "update" : "insert",
-      record
-    ).then(function(obj){
-      webix.dp(state.table).ignore(function(){
+    let rows = [];
 
-        (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
+    table.data.each(function(row) {
+      if (row.$group) return;
+      for (var prop in row) {
+        if (prop.indexOf('$') != -1) {
+          delete row[prop];
+        }
+      }
+      delete row['depends'];
+      delete row['triggers'];
+      row['date_document'] = dateDocument;
+      if (!row['list_id']) {
+        delete row['id'];
+      }
+      rows.push(row);
 
-        state.table.select(obj.id);
-
-        if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
-
-        //state.table.sort("name", "asc", "string");
-        //state.table.markSorting("name", "asc");
-
-      });
-
-      state.table.refresh();
-      state.win.close();
-    }, function(){
-      webix.message("Ошибка! Данные не сохранены!");
     });
+    rowList = {
+      'date_document' : dateDocument,
+      'type_document' : 7,
+      'sum' : sumDocument,
+      'data' : rows,
+      'id' : listId
+    };
+    if (listId == null) {
+      // webix.ajax().post(tableListUrl, rowList).then(function (data) {
+      //   let dataJson = data.json();
+      //   listId = dataJson.id;
+      //   row['list_id'] = listId;
+      //   state.formEdit.setValues(dataJson);
+      //   webix.ajax().post(tableUrl, row).then(function (data) {
+      //     // state.table.add(dataJson);
+      //     // state.table.updateItem(listId, dataJson);
+      //
+      //   }).then(function () {
+      //     state.win.close();
+      //   });
+      // });
+      webix.ajax().post(tableListUrl, rowList).then(function (data) {
+        debugger;
+        let dataJson = data.json();
+        state.win.close();
+      });
+    } else {
+      debugger;
+      webix.ajax().put(tableListUrlUpdate, rowList).then(function (data) {
+        debugger;
+        let dataJson = data.json();
+        state.win.close();
+      });
+    }
+
+    // table.data.each(function(row){
+    //
+    //   if (row.$group) return;
+    //   for (var prop in row) {
+    //     if (prop.indexOf('$') != -1) {
+    //       delete row[prop];
+    //     }
+    //   }
+    //
+    //   delete row['depends'];
+    //   delete row['triggers'];
+    //
+    //
+    //   row['date_document'] = dateDocument;
+    //
+    //   if (!row['list_id']) {
+    //
+    //     isUpdate = false;
+    //     row['list_id'] = listId;
+    //     delete row['id'];
+    //     rowList = {
+    //       'date_document' : dateDocument,
+    //       'type_document' : 7,
+    //       'sum' : 0
+    //     };
+    //
+    //     if (listId == null) {
+    //       debugger;
+    //       webix.ajax().post(tableListUrl, rowList).then(function (data) {
+    //         let dataJson = data.json();
+    //         listId = dataJson.id;
+    //         row['list_id'] = listId;
+    //         state.formEdit.setValues(dataJson);
+    //         webix.ajax().post(tableUrl, row).then(function (data) {
+    //           // state.table.add(dataJson);
+    //           // state.table.updateItem(listId, dataJson);
+    //
+    //         }).then(function() {
+    //           state.win.close();
+    //         });
+    //       });
+    //     } else {
+    //       debugger;
+    //       // webix.ajax().post(tableUrl, row).then(function (data) {
+    //       //
+    //       // }).then(function() {
+    //       //   state.win.close();
+    //       // });
+    //     }
+    //
+    //
+    //   } else {
+    //
+    //     // tableUrlUpdate = scope.app.config.apiRest.getUrl("put","accounting/document-salary-accruals", {},row.id);
+    //     // webix.ajax().sync().put(tableUrlUpdate, row);
+    //   }
+    //
+    //
+    // });
+    //record = state.formEdit.getValues();
+    //state.table.updateItem(record.id, record);
+    //state.win.close();
+    //record = state.formEdit.getValues();
+    //state.table.updateItem(listId, record);
+
+
   }
 
 

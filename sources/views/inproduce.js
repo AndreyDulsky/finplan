@@ -32,9 +32,16 @@ webix.GroupMethods.median = function(prop, data){
 webix.ui.datafilter.totalColumn = webix.extend({
   refresh: function (master, node, value) {
     var result = 0, _val;
+    let sumParent = {};
     master.data.each(function (obj) {
       if (obj.$group) return;
 
+      if (sumParent[obj.$parent] && sumParent[obj.$parent][value.columnId]) {
+        sumParent[obj.$parent][value.columnId] += obj[value.columnId] * 1;
+      } else {
+        sumParent[obj.$parent] = {};
+        sumParent[obj.$parent][value.columnId] = obj[value.columnId] * 1;
+      }
 
       _val = obj[value.columnId];
       if (value.columnId == 'coefMoney') {
@@ -52,6 +59,16 @@ webix.ui.datafilter.totalColumn = webix.extend({
       _val =  parseFloat(_val);
       if (!isNaN(_val)) result = result+_val;
     });
+    for (let key in sumParent) {
+      if (key == 0) continue;
+      //debugger;
+      let item =  master.getItem(key);
+      if (item) {
+        master.getItem(key)[value.columnId] = sumParent[key][value.columnId];
+        //master.updateItem(key)
+      }
+    }
+
     result = webix.i18n.numberFormat(result,{
       groupDelimiter:"`",
       groupSize:3,
@@ -336,6 +353,7 @@ export default class InproduceView extends JetView{
       view: "table-dynamic",
       state: {
         scope : scope,
+        parent: null,
         params: {
           mode: mode,
           id: this.getParam('id'),
