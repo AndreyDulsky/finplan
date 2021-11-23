@@ -34,7 +34,7 @@ webix.ui.datafilter.totalColumn = webix.extend({
     var result = 0, _val;
     let sumParent = {};
     master.data.each(function (obj) {
-      if (obj.$group) return;
+      if (obj.$group ) return;
 
       if (sumParent[obj.$parent] && sumParent[obj.$parent][value.columnId]) {
         sumParent[obj.$parent][value.columnId] += obj[value.columnId] * 1;
@@ -63,7 +63,8 @@ webix.ui.datafilter.totalColumn = webix.extend({
       if (key == 0) continue;
       //debugger;
       let item =  master.getItem(key);
-      if (item) {
+
+      if (item && item.$group) {
         master.getItem(key)[value.columnId] = sumParent[key][value.columnId];
         //master.updateItem(key)
       }
@@ -297,7 +298,6 @@ webix.editors.buttonEditor = {
 
 export default class InproduceView extends JetView{
   config(){
-
 
     let hash = document.location.hash.split('/');
     let hashMode = hash[hash.length-1];

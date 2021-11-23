@@ -7,6 +7,7 @@ import "components/searchClose";
 
 export default class OrderCalculationRuleView extends JetView{
   config(){
+
     let scope = this;
     this.api = this.app.config.apiRest;
     return {
@@ -154,7 +155,6 @@ export default class OrderCalculationRuleView extends JetView{
                     });
 
                   } else {
-
                     this.$scope.cashEdit.showForm(this);
                   }
                 },

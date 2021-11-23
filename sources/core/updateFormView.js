@@ -93,6 +93,7 @@ export default class UpdateFormView extends JetView {
     //set state formData
     state.formData = result;
     //set elements form
+
     scope.renderForm(elementsCount);
 
 
@@ -131,9 +132,11 @@ export default class UpdateFormView extends JetView {
 
 
   renderForm(elementsCount) {
+    debugger;
     let state  = this.state;
     //render first time
     //if (elementsCount === 0 ) {
+    if (state.formData.data.configForm != false) {
       state.formConfig = state.formData.data.configForm;
       webix.ui(
         state.formConfig,
@@ -141,10 +144,11 @@ export default class UpdateFormView extends JetView {
       );
 
       //this.attachFormParamsElements();
-    //if (elementsCount === 0 ) {
+      //if (elementsCount === 0 ) {
       //atach events for first render
       this.attachFormEvents();
-    //}
+      //}
+    }
 
   }
 
