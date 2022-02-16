@@ -470,11 +470,12 @@ export default class OrderResultView extends JetView{
 
             },
             { id:"cost_cut_coef_employee", header:[ "Коэф. крой", { content:"selectFilter" }, "" ], width:100, batch:3,
-              "css": {"color": "green", "text-align": "right"}
+              "css": {"color": "green", "text-align": "right"}, editor:"text"
             },
 
             { id:"BY", header:[ "Настил", { content:"selectFilter" }, "" ], width:100, batch:3,
               "css": {"color": "green", "text-align": "right"},
+              editor:"text",
               "template" : function(data) {
                   if (data.$group) return '';
                   let result = data.BY;

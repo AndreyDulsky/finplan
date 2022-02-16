@@ -1291,7 +1291,7 @@ webix.protoUI({
     }
 
     if (this.state.params.mode == 'order') {
-      params['expand'] = 'comment,images';
+      params['expand'] = 'comment,images,orderWork, work';
     }
 
 

@@ -394,6 +394,7 @@ export default class InproduceView extends JetView{
     webix.attachEvent("onBeforeAjax", function(mode, url, params, xhr,
                                                headers, file, promise){
 
+      debugger;
       if (Object.keys(scope.lastXHR).length > 0) {
         for (let key in scope.lastXHR) {
           let item = scope.lastXHR[key];
@@ -404,15 +405,20 @@ export default class InproduceView extends JetView{
         };
       }
 
+
       scope.lastXHR[url]=xhr;
 
       console.log('set onBeforeAjax xhr = ');
       console.log(xhr);
-      promise.then(function() {
-        delete scope.lastXHR[url];
-      }, function() {
-        delete scope.lastXHR[url];
-      });
+      console.log(promise);
+      if (!isNaN(promise)) {
+        promise.then(function () {
+
+          delete scope.lastXHR[url];
+        }, function () {
+          delete scope.lastXHR[url];
+        });
+      }
     });
 
   }
