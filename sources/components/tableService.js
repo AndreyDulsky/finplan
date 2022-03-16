@@ -1593,7 +1593,7 @@ webix.protoUI({
 
       let dataItem = (items.data)?items.data:items.items;
       scope.dataItem = dataItem;
-      //debugger;
+
       //items.config.columns = webix.DataDriver.json.toObject(items.config.columns);
       items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
       //items['config'] = {'columns' : []};
@@ -1602,7 +1602,7 @@ webix.protoUI({
       items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
 
 
-      //scope.table.config.columns = items.config.columns;
+      scope.table.config.columns = items.config.columns;
       scope.columns = items.config.columns;
       //scope.columns = scope.table.config.columns;
       scope.table.refreshColumns();
