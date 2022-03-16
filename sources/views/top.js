@@ -207,7 +207,7 @@ export default class TopView extends JetView{
                   scope.setCommentsFireBase(this.count());
                 },
                 onSelectChange: function () {
-                  debugger;
+                  //debugger;
                   scope.setCommentsFireBase(this.count());
                 },
                 onItemClick: function (id, e, trg) {

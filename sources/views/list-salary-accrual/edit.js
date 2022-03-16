@@ -217,7 +217,7 @@ export default class UpdateFormView extends JetView {
           scope.setSumByTableRows()
         });
         res2.data.attachEvent("onItemClick", function(id){
-          debugger;
+          //debugger;
         });
         // when we have data, do some actions
         scope.setSumByTableRows();

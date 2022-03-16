@@ -267,7 +267,7 @@ export default class EmployeeSalaryView extends JetView{
       //process raw data
       //let blob1 = new Blob(blob, {type:"application/png"});
       webix.html.download(blob, "myfile.pdf");
-      debugger;
+      //debugger;
     });
   }
 

@@ -274,7 +274,7 @@ webix.editors.buttonEditor = {
 // });
 
 webix.protoUI({
-  name:"table-dynamic",
+  name:"table-service",
   defaults: {
     localId:"layout"
   },
@@ -981,28 +981,241 @@ webix.protoUI({
       view: "treetable",
       localId: 'table-layout',
       urlEdit: this.state.params.mode,
-      css: "webix_header_border webix_data_border ",
+      css: "table-transaction",
+      hover: "myhover",
+      rowHeight:43,
       leftSplit: 0,
-      //spans:true,
-      //rightSplit: 0,
       select:"multiselect",
       resizeColumn: {headerOnly: true},
-      //localId: 'order-table',
       multiselect: true,
-      //scroll: true,
       clipboard: "selection",
-      //blockselect: true,
       tooltip: true,
       editable:true,
       editaction: "dblclick",
-      sort:"multi",
+      //sort:"multi",
       drag: false,
       dragColumn:true,
-      math: true,
+      //math: true,
       save: "api->accounting/"+this.getModelName(this.state.params.mode),
-      //save: "firebase->accounting/"+this.mode,//this.getModelName(this.mode),
-      //owCss:"#css#",
-      //url: "firebase->transaction",
+      datafetch: 100,
+      loadahead: 200,
+      //url: 'http://service.local/api/v1/test',//
+      xCount:0,
+      //autoConfig:true,
+      //scroll:"true",
+      // columns:[
+      //   // {
+      //   //   "id": "index",
+      //   //   "header": [
+      //   //     {
+      //   //       "text": "#",
+      //   //       "tooltip": true
+      //   //     }
+      //   //   ],
+      //   //   "width": 50,
+      //   //   "value": "index",
+      //   //   "rowId": 0,
+      //   //   "sort_order": 10,
+      //   //   "use_filter": 1
+      //   // },
+      //   // {
+      //   //   "id": "_id",
+      //   //   "header": [
+      //   //     {
+      //   //       "text": "#_id",
+      //   //       "tooltip": true
+      //   //     }
+      //   //   ],
+      //   //   "width": 100,
+      //   //   "template": columnGroupTemplate,
+      //   //   "value": "_id",
+      //   //   "rowId": 1,
+      //   //   "sort_order": 10,
+      //   //   "use_filter": 1
+      //   // },
+      //   {
+      //     "id": "operationDate",
+      //     "header": [
+      //       {
+      //         "text": "Дата",
+      //         "tooltip": true
+      //       }
+      //     ],
+      //     "template": columnGroupTemplate,
+      //     "width": 150,
+      //     "value": "operationDate",
+      //     "rowId": 4,
+      //     "sort_order": 10,
+      //     "use_filter": 1
+      //   },
+      //   // {
+      //   //   "id": "boundMoveOperation",
+      //   //   "header": [
+      //   //     {
+      //   //       "text": "#boundMoveOperation",
+      //   //       "tooltip": true
+      //   //     }
+      //   //   ],
+      //   //   "width": 100,
+      //   //   "template": "",
+      //   //   "value": "boundMoveOperation",
+      //   //   "rowId": 2,
+      //   //   "sort_order": 10,
+      //   //   "use_filter": 1
+      //   // },
+      //   {
+      //     "id": "account.title",
+      //     "header": [
+      //       {
+      //         "text": "Счет",
+      //         "tooltip": true
+      //       }
+      //     ],
+      //     "width": 150,
+      //     "template": "#account.title#",
+      //     "value": "account.title",
+      //     "rowId": 6,
+      //     "sort_order": 10,
+      //     "use_filter": 1
+      //   },
+      //   {
+      //     "id": "operationType",
+      //     "header": [
+      //       {
+      //         "text": "Тип",
+      //         "tooltip": true
+      //       }
+      //     ],
+      //     "width": 100,
+      //     "template": "",
+      //     "value": "operationType",
+      //     "rowId": 3,
+      //     "sort_order": 10,
+      //     "use_filter": 1
+      //   },
+      //   {
+      //     "id": "contrAgent.title",
+      //     "header": [
+      //       {
+      //         "text": "Контрагент",
+      //         "tooltip": true
+      //       }
+      //     ],
+      //     "width": 150,
+      //     "template": "#contrAgent.title#",
+      //     "value": "contrAgent.title",
+      //     "rowId": 5,
+      //     "sort_order": 10,
+      //     "use_filter": 1
+      //   },
+      //
+      //   // {
+      //   //   "id": "accountCurrency.title",
+      //   //   "header": [
+      //   //     {
+      //   //       "text": "#accountCurrency.title",
+      //   //       "tooltip": true
+      //   //     }
+      //   //   ],
+      //   //   "width": 100,
+      //   //   "template": "#accountCurrency.title#",
+      //   //   "value": "accountCurrency.title",
+      //   //   "rowId": 7,
+      //   //   "sort_order": 10,
+      //   //   "use_filter": 1
+      //   // },
+      //   {
+      //     "id": "operationCategory.title",
+      //     "header": [
+      //       {
+      //         "text": "Статья",
+      //         "tooltip": true
+      //       }
+      //     ],
+      //     "width": 200,
+      //     "template": "#operationCategory.title#",
+      //     "value": "operationCategory.title",
+      //     "rowId": 8,
+      //     "sort_order": 10,
+      //     "use_filter": 1
+      //   },
+      //   // {
+      //   //   "id": "comment",
+      //   //   "header": [
+      //   //     {
+      //   //       "text": "#comment",
+      //   //       "tooltip": true
+      //   //     }
+      //   //   ],
+      //   //   "width": 100,
+      //   //   "template": "",
+      //   //   "value": "comment",
+      //   //   "rowId": 9,
+      //   //   "sort_order": 10,
+      //   //   "use_filter": 1
+      //   // },
+      //   {
+      //     "id": "value",
+      //     "header": [
+      //       {
+      //         "text": "Сумма",
+      //         "tooltip": true
+      //       }
+      //     ],
+      //     //"width": 100,
+      //     "template": "",
+      //     "value": "value",
+      //     "rowId": 10,
+      //     "sort_order": 10,
+      //     "use_filter": 1,
+      //     "fillspace": true
+      //   },
+      //   // {
+      //   //   "id": "isCommitted",
+      //   //   "header": [
+      //   //     {
+      //   //       "text": "#isCommitted",
+      //   //       "tooltip": true
+      //   //     }
+      //   //   ],
+      //   //   "width": 100,
+      //   //   "template": "",
+      //   //   "value": "isCommitted",
+      //   //   "rowId": 12,
+      //   //   "sort_order": 10,
+      //   //   "use_filter": 1
+      //   // },
+      //   // {
+      //   //   "id": "action-edit",
+      //   //   "header": [
+      //   //     {
+      //   //       "text": "action-edit",
+      //   //       "tooltip": true
+      //   //     }
+      //   //   ],
+      //   //   "width": 100,
+      //   //   template: "{common.editIcon()}",
+      //   //   "value": "action-edit",
+      //   //   "rowId": 12,
+      //   //   "sort_order": 10,
+      //   //   "use_filter": 1
+      //   // },
+      //   // {
+      //   //   "id": "id",
+      //   //   "header": [
+      //   //     {
+      //   //       "text": "#id",
+      //   //       "tooltip": true
+      //   //     }
+      //   //   ],
+      //   //   "width": 100,
+      //   //   "template": "",
+      //   //   "value": "id",
+      //   //   "rowId": 14,
+      //   //   "sort_order": 10,
+      //   //   "use_filter": 1
+      //   // }
+      // ],
       scheme:{
 
       },
@@ -1127,6 +1340,9 @@ webix.protoUI({
         onBeforeLoad:function(){
           //this.showOverlay("Loading...");
         },
+        onAfterLoad:function(){
+          //this.hideOverlay();
+        },
 
         onBeforeDrop:function(context, e){
           let record = this.getItem(context.start);
@@ -1202,7 +1418,15 @@ webix.protoUI({
       scope.eventSetColumnUserSort(sourceId, targetId, event);
     });
 
+    this.table.attachEvent("onScrollY", function(){
+      var state = scope.table.getScrollState();
+      scope.getDataTable(state);
+
+    });
+
     this.setColorSettingForTable();
+    scope.scrollCountSave = 0;
+    scope.eventScroll = true;
 
   },
 
@@ -1279,7 +1503,7 @@ webix.protoUI({
     return mode+'s';
   },
 
-  getDataTable() {
+  getDataTable(state = {x:-1,y:-1}) {
     let scope = this;
 
     this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
@@ -1289,7 +1513,7 @@ webix.protoUI({
 
     scope.columns = [];
     let params = {
-      'per-page' : 2000,
+      //'per-page' : 2000,
       'schema-table-user-id': scope.selectTypeValue,
       //'sort': '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]'
     };
@@ -1321,30 +1545,66 @@ webix.protoUI({
         params[key] = this.urlParams[key];
       }
     }
-    scope.tableUrl = this.state.scope.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.state.params.mode), params);
 
-    webix.extend(this.table, webix.ProgressBar);
-    this.table.disable();
-    this.table.showProgress({
-      type:"icon",
-      hide: false
-    });
+    //scope.tableUrl = 'http://service.local/api/v1/test';
+
+    if (state.y != -1) {
+      scope.scrollY = state.y+200;
+      scope.scrollCount = Math.floor(scope.scrollY/window.screen.height);
+      if (scope.eventScroll == true) {
+        scope.eventScroll = false;
+        scope.scrollYSave = scope.scrollY;
+        return 0;
+      } else {
+        if (scope.scrollY > scope.scrollYSave) {
+          scope.eventScroll = true;
+          return 0;
+        } else {
+          if (scope.scrollCount > scope.scrollCountSave) {
+            webix.message(scope.scrollY);
+            scope.scrollCountSave = scope.scrollCount;
+            params['count'] =  100; //scope.tableUrl+'?count=100&start='+scope.scrollCountSave*100;
+            params['start'] =  scope.scrollCountSave*100;
+
+          } else {
+            return 0;
+          }
+        }
+      }
+    } else {
+      scope.table.clearAll();
+    }
+    scope.tableUrl = this.state.scope.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.state.params.mode), params);
+    //webix.extend(this.table, webix.ProgressBar);
+    //this.table.disable();
+    // this.table.showProgress({
+    //   type:"icon",
+    //   hide: false
+    // });
     scope.filter = scope.getFilterParams();
 
+    // table.config.url = url;
+    //scope.table.clearAll();
+    //scope.table.load(scope.tableUrl);
 
     webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
-      scope.table.clearAll();
+      //scope.table.clearAll();
       let items = data.json();
 
       let dataItem = (items.data)?items.data:items.items;
       scope.dataItem = dataItem;
       //debugger;
       //items.config.columns = webix.DataDriver.json.toObject(items.config.columns);
-
+      items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
+      //items['config'] = {'columns' : []};
+      //items['config']['columns'] = Object.assign({},  scope.table.config.columns);
+      //items.config.columns = scope.dataDriverJsonToObject(scope.table.config.columns);
       items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
 
-      scope.table.config.columns = items.config.columns;
+
+      //scope.table.config.columns = items.config.columns;
       scope.columns = items.config.columns;
+      //scope.columns = scope.table.config.columns;
       scope.table.refreshColumns();
       scope.setColumnSettingForTable();
 
@@ -1416,7 +1676,7 @@ webix.protoUI({
       params = '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]';
     }
     if (this.schemaSortUserList && this.schemaSortUserList.length > 2) {
-      let sort = this.schemaSortUserList;//JSON.parse(this.schemaSortUserList);
+      let sort = JSON.parse(this.schemaSortUserList);
       params = [];
       for (let key in sort) {
         params.push({'property':sort[key].field, 'direction' : sort[key].direction});
@@ -1460,7 +1720,7 @@ webix.protoUI({
 
 
     if (this.schemaFilterUserList && this.schemaFilterUserList.length > 2) {
-      let filter = this.schemaFilterUserList;//JSON.parse(this.schemaFilterUserList);
+      let filter = JSON.parse(this.schemaFilterUserList);
 
       let filterSchema = {};
       let filterFirstLavel = {"or": []};
@@ -1513,7 +1773,6 @@ webix.protoUI({
 
   dataDriverJsonToObject(configColumns) {
     configColumns.forEach(function(item,key) {
-
       let myObj = {
         func: {}
       }
@@ -1576,7 +1835,7 @@ webix.protoUI({
     let options = [];
     let select = "0";
     let i = 0;
-    this.schemaColumnUserListObject = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
+    this.schemaColumnUserListObject = JSON.parse(this.schemaColumnUserList);
 
     columnSetting = this.schemaColumnUserListObject;
 
@@ -1701,7 +1960,7 @@ webix.protoUI({
   setElementFilterForm() {
     if (this.schemaFilterUserList && this.schemaFilterUserList.length >2) {
 
-      let values = this.schemaFilterUserList;//JSON.parse(this.schemaFilterUserList);
+      let values = JSON.parse(this.schemaFilterUserList);
 
       let formRowLayout = this.winFilter.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -2515,7 +2774,7 @@ webix.protoUI({
 
     if (this.schemaSortUserList && this.schemaSortUserList.length >2) {
 
-      let values = this.schemaSortUserList;//JSON.parse(this.schemaSortUserList);
+      let values = JSON.parse(this.schemaSortUserList);
 
       let formRowLayout = this.winSort.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -2665,7 +2924,7 @@ webix.protoUI({
   //setting color row
   setColorSettingForTable() {
 
-    let colorSetting = this.schemaColorUserList;//JSON.parse(this.schemaColorUserList);
+    let colorSetting = JSON.parse(this.schemaColorUserList);
 
     let condition = [];
     let obj = { func: function() {} };
@@ -2763,7 +3022,7 @@ webix.protoUI({
 
     if (this.schemaColorUserList && this.schemaColorUserList.length >2) {
 
-      let values = this.schemaColorUserList;//JSON.parse(this.schemaColorUserList);
+      let values = JSON.parse(this.schemaColorUserList);
 
       let formRowLayout = this.winColor.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -2994,7 +3253,7 @@ webix.protoUI({
 
     if (this.schemaColumnUserList && this.schemaColumnUserList.length >2) {
 
-      let values = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
+      let values = JSON.parse(this.schemaColumnUserList);
 
       let formRowLayout = this.winColumn.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -3167,7 +3426,7 @@ webix.protoUI({
       this.selectColumnSettingId = null;
     }
     // update css
-    let columnSetting = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
+    let columnSetting = JSON.parse(this.schemaColumnUserList);
     let elementDeleteCategory = (columnSetting[id]) ? columnSetting[id].category : {};
     for (let key in elementDeleteCategory) {
       this.table.getColumnConfig(elementDeleteCategory[key].field).cssFormat = '';
@@ -3183,7 +3442,7 @@ webix.protoUI({
     let element = this.winColumn.queryView({'localId': idLayout});
 
     // update css
-    let columnSetting = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
+    let columnSetting = JSON.parse(this.schemaColumnUserList);
     if (columnSetting[idCategory]) {
       let elementDelete = columnSetting[idCategory]['category'][id];
       this.table.getColumnConfig(elementDelete.field).cssFormat = '';

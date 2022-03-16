@@ -234,7 +234,7 @@ export default class WindowDirectoryView extends JetView {
 
     var res = webix.promise.defer();
     res.resolve(state.win.getBody()).then(function(result, res1) {
-      debugger;
+
       let res2 = state.win.getBody().queryView({'localId':'table-layout'});
       scope.setSumByTableRows();
       res2.data.attachEvent("onDataUpdate", function(id, data, old){
@@ -365,7 +365,7 @@ export default class WindowDirectoryView extends JetView {
     // });
 
     res2.data.each(function(row){
-      debugger;
+
       if (row) {
         sum = sum + parseFloat(row.salary);
       }

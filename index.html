@@ -80,6 +80,22 @@
                 function(mode, url, data, request, headers, files, promise){
                   if (!files) {
                     headers["Content-type"] = "application/json";
+
+                    if(url.includes('http://service.local/api/v1/test')) {
+					  //headers["Access-Control-Allow-Origin"] = "*";
+                      //headers["Access-Control-Allow-Credentials"] = "true";
+                      //headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
+                      //headers["Access-Control-Request-Headers"] = "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range";
+                      //headers["Access-Control-Expose-Headers"] = "Content-Length,Content-Range";
+
+
+
+
+
+
+
+                      headers["Authorization"] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IllpaS1SRVNULUFQSSJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsImp0aSI6IllpaS1SRVNULUFQSSIsImlhdCI6MTY0NzE5NjQwNiwiZXhwIjoxNjQ3NDU1NjA2LCJ1c2VybmFtZSI6ImRlbW8iLCJpZCI6MX0.07FqIEx1nz5cG2f62PdgBIPI1sIniffo3l0UrVjcAIk";
+                    }
                   }
                 }
             );

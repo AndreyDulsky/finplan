@@ -101,7 +101,7 @@ export default class CheckFormView extends JetView {
     state.formConfig = [];
     state.formProcessConfig = [];
 
-
+    //debugger;
     let departmentName = '';
     state.works = table.$scope.app.config.apiRest.getCollection('accounting/works',{'per-page': -1, sort: 'department_id', 'expand': 'department'});
     state.works.waitData.then(function() {
@@ -111,7 +111,13 @@ export default class CheckFormView extends JetView {
       }
       let fields = [];
       let works = [];
+      let values = [];
       let i=0;
+
+      record.orderWork.forEach(function(obj){
+
+        values.push(obj.work_id);
+      });
 
       state.works.data.each(function(obj){
         i++;
@@ -163,7 +169,7 @@ export default class CheckFormView extends JetView {
         labelLeft:"Рабочие процессы",
         labelRight:"Выбранные",
         name: 'works',
-        value: [1,6],
+        value: values,
         data:works
       });
       state.formProcessConfig.push({

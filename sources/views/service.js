@@ -4,7 +4,7 @@ import FormCommnetView from "views/comment/index";
 import FormViewView from "views/order/check-work";
 import UpdateFormOrderView from "core/updateFormOrderView";
 import WindowDirectoryView from "core/window/WindowDirectoryView";
-import TableDynamic from  "components/tableDynamic";
+import TableDynamic from  "components/tableService";
 
 import FormView from "core/formView";
 
@@ -350,7 +350,7 @@ export default class InproduceView extends JetView{
     this.windowDirectory = this.ui(WindowDirectoryView);
     let type = 'table';
     let config = {
-      view: "table-dynamic",
+      view: "table-service",
       state: {
         scope : scope,
         parent: null,

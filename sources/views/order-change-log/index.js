@@ -26,7 +26,7 @@ webix.editors.$popup.text = {
     ],
     scheme:{
       $init: function($item) {
-        debugger;
+        //debugger;
       }
     }
   }

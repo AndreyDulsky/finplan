@@ -555,7 +555,7 @@ export default class UpdateFireJetView extends JetView {
   }
 
   showParts(selectedItem) {
-    debugger;
+    //debugger;
     let state = this.state;
     let tableParts = this.$$("table_part_value");
     tableParts.clearAll();

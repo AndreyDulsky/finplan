@@ -79,6 +79,7 @@ export class ApiRest {
   }
 
   getData(url, model, callback) {
+
     if (!this.dataCollection[model]) {
       this.dataCollection[model] = webix.ajax(url, callback);
     }
