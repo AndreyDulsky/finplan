@@ -79,11 +79,17 @@ export class ApiRest {
   }
 
   getData(url, model, callback) {
+    //debugger;
+    //let scope = this;
+    // if (!this.dataCollection[model]) {
+    //   //webix.ajax(url, callback);
+    //
+    //
+    //   return webix.ajax(url, callback);
+    // }
 
-    if (!this.dataCollection[model]) {
-      this.dataCollection[model] = webix.ajax(url, callback);
-    }
-    return this.dataCollection[model];
+
+    return  webix.ajax(url, callback);//this.dataCollection[model];
   }
 
   getLoad(url, params, callback) {
