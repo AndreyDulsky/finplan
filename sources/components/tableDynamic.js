@@ -2721,6 +2721,7 @@ webix.protoUI({
   },
 
   showColorSetting() {
+    debugger;
     let scope = this;
     let body = {
       localId: 'body-setting-color-layout',
@@ -2762,7 +2763,7 @@ webix.protoUI({
 
   setElementColorForm() {
 
-    if (this.schemaColorUserList && this.schemaColorUserList.length >0) {
+    if (this.schemaColorUserList) {
 
       let values = this.schemaColorUserList;//JSON.parse(this.schemaColorUserList);
 
@@ -2936,6 +2937,7 @@ webix.protoUI({
   },
 
   showColumnSetting() {
+
     let scope = this;
     let body = {
       localId: 'body-setting-color-column-layout',
@@ -2993,7 +2995,7 @@ webix.protoUI({
 
   setCategoryColumnForm() {
 
-    if (this.schemaColumnUserList && this.schemaColumnUserList.length >0) {
+    if (this.schemaColumnUserList) {
 
       let values = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
 
