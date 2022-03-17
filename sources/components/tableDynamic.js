@@ -707,7 +707,6 @@ webix.protoUI({
 
     let scope = this;
     scope.dateFrom.attachEvent("onChange", function(id) {
-
       scope.getDataTable();
       scope.putFilterState();
     });
@@ -1421,14 +1420,14 @@ webix.protoUI({
       for (let key in sort) {
         params.push({'property':sort[key].field, 'direction' : sort[key].direction});
       }
-      params = JSON.stringify(params);
+      //params = JSON.stringify(params);
     }
 
     return params;
   },
 
   getFilterParams() {
-
+    debugger;
     let scope = this;
     this.format = webix.Date.dateToStr("%Y-%m-%d");
     this.dateFrom = this.getEl("dateFrom");
@@ -1839,12 +1838,13 @@ webix.protoUI({
   },
 
   doSaveFilterSettingClick(values) {
+    debugger;
     let scope = this;
     if (this.selectTypeValue) {
-      scope.schemaFilterUserList =  JSON.stringify(values);
+      scope.schemaFilterUserList =  values;//JSON.stringify(values);
       let url = this.state.apiRest.getUrl('put', this.state.urlTableUserListsPut,{},this.selectTypeValue);
       webix.ajax().put(url, {
-        'filter_setting': JSON.stringify(values)
+        'filter_setting': values//JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -2375,7 +2375,7 @@ webix.protoUI({
       // item.is_default = 1;
       context.obj.refresh();
     } else {
-      webix.message("Ошибка! Данные не изменены!" + JSON.stringify(dataJson.errors));
+      webix.message("Ошибка! Данные не изменены!" + dataJson.errors);
     }
   },
 
@@ -2404,7 +2404,7 @@ webix.protoUI({
         item.value = result;
         context.obj.refresh();
       } else {
-        webix.message("Ошибка! Данные не изменены!" + JSON.stringify(dataJson.errors));
+        webix.message("Ошибка! Данные не изменены!" + dataJson.errors);
       }
     }).fail(function(){
       // webix.alert({
@@ -2638,12 +2638,12 @@ webix.protoUI({
   doSaveSortSettingClick(values) {
     let scope = this;
     if (this.selectTypeValue) {
-      scope.schemaSortUserList =  JSON.stringify(values);
+      scope.schemaSortUserList =  values;//JSON.stringify(values);
       let url = this.state.apiRest.getUrl('put', this.state.urlTableUserListsPut,{},this.selectTypeValue);
 
 
       webix.ajax().put(url, {
-        'sort_setting': JSON.stringify(values)
+        'sort_setting': values//JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -2910,12 +2910,12 @@ webix.protoUI({
   doSaveColorSettingClick(values) {
     let scope = this;
     if (this.selectTypeValue) {
-      scope.schemaColorUserList =  JSON.stringify(values);
+      scope.schemaColorUserList =  values;//JSON.stringify(values);
       let url = this.state.apiRest.getUrl('put', this.state.urlTableUserListsPut,{},this.selectTypeValue);
 
 
       webix.ajax().put(url, {
-        'color_setting': JSON.stringify(values)
+        'color_setting': values//JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -3242,12 +3242,12 @@ webix.protoUI({
     let scope = this;
     if (this.selectTypeValue) {
 
-      scope.schemaColumnUserList =  JSON.stringify(values);
+      scope.schemaColumnUserList =  values;//JSON.stringify(values);
       let url = this.state.apiRest.getUrl('put', "accounting/schema-table-user-lists",{},this.selectTypeValue);
 
 
       webix.ajax().put(url, {
-        'column_setting': JSON.stringify(values)
+        'column_setting': values//JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -3470,7 +3470,7 @@ webix.protoUI({
       columns.push({'id': item.id, 'hidden' : (item.hidden) ? item.hidden : 0});
     });
 
-    webix.ajax().post(url, {'model': this.model, 'setting':JSON.stringify(columns), 'name':'Печать','list_id':this.selectTypeValue},{
+    webix.ajax().post(url, {'model': this.model, 'setting':columns, 'name':'Печать','list_id':this.selectTypeValue},{
       error:function(text, data, response){
         scope.showMessageError(data.json());
       },
@@ -3594,7 +3594,7 @@ webix.protoUI({
         item.value = result;
         context.obj.refresh();
       } else {
-        webix.message("Ошибка! Данные не изменены!" + JSON.stringify(dataJson.errors));
+        webix.message("Ошибка! Данные не изменены!" + dataJson.errors);
       }
     }).fail(function(){
       // webix.alert({
@@ -3627,7 +3627,7 @@ webix.protoUI({
       // item.is_default = 1;
       context.obj.refresh();
     } else {
-      webix.message("Ошибка! Данные не изменены!" + JSON.stringify(dataJson.errors));
+      webix.message("Ошибка! Данные не изменены!" + dataJson.errors);
     }
   },
 

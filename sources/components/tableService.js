@@ -999,228 +999,28 @@ webix.protoUI({
       save: "api->accounting/"+this.getModelName(this.state.params.mode),
       datafetch: 100,
       loadahead: 200,
-      //url: 'http://service.local/api/v1/test',//
+      autoConfig: false,
+      //url: scope.state.scope.app.config.apiRest.getUrl('get',"accounting/"+scope.getModelName(scope.state.params.mode)),
       xCount:0,
-      //autoConfig:true,
-      //scroll:"true",
-      // columns:[
-      //   // {
-      //   //   "id": "index",
-      //   //   "header": [
-      //   //     {
-      //   //       "text": "#",
-      //   //       "tooltip": true
-      //   //     }
-      //   //   ],
-      //   //   "width": 50,
-      //   //   "value": "index",
-      //   //   "rowId": 0,
-      //   //   "sort_order": 10,
-      //   //   "use_filter": 1
-      //   // },
-      //   // {
-      //   //   "id": "_id",
-      //   //   "header": [
-      //   //     {
-      //   //       "text": "#_id",
-      //   //       "tooltip": true
-      //   //     }
-      //   //   ],
-      //   //   "width": 100,
-      //   //   "template": columnGroupTemplate,
-      //   //   "value": "_id",
-      //   //   "rowId": 1,
-      //   //   "sort_order": 10,
-      //   //   "use_filter": 1
-      //   // },
-      //   {
-      //     "id": "operationDate",
-      //     "header": [
-      //       {
-      //         "text": "Дата",
-      //         "tooltip": true
-      //       }
-      //     ],
-      //     "template": columnGroupTemplate,
-      //     "width": 150,
-      //     "value": "operationDate",
-      //     "rowId": 4,
-      //     "sort_order": 10,
-      //     "use_filter": 1
-      //   },
-      //   // {
-      //   //   "id": "boundMoveOperation",
-      //   //   "header": [
-      //   //     {
-      //   //       "text": "#boundMoveOperation",
-      //   //       "tooltip": true
-      //   //     }
-      //   //   ],
-      //   //   "width": 100,
-      //   //   "template": "",
-      //   //   "value": "boundMoveOperation",
-      //   //   "rowId": 2,
-      //   //   "sort_order": 10,
-      //   //   "use_filter": 1
-      //   // },
-      //   {
-      //     "id": "account.title",
-      //     "header": [
-      //       {
-      //         "text": "Счет",
-      //         "tooltip": true
-      //       }
-      //     ],
-      //     "width": 150,
-      //     "template": "#account.title#",
-      //     "value": "account.title",
-      //     "rowId": 6,
-      //     "sort_order": 10,
-      //     "use_filter": 1
-      //   },
-      //   {
-      //     "id": "operationType",
-      //     "header": [
-      //       {
-      //         "text": "Тип",
-      //         "tooltip": true
-      //       }
-      //     ],
-      //     "width": 100,
-      //     "template": "",
-      //     "value": "operationType",
-      //     "rowId": 3,
-      //     "sort_order": 10,
-      //     "use_filter": 1
-      //   },
-      //   {
-      //     "id": "contrAgent.title",
-      //     "header": [
-      //       {
-      //         "text": "Контрагент",
-      //         "tooltip": true
-      //       }
-      //     ],
-      //     "width": 150,
-      //     "template": "#contrAgent.title#",
-      //     "value": "contrAgent.title",
-      //     "rowId": 5,
-      //     "sort_order": 10,
-      //     "use_filter": 1
-      //   },
-      //
-      //   // {
-      //   //   "id": "accountCurrency.title",
-      //   //   "header": [
-      //   //     {
-      //   //       "text": "#accountCurrency.title",
-      //   //       "tooltip": true
-      //   //     }
-      //   //   ],
-      //   //   "width": 100,
-      //   //   "template": "#accountCurrency.title#",
-      //   //   "value": "accountCurrency.title",
-      //   //   "rowId": 7,
-      //   //   "sort_order": 10,
-      //   //   "use_filter": 1
-      //   // },
-      //   {
-      //     "id": "operationCategory.title",
-      //     "header": [
-      //       {
-      //         "text": "Статья",
-      //         "tooltip": true
-      //       }
-      //     ],
-      //     "width": 200,
-      //     "template": "#operationCategory.title#",
-      //     "value": "operationCategory.title",
-      //     "rowId": 8,
-      //     "sort_order": 10,
-      //     "use_filter": 1
-      //   },
-      //   // {
-      //   //   "id": "comment",
-      //   //   "header": [
-      //   //     {
-      //   //       "text": "#comment",
-      //   //       "tooltip": true
-      //   //     }
-      //   //   ],
-      //   //   "width": 100,
-      //   //   "template": "",
-      //   //   "value": "comment",
-      //   //   "rowId": 9,
-      //   //   "sort_order": 10,
-      //   //   "use_filter": 1
-      //   // },
-      //   {
-      //     "id": "value",
-      //     "header": [
-      //       {
-      //         "text": "Сумма",
-      //         "tooltip": true
-      //       }
-      //     ],
-      //     //"width": 100,
-      //     "template": "",
-      //     "value": "value",
-      //     "rowId": 10,
-      //     "sort_order": 10,
-      //     "use_filter": 1,
-      //     "fillspace": true
-      //   },
-      //   // {
-      //   //   "id": "isCommitted",
-      //   //   "header": [
-      //   //     {
-      //   //       "text": "#isCommitted",
-      //   //       "tooltip": true
-      //   //     }
-      //   //   ],
-      //   //   "width": 100,
-      //   //   "template": "",
-      //   //   "value": "isCommitted",
-      //   //   "rowId": 12,
-      //   //   "sort_order": 10,
-      //   //   "use_filter": 1
-      //   // },
-      //   // {
-      //   //   "id": "action-edit",
-      //   //   "header": [
-      //   //     {
-      //   //       "text": "action-edit",
-      //   //       "tooltip": true
-      //   //     }
-      //   //   ],
-      //   //   "width": 100,
-      //   //   template: "{common.editIcon()}",
-      //   //   "value": "action-edit",
-      //   //   "rowId": 12,
-      //   //   "sort_order": 10,
-      //   //   "use_filter": 1
-      //   // },
-      //   // {
-      //   //   "id": "id",
-      //   //   "header": [
-      //   //     {
-      //   //       "text": "#id",
-      //   //       "tooltip": true
-      //   //     }
-      //   //   ],
-      //   //   "width": 100,
-      //   //   "template": "",
-      //   //   "value": "id",
-      //   //   "rowId": 14,
-      //   //   "sort_order": 10,
-      //   //   "use_filter": 1
-      //   // }
-      // ],
       scheme:{
 
       },
       ready: function() {
         //scope.attachToolBarEvents()
+        webix.storage.local.remove('config_'+scope.state.params.mode);
+        let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
+        if (dataJson) {
+          scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
+          scope.table.refreshColumns();
+        } else {
+          scope.state.scope.app.config.apiRest.get("accounting/" + scope.state.params.mode + "/get-config").then(function (data) {
+            let dataJson = data.json();
+            webix.storage.local.put('config_' + scope.state.params.mode, dataJson);
+            scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
+            scope.table.refreshColumns();
+          });
+        }
+
         webix.ui({
           view:"contextmenu",
           data: ["Добавить","Редактировать"],
@@ -1338,10 +1138,20 @@ webix.protoUI({
         },
 
         onBeforeLoad:function(){
-          //this.showOverlay("Loading...");
+          // webix.extend(this, webix.OverlayBox);
+          // this.showOverlay('<i class="mdi mdi-reload" style="font-size: 26px"></i>');
+          webix.extend(this, webix.ProgressBar);
+          //this.disable();
+          this.showProgress({
+            type:"icon",
+            //icon: "abjad-hebrew",
+            hide: false
+          });
         },
         onAfterLoad:function(){
           //this.hideOverlay();
+          //this.enable();
+          //this.hideProgress();
         },
 
         onBeforeDrop:function(context, e){
@@ -1550,7 +1360,7 @@ webix.protoUI({
 
     if (state.y != -1) {
       scope.scrollY = state.y+200;
-      scope.scrollCount = Math.floor(scope.scrollY/window.screen.height);
+      scope.scrollCount = Math.floor(scope.scrollY/window.screen.height/3);
       if (scope.eventScroll == true) {
         scope.eventScroll = false;
         scope.scrollYSave = scope.scrollY;
@@ -1575,7 +1385,7 @@ webix.protoUI({
       scope.table.clearAll();
     }
     scope.tableUrl = this.state.scope.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.state.params.mode), params);
-    //webix.extend(this.table, webix.ProgressBar);
+    webix.extend(this.table, webix.ProgressBar);
     //this.table.disable();
     // this.table.showProgress({
     //   type:"icon",
@@ -1594,66 +1404,60 @@ webix.protoUI({
       let dataItem = (items.data)?items.data:items.items;
       scope.dataItem = dataItem;
 
-      //items.config.columns = webix.DataDriver.json.toObject(items.config.columns);
-      items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
-      //items['config'] = {'columns' : []};
-      //items['config']['columns'] = Object.assign({},  scope.table.config.columns);
-      //items.config.columns = scope.dataDriverJsonToObject(scope.table.config.columns);
-      items.config.columns = scope.dataDriverJsonToObject(items.config.columns);
 
+      let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
+      scope.columns = dataJson.columns;
 
-      scope.table.config.columns = items.config.columns;
-      scope.columns = items.config.columns;
       //scope.columns = scope.table.config.columns;
-      scope.table.refreshColumns();
-      scope.setColumnSettingForTable();
+      //scope.table.refreshColumns();
+      //scope.setColumnSettingForTable();
 
 
       scope.table.parse(dataItem);
 
-      scope.table.enable();
-      scope.table.hideProgress();
+      //scope.table.enable();
+      //scope.table.hideProgress();
 
       let resultType= '';
-      if (scope.schemaTableSetting.group['group-by'].type) {
-        resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
-      } else {
-        let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+      // if (scope.schemaTableSetting.group['group-by'].type) {
+      //   resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
+      // } else {
+      //   let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+      //
+      //   resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
+      // }
+      //
+      // if (scope.schemaTableSetting.group['group-by'].value) {
+      //   scope.table.group({
+      //     by: function (obj) {
+      //       return eval(resultType);
+      //     },
+      //     map: {
+      //       'property_value': [function (obj) {
+      //
+      //         let per = eval(resultType);
+      //         let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+      //         if (configColumn.collection) {
+      //           //id collection json or colellection "api->url"
+      //           return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
+      //         } else {
+      //           return eval(resultType);
+      //         }
+      //       }],
+      //       'property_title': ['A'],
+      //       'index': ['', 'string'],
+      //       'I': ['', 'string'],
+      //       // //'G': ['G', 'sum'],
+      //       // 'value_sum': ['value_sum', 'median'],
+      //        'L': ['', 'string'],
+      //        'N': ['', 'string'],
+      //        'O': ['', 'string'],
+      //        'P': ['', 'string']
+      //     },
+      //   });
+      // }
 
-        resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
-      }
-
-      if (scope.schemaTableSetting.group['group-by'].value) {
-        scope.table.group({
-          by: function (obj) {
-            return eval(resultType);
-          },
-          map: {
-            'property_value': [function (obj) {
-
-              let per = eval(resultType);
-              let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
-              if (configColumn.collection) {
-                //id collection json or colellection "api->url"
-                return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
-              } else {
-                return eval(resultType);
-              }
-            }],
-            'property_title': ['A'],
-            'index': ['', 'string'],
-            'I': ['', 'string'],
-            // //'G': ['G', 'sum'],
-            // 'value_sum': ['value_sum', 'median'],
-             'L': ['', 'string'],
-             'N': ['', 'string'],
-             'O': ['', 'string'],
-             'P': ['', 'string']
-          },
-        });
-      }
-
-      scope.table.openAll();
+      //scope.table.openAll();
 
       if (scope.state.type == 'directory') {
         scope.table.select(scope.state.scope.state.editor.value);
@@ -2939,7 +2743,7 @@ webix.protoUI({
         condition[index].push(item);
       }
     }
-    let conditionFunction = 'function(item, view, prop) { item.index = (this.count())+1; ';
+    let conditionFunction = 'function(item, view, prop) {';//'function(item, view, prop) { item.index = (this.count())+1; ';
 
     condition.forEach((items) => {
 
