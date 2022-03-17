@@ -1658,6 +1658,7 @@ webix.protoUI({
 
   //setting filter
   showFilterSetting() {
+    debugger;
     let scope = this;
     let body = {
       localId: 'body-setting-filter-layout',
@@ -1698,7 +1699,7 @@ webix.protoUI({
   },
 
   setElementFilterForm() {
-    if (this.schemaFilterUserList && this.schemaFilterUserList.length >2) {
+    if (this.schemaFilterUserList && this.schemaFilterUserList.length >0) {
 
       let values = this.schemaFilterUserList;//JSON.parse(this.schemaFilterUserList);
 
@@ -2513,7 +2514,7 @@ webix.protoUI({
 
   setElementSortForm() {
 
-    if (this.schemaSortUserList && this.schemaSortUserList.length >2) {
+    if (this.schemaSortUserList && this.schemaSortUserList.length >0) {
 
       let values = this.schemaSortUserList;//JSON.parse(this.schemaSortUserList);
 
@@ -2761,7 +2762,7 @@ webix.protoUI({
 
   setElementColorForm() {
 
-    if (this.schemaColorUserList && this.schemaColorUserList.length >2) {
+    if (this.schemaColorUserList && this.schemaColorUserList.length >0) {
 
       let values = this.schemaColorUserList;//JSON.parse(this.schemaColorUserList);
 
@@ -2992,7 +2993,7 @@ webix.protoUI({
 
   setCategoryColumnForm() {
 
-    if (this.schemaColumnUserList && this.schemaColumnUserList.length >2) {
+    if (this.schemaColumnUserList && this.schemaColumnUserList.length >0) {
 
       let values = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
 
