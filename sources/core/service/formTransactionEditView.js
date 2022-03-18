@@ -72,7 +72,7 @@ export default class FormTransactionEditView extends JetView {
 
       if (element.target.classList.value === "add-to-table") {
         let table = scope.$$("table_part_value");
-        table.add({"index":"","contrAgent.contrAgentId" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"" });
+        table.add({"index":"","contrAgent" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"" });
       }
     });
   }
@@ -336,6 +336,7 @@ export default class FormTransactionEditView extends JetView {
     if (!selectedItem) {
       return;
     }
+    debugger;
     let branches = state.table.data.getBranch(selectedItem.id);
     for (let key in branches) {
       tableParts.add(branches[key]);
