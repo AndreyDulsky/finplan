@@ -4,7 +4,7 @@ import FormCommnetView from "views/comment/index";
 import FormViewView from "views/order/check-work";
 import UpdateFormOrderView from "core/updateFormOrderView";
 import WindowDirectoryView from "core/window/WindowDirectoryView";
-import FormUpdateJetView from "core/updateJetView";
+import FormTransactionEditView from "core/service/formTransactionEditView";
 import TableDynamic from  "components/tableService";
 
 import FormView from "core/formView";
@@ -346,7 +346,7 @@ export default class InproduceView extends JetView{
     this.formEdit = this.ui(FormEditView);
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
-    this.formUpdateJetView = this.ui(FormUpdateJetView);
+    this.formTransactionEditView = this.ui(FormTransactionEditView);
 
     this.formUpdateOrderView = this.ui(UpdateFormOrderView);
 
@@ -381,7 +381,7 @@ export default class InproduceView extends JetView{
         formView: this.formView,
         formComment: this.formComment,
         formUpdateOrderView: this.formUpdateOrderView,
-        formUpdateJetView: this.formUpdateJetView,
+        formTransactionEditView: this.formTransactionEditView,
 
 
         windowDirectory: this.windowDirectory,

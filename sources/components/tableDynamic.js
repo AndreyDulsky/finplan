@@ -1470,7 +1470,7 @@ webix.protoUI({
         if (filter[key].value == 'dateFrom') filter[key].value = this.dateFromValue;
         if (filter[key].value == 'dateTo') filter[key].value = this.dateToValue;
 
-        if (filter[key].comparison == 'in') filter[key].value = filter[key].value.split(',');
+        if (filter[key].comparison == 'in' && !Array.isArray(filter[key].value)) filter[key].value = filter[key].value.split(',');
 
         if (filter[key].operator == "or") {
           filterFirstLavel["or"].push(filterSchema);

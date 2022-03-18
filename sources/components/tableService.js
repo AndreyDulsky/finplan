@@ -1082,7 +1082,7 @@ webix.protoUI({
               scope.state.formUpdateOrderView.showForm(this);
             } else {
               if (scope.state.params.mode == 'transaction-mongo') {
-                scope.state.formUpdateJetView.showForm(this);
+                scope.state.formTransactionEditView.showForm(this);
               } else {
                 scope.state.formEdit.showForm(this);
               }
