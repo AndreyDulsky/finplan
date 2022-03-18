@@ -87,9 +87,9 @@ export class ApiRest {
     //
     //   return webix.ajax(url, callback);
     // }
+    this.dataCollection[model] = webix.ajax(url, callback);
 
-
-    return  webix.ajax(url, callback);//this.dataCollection[model];
+    return  this.dataCollection[model];//this.dataCollection[model];
   }
 
   getLoad(url, params, callback) {

@@ -2,6 +2,7 @@ import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
 
+
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
   var summ = 0;
@@ -899,7 +900,6 @@ webix.protoUI({
   },
 
   getSchemaTableSetting() {
-
     let url = this.state.urlTableSettingUsers;
     let response = webix.ajax().sync().get(url, {filter:{"model": this.model, "list_id":this.selectTypeValue}});
     let data = JSON.parse(response.responseText);
@@ -1006,6 +1006,7 @@ webix.protoUI({
 
       },
       ready: function() {
+
         //scope.attachToolBarEvents()
         webix.storage.local.remove('config_'+scope.state.params.mode);
         let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
@@ -1080,7 +1081,11 @@ webix.protoUI({
             if (scope.state.params.mode == 'order' || scope.state.params.mode == 'order-management') {
               scope.state.formUpdateOrderView.showForm(this);
             } else {
-              scope.state.formEdit.showForm(this);
+              if (scope.state.params.mode == 'transaction-mongo') {
+                scope.state.formUpdateJetView.showForm(this);
+              } else {
+                scope.state.formEdit.showForm(this);
+              }
             }
           }
           if (id.column == 'action-view-window') {
@@ -1138,15 +1143,16 @@ webix.protoUI({
         },
 
         onBeforeLoad:function(){
+
           // webix.extend(this, webix.OverlayBox);
           // this.showOverlay('<i class="mdi mdi-reload" style="font-size: 26px"></i>');
-          webix.extend(this, webix.ProgressBar);
+          //webix.extend(this, webix.ProgressBar);
           //this.disable();
-          this.showProgress({
-            type:"icon",
-            //icon: "abjad-hebrew",
-            hide: false
-          });
+          // this.showProgress({
+          //   type:"icon",
+          //   //icon: "abjad-hebrew",
+          //   hide: false
+          // });
         },
         onAfterLoad:function(){
           //this.hideOverlay();
@@ -1191,7 +1197,6 @@ webix.protoUI({
     //this.table = table;
     //webix.extend(this.table, webix.ProgressBar);
     //layout.addView(table);
-
 
     this.table = webix.ui(tableConfig,layout,this.getEl('table-layout') );
 
@@ -1386,11 +1391,11 @@ webix.protoUI({
     }
     scope.tableUrl = this.state.scope.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.state.params.mode), params);
     webix.extend(this.table, webix.ProgressBar);
-    //this.table.disable();
-    // this.table.showProgress({
-    //   type:"icon",
-    //   hide: false
-    // });
+    this.table.disable();
+    this.table.showProgress({
+      type:"icon",
+      hide: false
+    });
     scope.filter = scope.getFilterParams();
 
     // table.config.url = url;
@@ -1399,24 +1404,25 @@ webix.protoUI({
 
     webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
       //scope.table.clearAll();
+
       let items = data.json();
 
       let dataItem = (items.data)?items.data:items.items;
       scope.dataItem = dataItem;
 
 
-      let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
-      scope.columns = dataJson.columns;
+      //let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
+      //scope.columns = dataJson.columns;
 
-      //scope.columns = scope.table.config.columns;
+      scope.columns = scope.table.config.columns;
       //scope.table.refreshColumns();
       //scope.setColumnSettingForTable();
 
 
       scope.table.parse(dataItem);
 
-      //scope.table.enable();
-      //scope.table.hideProgress();
+      scope.table.enable();
+      scope.table.hideProgress();
 
       let resultType= '';
       // if (scope.schemaTableSetting.group['group-by'].type) {
@@ -2743,7 +2749,7 @@ webix.protoUI({
         condition[index].push(item);
       }
     }
-    let conditionFunction = 'function(item, view, prop) {';//'function(item, view, prop) { item.index = (this.count())+1; ';
+    let conditionFunction = 'function(item, view, prop) { ';//item.index = (this.count())+1; ';
 
     condition.forEach((items) => {
 
