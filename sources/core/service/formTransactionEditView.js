@@ -72,7 +72,7 @@ export default class FormTransactionEditView extends JetView {
 
       if (element.target.classList.value === "add-to-table") {
         let table = scope.$$("table_part_value");
-        table.add({"index":"","contrAgent" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"" });
+        table.add({"index":"","contragent_id" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"" });
       }
     });
   }
@@ -118,7 +118,6 @@ export default class FormTransactionEditView extends JetView {
     scope.renderForm(elementsCount);
 
     //set values for form from table
-    debugger;
     state.formEdit.parse(scope.getRecord());
 
     scope.bindCollection(result);
@@ -145,7 +144,13 @@ export default class FormTransactionEditView extends JetView {
     let tablePartValue = this.$$("table_part_value");
 
     tablePartValue.scheme_setter({
-      $init:function(obj){ obj.index = this.count()+1; }
+      $init:function(obj){
+        obj.contragent_id = obj.contrAgent.contrAgentId;
+        obj.category_id = obj.operationCategory.operationCategoryId;
+        obj.project_id = obj.project.projectId;
+
+        obj.index = this.count()+1;
+      }
     });
 
     state.table.scheme_setter({
@@ -336,11 +341,13 @@ export default class FormTransactionEditView extends JetView {
     if (!selectedItem) {
       return;
     }
-    debugger;
     let branches = state.table.data.getBranch(selectedItem.id);
+    //tableParts.parse(state.table.getItem(selectedItem.id).operationParts);
+
     for (let key in branches) {
       tableParts.add(branches[key]);
     }
+
   }
 
   doClickSave() {
@@ -400,7 +407,7 @@ export default class FormTransactionEditView extends JetView {
     ).then(function(obj){
 
       webix.dp(state.table).ignore(function(){
-
+        debugger;
         (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
         //state.table.group("transaction_id");
         debugger;

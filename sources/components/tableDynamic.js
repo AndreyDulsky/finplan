@@ -1427,7 +1427,7 @@ webix.protoUI({
   },
 
   getFilterParams() {
-    debugger;
+
     let scope = this;
     this.format = webix.Date.dateToStr("%Y-%m-%d");
     this.dateFrom = this.getEl("dateFrom");
@@ -1449,7 +1449,7 @@ webix.protoUI({
 
     let type = {};
     let date = {};
-
+    debugger;
     if (this.showFilterDateRange.isVisible() && this.filterDateRangeField) {
       date[this.filterDateRangeField] =  {">=": this.dateFromValue, '<=': this.dateToValue};
       filterParams["filter"]["or"] = [date];
@@ -1458,7 +1458,7 @@ webix.protoUI({
 
 
 
-    if (this.schemaFilterUserList && this.schemaFilterUserList.length > 2) {
+    if (this.schemaFilterUserList && this.schemaFilterUserList.length > 0) {
       let filter = this.schemaFilterUserList;//JSON.parse(this.schemaFilterUserList);
 
       let filterSchema = {};
@@ -1699,7 +1699,7 @@ webix.protoUI({
   },
 
   setElementFilterForm() {
-    if (this.schemaFilterUserList && this.schemaFilterUserList.length >0) {
+    if (this.schemaFilterUserList) {
 
       let values = this.schemaFilterUserList;//JSON.parse(this.schemaFilterUserList);
 
@@ -2665,7 +2665,6 @@ webix.protoUI({
 
   //setting color row
   setColorSettingForTable() {
-
     let colorSetting = this.schemaColorUserList;//JSON.parse(this.schemaColorUserList);
 
     let condition = [];
@@ -2721,7 +2720,6 @@ webix.protoUI({
   },
 
   showColorSetting() {
-    debugger;
     let scope = this;
     let body = {
       localId: 'body-setting-color-layout',
@@ -3007,11 +3005,13 @@ webix.protoUI({
           view.addView(this.getElementColumnForm(key, keyCategory));
         }
       }
+      debugger;
       this.winColumn.queryView('form').setValues(values);
     }
   },
 
   getCategoryColumnForm(id) {
+    debugger;
     let scope = this;
     return {
       localId: 'category-column-'+id,
