@@ -1415,12 +1415,12 @@ webix.protoUI({
       params = '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]';
     }
     if (this.schemaSortUserList && this.schemaSortUserList.length > 2) {
-      let sort = this.schemaSortUserList;//JSON.parse(this.schemaSortUserList);
+      let sort = JSON.parse(this.schemaSortUserList);
       params = [];
       for (let key in sort) {
         params.push({'property':sort[key].field, 'direction' : sort[key].direction});
       }
-      //params = JSON.stringify(params);
+      params = JSON.stringify(params);
     }
 
     return params;
@@ -1449,7 +1449,7 @@ webix.protoUI({
 
     let type = {};
     let date = {};
-    debugger;
+
     if (this.showFilterDateRange.isVisible() && this.filterDateRangeField) {
       date[this.filterDateRangeField] =  {">=": this.dateFromValue, '<=': this.dateToValue};
       filterParams["filter"]["or"] = [date];
@@ -1459,7 +1459,7 @@ webix.protoUI({
 
 
     if (this.schemaFilterUserList && this.schemaFilterUserList.length > 0) {
-      let filter = this.schemaFilterUserList;//JSON.parse(this.schemaFilterUserList);
+      let filter = JSON.parse(this.schemaFilterUserList);
 
       let filterSchema = {};
       let filterFirstLavel = {"or": []};
@@ -1575,7 +1575,8 @@ webix.protoUI({
     let options = [];
     let select = "0";
     let i = 0;
-    this.schemaColumnUserListObject = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
+
+    this.schemaColumnUserListObject = JSON.parse(this.schemaColumnUserList);
 
     columnSetting = this.schemaColumnUserListObject;
 
@@ -1615,7 +1616,7 @@ webix.protoUI({
   selectColumnSettingForTable(id) {
     let scope = this;
     scope.selectColumnSettingId = id;
-    //debugger;
+
 
     let columnSetting = this.schemaColumnUserListObject;
 
@@ -1658,7 +1659,7 @@ webix.protoUI({
 
   //setting filter
   showFilterSetting() {
-    debugger;
+
     let scope = this;
     let body = {
       localId: 'body-setting-filter-layout',
@@ -1701,7 +1702,7 @@ webix.protoUI({
   setElementFilterForm() {
     if (this.schemaFilterUserList) {
 
-      let values = this.schemaFilterUserList;//JSON.parse(this.schemaFilterUserList);
+      let values = JSON.parse(this.schemaFilterUserList);
 
       let formRowLayout = this.winFilter.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -1839,13 +1840,13 @@ webix.protoUI({
   },
 
   doSaveFilterSettingClick(values) {
-    debugger;
+
     let scope = this;
     if (this.selectTypeValue) {
-      scope.schemaFilterUserList =  values;//JSON.stringify(values);
+      scope.schemaFilterUserList =  JSON.stringify(values);
       let url = this.state.apiRest.getUrl('put', this.state.urlTableUserListsPut,{},this.selectTypeValue);
       webix.ajax().put(url, {
-        'filter_setting': values//JSON.stringify(values)
+        'filter_setting': JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -2513,10 +2514,10 @@ webix.protoUI({
   },
 
   setElementSortForm() {
+    debugger;
+    if (this.schemaSortUserList && this.schemaSortUserList.length >2) {
 
-    if (this.schemaSortUserList && this.schemaSortUserList.length >0) {
-
-      let values = this.schemaSortUserList;//JSON.parse(this.schemaSortUserList);
+      let values = JSON.parse(this.schemaSortUserList);
 
       let formRowLayout = this.winSort.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -2639,12 +2640,12 @@ webix.protoUI({
   doSaveSortSettingClick(values) {
     let scope = this;
     if (this.selectTypeValue) {
-      scope.schemaSortUserList =  values;//JSON.stringify(values);
+      scope.schemaSortUserList =  JSON.stringify(values);
       let url = this.state.apiRest.getUrl('put', this.state.urlTableUserListsPut,{},this.selectTypeValue);
 
 
       webix.ajax().put(url, {
-        'sort_setting': values//JSON.stringify(values)
+        'sort_setting': JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -2665,7 +2666,7 @@ webix.protoUI({
 
   //setting color row
   setColorSettingForTable() {
-    let colorSetting = this.schemaColorUserList;//JSON.parse(this.schemaColorUserList);
+    let colorSetting = JSON.parse(this.schemaColorUserList);
 
     let condition = [];
     let obj = { func: function() {} };
@@ -2763,7 +2764,7 @@ webix.protoUI({
 
     if (this.schemaColorUserList) {
 
-      let values = this.schemaColorUserList;//JSON.parse(this.schemaColorUserList);
+      let values = JSON.parse(this.schemaColorUserList);
 
       let formRowLayout = this.winColor.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -2895,6 +2896,7 @@ webix.protoUI({
                 css: 'webix_primary',
                 //width: 400,
                 click: function() {
+
                   scope.doSaveColorSettingClick(this.getTopParentView().queryView('form').getValues());
                   scope.winColor.close();
                 }
@@ -2910,12 +2912,12 @@ webix.protoUI({
   doSaveColorSettingClick(values) {
     let scope = this;
     if (this.selectTypeValue) {
-      scope.schemaColorUserList =  values;//JSON.stringify(values);
+      scope.schemaColorUserList =  JSON.stringify(values);
       let url = this.state.apiRest.getUrl('put', this.state.urlTableUserListsPut,{},this.selectTypeValue);
 
 
       webix.ajax().put(url, {
-        'color_setting': values//JSON.stringify(values)
+        'color_setting': JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
@@ -2960,6 +2962,7 @@ webix.protoUI({
                   css: 'webix_primary',
                   //width: 400,
                   click: function() {
+
                     scope.doSaveColumnSettingClick(this.getTopParentView().queryView('form').getValues());
                     scope.winColumn.close();
                   }
@@ -2995,7 +2998,7 @@ webix.protoUI({
 
     if (this.schemaColumnUserList) {
 
-      let values = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
+      let values = JSON.parse(this.schemaColumnUserList);
 
       let formRowLayout = this.winColumn.queryView({'localId': 'form-row-layout'});
       for (let key in values) {
@@ -3005,13 +3008,13 @@ webix.protoUI({
           view.addView(this.getElementColumnForm(key, keyCategory));
         }
       }
-      debugger;
+
       this.winColumn.queryView('form').setValues(values);
     }
   },
 
   getCategoryColumnForm(id) {
-    debugger;
+
     let scope = this;
     return {
       localId: 'category-column-'+id,
@@ -3170,8 +3173,9 @@ webix.protoUI({
       this.selectColumnSettingId = null;
     }
     // update css
-    let columnSetting = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
+    let columnSetting = JSON.parse(this.schemaColumnUserList);
     let elementDeleteCategory = (columnSetting[id]) ? columnSetting[id].category : {};
+    let scope = this;
     for (let key in elementDeleteCategory) {
       this.table.getColumnConfig(elementDeleteCategory[key].field).cssFormat = '';
 
@@ -3186,7 +3190,7 @@ webix.protoUI({
     let element = this.winColumn.queryView({'localId': idLayout});
 
     // update css
-    let columnSetting = this.schemaColumnUserList;//JSON.parse(this.schemaColumnUserList);
+    let columnSetting = JSON.parse(this.schemaColumnUserList);
     if (columnSetting[idCategory]) {
       let elementDelete = columnSetting[idCategory]['category'][id];
       this.table.getColumnConfig(elementDelete.field).cssFormat = '';
@@ -3244,13 +3248,12 @@ webix.protoUI({
   doSaveColumnSettingClick(values) {
     let scope = this;
     if (this.selectTypeValue) {
-
-      scope.schemaColumnUserList =  values;//JSON.stringify(values);
+      scope.schemaColumnUserList =  JSON.stringify(values);
       let url = this.state.apiRest.getUrl('put', "accounting/schema-table-user-lists",{},this.selectTypeValue);
 
 
       webix.ajax().put(url, {
-        'column_setting': values//JSON.stringify(values)
+        'column_setting': JSON.stringify(values)
       }, {
         error: function (text, data, response) {
           scope.showMessageError(data.json());
