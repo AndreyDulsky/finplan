@@ -103,9 +103,9 @@ export default class UpdateJetView extends JetView {
       return state.tableRecord;
     }
     return {
-      date_operation: new Date(),
+      date_transaction: new Date(),
       is_committed : 1,
-      type_operation: 2
+      type_transaction: 2
     }
   }
 
@@ -194,7 +194,7 @@ export default class UpdateJetView extends JetView {
   attachFormEvents() {
     let scope = this;
     let state = this.state;
-    let typeOperation = state.formEdit.elements["type_operation"];
+    let typeOperation = state.formEdit.elements["type_transaction"];
     let comboValueBreak = this.$$("combo_value_break");
     let tablePartValue = this.$$("table_part_value");
     let btnSave = this.$$("btn_save");
@@ -301,7 +301,7 @@ export default class UpdateJetView extends JetView {
     let scope = this;
     webix.attachEvent("onClick", function(element, b, c) {
 
-      if (!element['target']) {
+      if (element && !element['target']) {
         return;
       }
       if (element.target.classList.value === "show-combo-value-break") {

@@ -97,6 +97,15 @@
 .table-transaction .webix_column div[aria-level="1"] {
     background: #fff;
 }
+/*.table-transaction .webix_column div[aria-colindex="1"] {*/
+    /*background: #F4F5F9;*/
+/*}*/
+
+.loading-table-icon .webix_progress_icon div {
+    font-size: 30px;
+    margin-left: -15px;
+    margin-top: -15px;
+}
 
 div[column="2"] div[aria-level="2"] .subrowimage {
     margin-left: 25px;
@@ -310,4 +319,22 @@ i.mdi:hover{
     background:#ffd;
 }
 
+.show-combo-value-break {
+    color: #1CA1C1;
+    text-decoration: none;
+}
 
+.add-to-table {
+    color: #1CA1C1;
+    text-decoration: none;
+    margin-left: -12px;
+}
+
+/*.webix_primary button {*/
+    /*background-color: #F4F5F9;*/
+    /*!*border-radius: 15px;*!*/
+/*}*/
+
+/*.webix_primary .webix_icon {*/
+    /*color: #777;*/
+/*}*/

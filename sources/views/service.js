@@ -1,11 +1,12 @@
 import {JetView, plugins} from "webix-jet";
-import FormEditView from "core/updateFormView";
+import FormEditView from "core/service/FormTransactionSchemaEditView";
 import FormCommnetView from "views/comment/index";
 import FormViewView from "views/order/check-work";
 import UpdateFormOrderView from "core/updateFormOrderView";
 import WindowDirectoryView from "core/window/WindowDirectoryView";
-import FormTransactionEditView from "core/service/formTransactionEditView";
+//import FormTransactionEditView from "core/service/formTransactionEditView";
 import TableDynamic from  "components/tableService";
+import formFilterView from "core/service/FormFilterView";
 
 import FormView from "core/formView";
 
@@ -346,8 +347,8 @@ export default class InproduceView extends JetView{
     this.formEdit = this.ui(FormEditView);
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
-    this.formTransactionEditView = this.ui(FormTransactionEditView);
-
+    //this.formTransactionEditView = this.ui(FormTransactionEditView);
+    this.formFilterView = this.ui(formFilterView);
     this.formUpdateOrderView = this.ui(UpdateFormOrderView);
 
     this.windowDirectory = this.ui(WindowDirectoryView);
@@ -378,12 +379,10 @@ export default class InproduceView extends JetView{
         urlTableSettingUsersSave: "api->accounting/schema-table-setting-users",
         urlTableUserListsPut: "accounting/schema-table-user-lists",
         formEdit: this.formEdit,
+        formFilter: this.formFilterView,
         formView: this.formView,
         formComment: this.formComment,
         formUpdateOrderView: this.formUpdateOrderView,
-        formTransactionEditView: this.formTransactionEditView,
-
-
         windowDirectory: this.windowDirectory,
         type: type,
 

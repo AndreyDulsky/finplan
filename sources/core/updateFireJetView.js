@@ -48,7 +48,7 @@ export default class UpdateFireJetView extends JetView {
                 "margin": 10,
                 "rows": [{"view": "text", "name": "id", "width": 150, "hidden": true}, {
                   "view": "segmented",
-                  "name": "type_operation",
+                  "name": "type_transaction",
                   "value": 1,
                   "inputWidth": 320,
                   "options": [{"id": 1, "value": "Поступление"}, {"id": 2, "value": "Расход"}, {
@@ -69,7 +69,7 @@ export default class UpdateFireJetView extends JetView {
                     "value": "",
                     "view": "datepicker",
                     "labelWidth": 100,
-                    "name": "date_operation",
+                    "name": "date_transaction",
                     "timepicker": true,
                     "stringResult": true
                   }, {
@@ -335,9 +335,9 @@ export default class UpdateFireJetView extends JetView {
       return state.tableRecord;
     }
     return {
-      date_operation: new Date(),
+      date_transaction: new Date(),
       is_committed : 1,
-      type_operation: 2
+      type_transaction: 2
     }
   }
 
@@ -426,7 +426,7 @@ export default class UpdateFireJetView extends JetView {
   attachFormEvents() {
     let scope = this;
     let state = this.state;
-    let typeOperation = state.formEdit.elements["type_operation"];
+    let typeOperation = state.formEdit.elements["type_transaction"];
     let comboValueBreak = this.$$("combo_value_break");
     let tablePartValue = this.$$("table_part_value");
     let btnSave = this.$$("btn_save");
@@ -604,8 +604,8 @@ export default class UpdateFireJetView extends JetView {
         (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
         state.table.select(record.id);
         state.table.scrollTo(0, 0);
-        state.table.sort("date_operation", "desc", "string");
-        state.table.markSorting("date_operation", "desc");
+        state.table.sort("date_transaction", "desc", "string");
+        state.table.markSorting("date_transaction", "desc");
       });
       state.win.hide();
     }, function(){

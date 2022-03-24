@@ -44,7 +44,7 @@ export default class CashEditView extends JetView {
                         "margin": 10,
                         "rows": [
                             { view:"text", name: "id", width:150, hidden: true },
-                            { view:"segmented", "name":"type_operation", value: 1, inputWidth:320, options:[
+                            { view:"segmented", "name":"type_transaction", value: 1, inputWidth:320, options:[
                                     { id:1, value:"Поступление" },
                                     { id:2, value:"Расход"},
                                     { id:3, value:"Перемещение"}
@@ -61,7 +61,7 @@ export default class CashEditView extends JetView {
                                         "value": new Date(),
                                         "view": "datepicker",
                                         "labelWidth": 100,
-                                        "name":"date_operation" ,
+                                        "name":"date_transaction" ,
                                         "timepicker":true,
                                         "stringResult":true
                                     },
@@ -344,7 +344,7 @@ export default class CashEditView extends JetView {
     }
 
     attachFormEvents() {
-        var typeOperation = this.$$('my_form1').elements["type_operation"];
+        var typeOperation = this.$$('my_form1').elements["type_transaction"];
         //change type_operation
         //if type_operation = move =3
         const TYPE_OPERATION_MOVE = 3;
@@ -393,9 +393,9 @@ export default class CashEditView extends JetView {
             if ($$('table1').getCursor() == null) {
                 this.setValues({
                     id: null,
-                    date_operation: new Date(),
+                    date_transaction: new Date(),
                     is_committed : 1,
-                    type_operation: 2
+                    type_transaction: 2
                 });
             }
         });
@@ -403,7 +403,7 @@ export default class CashEditView extends JetView {
         if (action == 'create') {
             //this.$$("my_form1").reconstruct();
         } else {
-            var typeOperation = $$('table1').getSelectedItem().type_operation;
+            var typeOperation = $$('table1').getSelectedItem().type_transaction;
             if (typeOperation == 4) {
                 return;
             }
@@ -435,8 +435,8 @@ export default class CashEditView extends JetView {
             var key = "auth_token=7110eda4d09e062aa5e4a390b0a572ac0d2c02206";
             //debugger;
             var record = {
-                "type_operation": values['type_operation'],
-                "date_operation": values['date_operation'],
+                "type_transaction": values['type_transaction'],
+                "date_transaction": values['date_transaction'],
                 "is_committed": values['is_committed'],
                 "value": values['value'],
                 "comment": values['comment'],
@@ -459,8 +459,8 @@ export default class CashEditView extends JetView {
             var view = this;
             if (id) {
                 record = {
-                    "type_operation": values['type_operation'],
-                    "date_operation": values['date_operation'],
+                    "type_transaction": values['type_transaction'],
+                    "date_transaction": values['date_transaction'],
                     "is_committed": values['is_committed'],
                     "value": values['value'],
                     "comment": values['comment'],

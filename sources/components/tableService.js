@@ -3,6 +3,7 @@ import "components/comboDateClose";
 import "components/searchClose";
 
 
+import {JetView} from "webix-jet";
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
   var summ = 0;
@@ -242,6 +243,15 @@ function columnGroupTemplate(obj, common, item){
   return  common.icon(obj)+common.folder(obj, common)+' '+item;
 }
 
+function groupData (obj, common) {
+  let result = '';
+  if (obj.$level==1 && obj.$count > 1) result = common.icon(obj, common) + webix.i18n.longDateFormatStr(obj.date_transaction);
+  if (obj.$level!=1)  result = "<div class='subrowimage'><div></div></div>";
+  if (obj.$level==1 && obj.$count < 2) result = "<div style='margin-left:20px;'>"+webix.i18n.longDateFormatStr(obj.date_transaction)+"</div>";
+  if (obj.$level==1 && obj.is_committed == 2) result = '<div style="color:blue">'+result+'</div>';
+  return result;
+}
+
 webix.editors.buttonEditor = {
   focus:function(){
     this.getInputNode(this.node).focus();
@@ -273,7 +283,11 @@ webix.editors.buttonEditor = {
 // webix.UIManager.addHotKey("Ctrl+V", function() {
 //   webix.message("Ctrl+V for any");
 // });
-
+class SubView extends JetView {
+  config(){
+    return { template:"test" };
+  }
+}
 webix.protoUI({
   name:"table-service",
   defaults: {
@@ -283,7 +297,6 @@ webix.protoUI({
   $init: function(config) {
     let scope = this;
     this.initParam = false;
-
     this.state = config.state;
     this.stateCache = config.stateCache;
 
@@ -444,6 +457,7 @@ webix.protoUI({
             hidden: false,
             localId: "select-type"
           },
+          {},
           {
             view: "icon",
             icon: "mdi mdi-tools",
@@ -549,7 +563,7 @@ webix.protoUI({
       {
         view: "toolbar",
         localId: "show-toolbar",
-        height: 30,
+        height: 36,
         cols:[
           {
             view: "icon",
@@ -557,22 +571,38 @@ webix.protoUI({
             localId: "show-add-button",
             tooltip: "Добавить",
             hidden: true,
+            label: "Создать",
             width: 30,
+            css : "webix_primary",
             click: () => this.doAddClick()
           },
-          {
-            view: "icon",
-            icon: "mdi mdi-playlist-plus",
-            localId: "show-add-button",
-            tooltip: "Добавить строку",
-            hidden: false,
-            width: 30,
-            click: () => this.doAddRowClick()
-          },
+          // {
+          //   view: "icon",
+          //   icon: "mdi mdi-playlist-plus",
+          //   localId: "show-add-button",
+          //   tooltip: "Добавить строку",
+          //   hidden: false,
+          //   width: 30,
+          //   click: () => this.doAddRowClick()
+          // },
 
 
           //{ view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
-          { view: "icon", icon: 'mdi mdi-microsoft-excel', autowidth: true, click: () =>  this.showExportToExcelSetting()},
+          { view: "icon",
+            icon: 'mdi mdi-microsoft-excel',
+            width: 30,
+            css : "webix_primary",
+            click: () =>  this.showExportToExcelSetting()
+          },
+          {
+            view: "icon",
+            icon: 'mdi mdi-refresh',
+            css : "webix_primary",
+            width: 30,
+            value: true,
+            click: function() { scope.doRefresh() }
+
+          },
           {
             view: "toggle",
             type: "icon",
@@ -583,52 +613,119 @@ webix.protoUI({
             click: function() { scope.doClickOpenAll() }
 
           },
-          {
-            view: "icon",
-            icon: 'mdi mdi-refresh',
-            autowidth: true,
-            value: true,
-            click: function() { scope.doRefresh() }
-
-          },
-          {
-            view: "icon",
-            icon: 'mdi mdi-calculator',
-            autowidth: true,
-            value: true,
-            click: () =>  scope.doClickFillAll()
-
-          },
+          // {
+          //   view: "icon",
+          //   icon: 'mdi mdi-calculator',
+          //   autowidth: true,
+          //   value: true,
+          //   click: () =>  scope.doClickFillAll()
+          //
+          // },
 
 
           {},
         ]
       },
       {
-        localId: "body-layout",
+
+        view:"accordion",
+        //type:"wide",
+        multi:false,
         cols:[{
-          localId: "table-layout",
-          view: "datatable"
-        }]
-      }
+            header:"Фильтры",
+            localId: "filter-form-layout",
+            width: 220,
+            resize:true,
+            body: {
+              //type: "form",
+              rows: [
+                {
+                  view: "form",
+                  localId: "filter-form",
+                  scroll : "auto",
+                  autoheight: true,
+                  margin: 20,
+                  elements: [
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            view:"resizer",
+            id:"resizer"
+          },
+          {
+            localId: "body-layout",
+            //padding:10,
+            rows:[
+              {  localId: "table-layout" },
+              {
+                height: 50,
+                padding:{
+                  top:5, bottom:7, left:0, right:8
+                },
+                cols: [
+                {
+                  view: "label",
+                  label: "",
+                  width: 60,
+                  css: "loading-table-icon",
+                  localId: "loading-table",
+                  template: "<div class='webix_el_box' style='width:60px;height:50px;'></div>"
+                },
+                {
+                  view: "label",
+                  label: "0",
+                  localId: "count",
+                  template: "<div class='webix_el_box' style='line-height:32px'>Показано: #label# операций</div>"
+                },
+                {
+                  view: "label",
+                  label: "",
+                  localId: "income",
+                  template: "<div class='webix_el_box' style='line-height:32px; color: darkgreen'>Поступлений: #label#</div>"
+                },
+                {
+                  view: "label",
+                  label: "",
+                  localId: "outcome",
+                  template: "<div class='webix_el_box' style='line-height:32px; color: red'>Выплат: #label#</div>"
+                },
+                {
+                  view: "label",
+                  label: "",
+                  localId: "move",
+                  color: 'grey',
+                  template: "<div class='webix_el_box' style='line-height:32px; color: #color#'>Перемещения: #label#</div>"
+                },
+                {
+                  view: "label",
+                  label: "",
+                  localId: "total",
+                  color: 'grey',
+                  template: "<div class='webix_el_box' style='line-height:32px; color: #color#'>Итого:  #label#</div>"
+                },
+                {
+                  "align" :"right"
+                }
+              ]}
+            ]
+          }
+
+        ]
+      },
+
     ];
 
     this.stateFilter =  webix.storage.local.get(this.state.params.mode+"_"+this.state.type+"_filter_state");
     this.$ready.push(this.setPage);
 
-    //this.$ready.push(this.attachToolBarEvents());
-
-    //this.setPage();
-    //this.attachToolBarEvents();
-
-    // this.formEdit = this.ui(FormEditView);
-    // this.windowDirectory = this.ui(WindowDirectoryView);
-    // this.formComment = this.ui(FormCommnetView);
-    // this.formView = this.ui(FormViewView);
-
   },
+
   $ready: function() {
     //this.setPage();
+
   },
   setPage() {
     this.showGoToBack();
@@ -640,7 +737,35 @@ webix.protoUI({
     this.getTable();
     this.getDataTable();
     this.attachToolBarEvents();
+    this.getFilterForm();
 
+  },
+
+  getFilterForm() {
+    let scope = this;
+    let dataJson;
+    dataJson = webix.storage.local.get('config_filter_form_'+scope.state.params.mode);
+    let dataJsonObject = {};
+    if (dataJson) {
+      dataJsonObject = dataJson;
+      scope.setFilterForm(dataJsonObject);
+    } else {
+      this.state.apiRest.get('accounting/'+this.state.params.mode+'/form-filter').then(function(data) {
+
+        let dataJson = data.json();
+        dataJsonObject = dataJson.data.configForm;
+        webix.storage.local.put('config_filter_form_'+scope.state.params.mode, dataJsonObject);
+        scope.setFilterForm(dataJsonObject);
+      });
+    }
+  },
+
+  setFilterForm(dataJsonObject) {
+    let scope = this;
+    webix.ui(
+      dataJsonObject,
+      scope.getEl('filter-form')
+    );
   },
 
   doClickFillAll(employeeId = '') {
@@ -977,6 +1102,11 @@ webix.protoUI({
   getTable() {
     let layout = this.getEl("body-layout");
     let scope = this;
+    let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
+    let dataConfigObject = {};
+    if (dataJson) {
+      dataConfigObject = scope.dataDriverJsonToObject(dataJson.columns);
+    }
     let tableConfig = {
       view: "treetable",
       localId: 'table-layout',
@@ -1002,17 +1132,19 @@ webix.protoUI({
       autoConfig: false,
       //url: scope.state.scope.app.config.apiRest.getUrl('get',"accounting/"+scope.getModelName(scope.state.params.mode)),
       xCount:0,
+      scroll: 'xy',
       scheme:{
 
       },
+      columns: dataConfigObject,
       ready: function() {
 
         //scope.attachToolBarEvents()
-        webix.storage.local.remove('config_'+scope.state.params.mode);
+        //webix.storage.local.remove('config_'+scope.state.params.mode);
         let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
         if (dataJson) {
-          scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
-          scope.table.refreshColumns();
+          //scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
+          //scope.table.refreshColumns();
         } else {
           scope.state.scope.app.config.apiRest.get("accounting/" + scope.state.params.mode + "/get-config").then(function (data) {
             let dataJson = data.json();
@@ -1022,33 +1154,33 @@ webix.protoUI({
           });
         }
 
-        webix.ui({
-          view:"contextmenu",
-          data: ["Добавить","Редактировать"],
-          on:{
-            onItemClick:function(id){
-              var context = this.getContext();
-              scope.queryView({localId:'table-layout'}).unselect();
-              scope.queryView({localId:'table-layout'}).select(context.id.row, context.id.column,true);
-              if (id == 'Добавить') {
-
-                let grid = scope.queryView({localId:'table-layout'});
-                grid.unselectAll();
-                scope.state.formUpdateOrderView.showForm(scope.queryView({localId:'table-layout'}));
-
-                // let clipboard = document.getElementsByClassName("webix_clipbuffer")[0].value;
-                // grid.callEvent("onKeyPress", [
-                //   clipboard,
-                //   {ctrlKey:true,target:grid.$view}
-                // ]);
-              }
-              if (id == 'Редактировать') {
-                scope.state.formUpdateOrderView.showForm(scope.queryView({localId:'table-layout'}));
-              }
-
-            }
-          }
-        }).attachTo(this);
+        // webix.ui({
+        //   view:"contextmenu",
+        //   data: ["Добавить","Редактировать"],
+        //   on:{
+        //     onItemClick:function(id){
+        //       var context = this.getContext();
+        //       scope.queryView({localId:'table-layout'}).unselect();
+        //       scope.queryView({localId:'table-layout'}).select(context.id.row, context.id.column,true);
+        //       if (id == 'Добавить') {
+        //
+        //         let grid = scope.queryView({localId:'table-layout'});
+        //         grid.unselectAll();
+        //         scope.state.formUpdateOrderView.showForm(scope.queryView({localId:'table-layout'}));
+        //
+        //         // let clipboard = document.getElementsByClassName("webix_clipbuffer")[0].value;
+        //         // grid.callEvent("onKeyPress", [
+        //         //   clipboard,
+        //         //   {ctrlKey:true,target:grid.$view}
+        //         // ]);
+        //       }
+        //       if (id == 'Редактировать') {
+        //         scope.state.formUpdateOrderView.showForm(scope.queryView({localId:'table-layout'}));
+        //       }
+        //
+        //     }
+        //   }
+        // }).attachTo(this);
       },
       on:{
         onAfterColumnDrop : function() {
@@ -1200,6 +1332,8 @@ webix.protoUI({
 
     this.table = webix.ui(tableConfig,layout,this.getEl('table-layout') );
 
+    //webix.ui(this.state.formFilter, this.getEl('filter-form-layout').body);
+
     this.table.attachEvent("onKeyPress", function(code, e){
       //debugger;
       if (this.contextMenuSearchKey)
@@ -1239,10 +1373,86 @@ webix.protoUI({
 
     });
 
+    let formFilter = this.getEl("filter-form");
+    formFilter.attachEvent("onChange", function(obj){
+      scope.getDataTable();
+    });
+
     this.setColorSettingForTable();
     scope.scrollCountSave = 0;
     scope.eventScroll = true;
 
+  },
+
+  getParams() {
+
+    let form = this.getEl("filter-form");
+    //let formSearch = this.getEl("search-form");
+
+    let filter = form.getValues();
+    let filterNew = {};
+    let split = {};
+    let values = {};
+    let znak = '';
+
+    for (let key in filter) {
+      if (filter[key]) {
+        //debugger;
+        split = key.split('.');
+        if (split.length > 1) {
+
+          if (split[1] == 'range') {
+
+            if (!values[split[0]]) {
+              values[split[0]] = [];  values[split[0]] = {">=": filter[key]};
+            } else {
+              values[split[0]]["<="] = filter[key];
+            }
+            //values[split[0]][znak] = filter[key];
+            filter[split[0]] = values[split[0]];
+            filterNew[split[0]] = filter[split[0]];
+          } else {
+
+            if (!values[split[0]]) values[split[0]] = [];
+            let splitFilter = filter[key].split(',');
+            if (splitFilter.length > 1) {
+              for (let key1 in splitFilter) {
+                values[split[0]].push(splitFilter[key1]);
+              }
+            } else {
+              values[split[0]].push(filter[key]);
+            }
+            filter[split[0]] = {"in": values[split[0]]};
+            filterNew[split[0]] = filter[split[0]];
+          }
+        } else {
+          if (key == 'date_operation') {
+            //debugger;
+            if (filter['date_operation_to']) {
+              filterNew[key] = {'>=': formatDate(filter[key]), '<=': formatDate(filter['date_operation_to'])};
+            } else {
+              filterNew[key] = {'>=': formatDate(filter[key]), '<=': formatDate(filter[key])};
+            }
+
+          } else {
+            filterNew[key] = filter[key];
+          }
+          //filterNew[key] = filter[key];
+        }
+      }
+    }
+    delete filterNew['date_operation_to'];
+
+    // if (formSearch.getValue() != "") {
+    //   filterNew = {
+    //     'search': {
+    //       'comment':formSearch.getValue(),
+    //       'contragent.name':formSearch.getValue(),
+    //       'account.name':formSearch.getValue()
+    //     }
+    //   };
+    // }
+    return filterNew;
   },
 
   getSearchFieldByKeyPress(column, key, offset) {
@@ -1341,6 +1551,9 @@ webix.protoUI({
     if (this.state.params.mode == 'order') {
       params['expand'] = 'comment,images,orderWork';
     }
+    if (this.state.params.mode == 'transaction-schema') {
+      params['expand'] = 'data,contragent,category,project,account';
+    }
 
 
     let url = new URL(location.href.replace('/#!',''));
@@ -1365,7 +1578,7 @@ webix.protoUI({
 
     if (state.y != -1) {
       scope.scrollY = state.y+200;
-      scope.scrollCount = Math.floor(scope.scrollY/window.screen.height/3);
+      scope.scrollCount = Math.floor(scope.scrollY/window.screen.height/2);
       if (scope.eventScroll == true) {
         scope.eventScroll = false;
         scope.scrollYSave = scope.scrollY;
@@ -1376,7 +1589,7 @@ webix.protoUI({
           return 0;
         } else {
           if (scope.scrollCount > scope.scrollCountSave) {
-            webix.message(scope.scrollY);
+            //webix.message(scope.scrollY);
             scope.scrollCountSave = scope.scrollCount;
             params['count'] =  100; //scope.tableUrl+'?count=100&start='+scope.scrollCountSave*100;
             params['start'] =  scope.scrollCountSave*100;
@@ -1388,14 +1601,25 @@ webix.protoUI({
       }
     } else {
       scope.table.clearAll();
+      scope.scrollCountSave = 0
     }
     scope.tableUrl = this.state.scope.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.state.params.mode), params);
+
+    webix.extend(this.getEl('loading-table'), webix.ProgressBar);
     webix.extend(this.table, webix.ProgressBar);
-    this.table.disable();
-    this.table.showProgress({
-      type:"icon",
-      hide: false
-    });
+    if (scope.scrollCountSave == 0) {
+      this.table.disable();
+      this.table.showProgress({
+        type:"icon",
+        hide: false
+      });
+    } else {
+      this.getEl('loading-table').disable();
+      this.getEl('loading-table').showProgress({
+        type: "icon",
+        hide: false
+      });
+    }
     scope.filter = scope.getFilterParams();
 
     // table.config.url = url;
@@ -1420,9 +1644,10 @@ webix.protoUI({
 
 
       scope.table.parse(dataItem);
-
       scope.table.enable();
       scope.table.hideProgress();
+      scope.getEl('loading-table').enable();
+      scope.getEl('loading-table').hideProgress();
 
       let resultType= '';
       // if (scope.schemaTableSetting.group['group-by'].type) {
@@ -1477,6 +1702,51 @@ webix.protoUI({
 
 
     });
+    let urlSummary = this.state.scope.app.config.apiRest.getUrl('get','accounting/transaction-schema/summary',{'expand':'contragent,account'});
+    webix.ajax().get( urlSummary, scope.filter).then(function(data) {
+      scope.setTotal(data.json());
+
+    });
+  },
+
+  setTotal(data) {
+
+    let incomeLabel = this.getEl('income');
+    let outcomeLabel = this.getEl('outcome');
+    let moveLabel = this.getEl('move');
+    let totalLabel = this.getEl('total');
+    let countLabel = this.getEl('count');
+
+    let income = 0;
+    let outcome = 0;
+    let incomeMove = 0;
+    let outcomeMove = 0;
+    let count = 0;
+
+    for (let key in data.data) {
+      if (data.data[key]['type_operation']==1) { income = data.data[key].value; }
+      if (data.data[key]['type_operation']==2) { outcome = data.data[key].value; }
+      if (data.data[key]['type_operation']==4) { incomeMove = data.data[key].value; }
+      if (data.data[key]['type_operation']==3) { outcomeMove = data.data[key].value; }
+      (income) ? incomeLabel.setValue(webix.Number.format(income)) : incomeLabel.setValue(0);
+      (outcome) ? outcomeLabel.setValue(webix.Number.format(outcome)) : outcomeLabel.setValue(0);
+
+      count = count + Number.parseInt(data.data[key]['id_part']);
+    }
+
+    let move = webix.Number.format(incomeMove - outcomeMove);
+    let total = webix.Number.format(income*1-outcome*1+(incomeMove*1 - outcomeMove*1));
+    moveLabel.setValue(move);
+    totalLabel.setValue(total);
+    countLabel.setValue(count);
+    (total >= 0) ? totalLabel.define("color","green") : totalLabel.define("color","red");
+    (move >= 0) ? moveLabel.define("color","green") : moveLabel.define("color","red");
+
+    incomeLabel.refresh();
+    outcomeLabel.refresh();
+    moveLabel.refresh();
+    totalLabel.refresh();
+    countLabel.refresh();
   },
 
   getSortParams() {
@@ -1508,7 +1778,7 @@ webix.protoUI({
     this.filterInput = this.getEl('filter-input');
 
     this.dateFromValue = this.format(this.dateFrom.getValue());
-    this.dateToValue = this.format(this.dateTo.getValue());
+    this.dateToValue = this.format(this.dateTo.getValue())+' 23:59';
     this.filterFieldValue = this.filterField.getValue();
     this.filterInputValue = this.filterInput.getValue();
 
@@ -1520,10 +1790,17 @@ webix.protoUI({
 
     let type = {};
     let date = {};
+    let filterNew = this.getParams();
 
     if (this.showFilterDateRange.isVisible() && this.filterDateRangeField) {
       date[this.filterDateRangeField] =  {">=": this.dateFromValue, '<=': this.dateToValue};
+      //filterNew[this.filterDateRangeField] =  {">=": this.dateFromValue, '<=': this.dateToValue};
+      for (let key in filterNew) {
+        date[key] = filterNew[key];
+      }
       filterParams["filter"]["or"] = [date];
+      //filterParams["filter"]["or"] = [filterNew];
+      //filterParams["filter"]["or"] = [filterNew];
     }
 
 
@@ -1553,11 +1830,19 @@ webix.protoUI({
 
       }
 
+
+      //filterParams["filter"]["and"] =  [filterNew];
+
       filterFirstLavel["or"].push(filterSchema);
+      //filterFirstLavel["and"].push(filterSchema);
+
+
       filterParams["filter"] = filterFirstLavel;
 
 
     }
+
+
 
     if (this.filterField != '' && this.filterInputValue!='') {
       //type[this.filterFieldValue] =  {">=": this.dateFromValue, '<=': this.dateToValue};
@@ -1565,6 +1850,9 @@ webix.protoUI({
       type[this.filterFieldValue]['like'] =  this.filterInputValue;
       filterParams["filter"]["or"] = [type];
     }
+
+
+
     //
     // if (type.length == 0 && date.length == 0) {
     //   filterParams["filter"]["or"] = [];
@@ -1623,12 +1911,21 @@ webix.protoUI({
         eval(" myObj.func = " + item.template);
         configColumns[key].template = myObj.func;
       }
+      if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('(obj,common,value,config)') ==0) {
+        eval(" myObj.func = " + item.template);
+        configColumns[key].template = myObj.func;
+      }
       if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('custom_checkbox') ==0) {
         eval(" myObj.func = " + item.template);
         configColumns[key].template = myObj.func;
       }
       //debugger;
       if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('columnGroupTemplate') ==0) {
+        eval(" myObj.func = " + item.template);
+        configColumns[key].template = myObj.func;
+      }
+
+      if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('groupData') ==0) {
         eval(" myObj.func = " + item.template);
         configColumns[key].template = myObj.func;
       }
@@ -2749,7 +3046,7 @@ webix.protoUI({
         condition[index].push(item);
       }
     }
-    let conditionFunction = 'function(item, view, prop) { ';//item.index = (this.count())+1; ';
+    let conditionFunction = 'function(item, view, prop) { ';// item.index = (this.count())+1; ';
 
     condition.forEach((items) => {
 

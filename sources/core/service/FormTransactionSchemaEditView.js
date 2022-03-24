@@ -1,5 +1,5 @@
 import {JetView} from "webix-jet";
-import {FormClassState} from "core/service/FormClassState";
+import {CoreEditClass} from "core/CoreEditClass";
 
 
 
@@ -19,11 +19,11 @@ window.procent = function(row, id){
   return Math.round(item.value*100*100/sum) / 100
 }
 
-export default class FormTransactionEditView extends JetView {
+export default class FormTransactionSchemaEditView extends JetView {
   constructor(app, name){
     super(app,name);
     if (!this.state) {
-      this.state = new FormClassState(this);
+      this.state = new CoreEditClass(this);
     }
   }
   config() {
@@ -42,48 +42,22 @@ export default class FormTransactionEditView extends JetView {
       close: true,
       modal: true,
       body: {
-        localId: "formEdit",
-        view: 'form',
-        scroll : "auto",
-        complexData:true,
-        elements: this.state.formConfig
+        type: "space",
+        rows: [
+          {
+            localId: "formEdit",
+            view: 'form',
+            scroll : "auto",
+            elements: this.state.formConfig
+          }
+        ]
+
       }
     }
   }
 
   init(view, url) {
     this.attachClickEvents();
-  }
-
-  attachClickEvents() {
-    let scope = this;
-    webix.attachEvent("onClick", function(element, b, c) {
-
-      if (element && !element['target']) {
-        return;
-      }
-      if (element.target.classList.value === "show-combo-value-break") {
-        scope.onClickShowComboValueBreak();
-      }
-      //debugger;
-      //if (element.target.classList.value === "btn-save") {
-      //  scope.onClickSave();
-      //}
-
-      if (element.target.classList.value === "add-to-table") {
-        let table = scope.$$("table_part_value");
-        table.add({"index":"","contragent_id" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"" });
-      }
-    });
-  }
-
-  onClickShowComboValueBreak() {
-    let combo = this.$$("combo_value_break");
-    if (combo.isVisible()) {
-      this.$$("combo_value_break").hide();
-    } else {
-      this.$$("combo_value_break").show();
-    }
   }
 
   showForm(table) {
@@ -103,11 +77,11 @@ export default class FormTransactionEditView extends JetView {
     state.formEdit.clearValidation();
     //get config elements for form and urls collection;
     api.get(state.formUrl).then(function(data) {
-      FormTransactionEditView.showWindow(data, scope);
+      scope.showWindow(data, scope);
     });
   }
 
-  static showWindow(obj, scope) {
+  showWindow(obj, scope) {
     let state  = scope.state;
     let elementsCount = Object.keys(state.formEdit.elements).length;
     let result = obj.json();
@@ -118,7 +92,7 @@ export default class FormTransactionEditView extends JetView {
     scope.renderForm(elementsCount);
 
     //set values for form from table
-    state.formEdit.parse(scope.getRecord());
+    state.formEdit.setValues(scope.getRecord());
 
     scope.bindCollection(result);
     scope.bindColumnCollection(result);
@@ -126,6 +100,8 @@ export default class FormTransactionEditView extends JetView {
     // in bindCollection show window after load all records
     //state.win.show();
   }
+
+
 
   getRecord() {
     let state  = this.state;
@@ -144,13 +120,7 @@ export default class FormTransactionEditView extends JetView {
     let tablePartValue = this.$$("table_part_value");
 
     tablePartValue.scheme_setter({
-      $init:function(obj){
-        obj.contragent_id = obj.contrAgent.contrAgentId;
-        obj.category_id = obj.operationCategory.operationCategoryId;
-        obj.project_id = obj.project.projectId;
-
-        obj.index = this.count()+1;
-      }
+      $init:function(obj){ obj.index = this.count()+1; }
     });
 
     state.table.scheme_setter({
@@ -212,7 +182,6 @@ export default class FormTransactionEditView extends JetView {
   }
 
   bindColumnCollection(result) {
-
     let scope = this;
     let api = this.apiRest;
     let params = {"per-page": -1};
@@ -231,7 +200,7 @@ export default class FormTransactionEditView extends JetView {
   attachFormEvents() {
     let scope = this;
     let state = this.state;
-    let typeOperation = state.formEdit.elements["operationType"];
+    let typeOperation = state.formEdit.elements["type_transaction"];
     let comboValueBreak = this.$$("combo_value_break");
     let tablePartValue = this.$$("table_part_value");
     let btnSave = this.$$("btn_save");
@@ -273,7 +242,7 @@ export default class FormTransactionEditView extends JetView {
     let labelMoveTo = scope.$$("label_move_to");
     let labelValueBreak = scope.$$("label_value_break");
     let accountMoveId = state.formEdit.elements["account_move_id"];
-    let contragentId = state.formEdit.elements["contrAgent.contrAgentId"];
+    let contragentId = state.formEdit.elements["contragent_id"];
     let categoryId = state.formEdit.elements["category_id"];
     let comboValueBreak = this.$$("combo_value_break");
     let showMove = (newValue == TYPE_OPERATION_MOVE);
@@ -301,7 +270,7 @@ export default class FormTransactionEditView extends JetView {
     let tablePartValue = this.$$("table_part_value");
     let comboValueBreak = this.$$("combo_value_break");
     let layoutPartValue = this.$$("layout_part_value");
-    let contragentId = state.formEdit.elements["contrAgent.contrAgentId"];
+    let contragentId = state.formEdit.elements["contragent_id"];
     let categoryId = state.formEdit.elements["category_id"];
     let projectId = state.formEdit.elements["project_id"];
     let show = (newValue > TYPE_TABLE_PART_DEFAULT);
@@ -329,8 +298,44 @@ export default class FormTransactionEditView extends JetView {
         ? logicShow[key]["element"].show() : logicShow[key]["element"].hide()
     }
 
+    if (tablePartValue.count() == 0) {
+
+      tablePartValue.add({"index":"1","contragent_id" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"0.00" });
+    }
     if (!show) {
       tablePartValue.clearAll();
+    }
+  }
+
+  attachClickEvents() {
+    let scope = this;
+    webix.attachEvent("onClick", function(element, b, c) {
+
+      if (element && !element['target']) {
+        return;
+      }
+
+      if (element.target.classList.value === "show-combo-value-break") {
+        scope.onClickShowComboValueBreak();
+      }
+      //debugger;
+      //if (element.target.classList.value === "btn-save") {
+      //  scope.onClickSave();
+      //}
+
+      if (element.target.classList.value === "add-to-table") {
+        let table = scope.$$("table_part_value");
+        table.add({"index":"","contragent_id" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"" });
+      }
+    });
+  }
+
+  onClickShowComboValueBreak() {
+    let combo = this.$$("combo_value_break");
+    if (combo.isVisible()) {
+      this.$$("combo_value_break").hide();
+    } else {
+      this.$$("combo_value_break").show();
     }
   }
 
@@ -342,17 +347,14 @@ export default class FormTransactionEditView extends JetView {
       return;
     }
     let branches = state.table.data.getBranch(selectedItem.id);
-    //tableParts.parse(state.table.getItem(selectedItem.id).operationParts);
-
     for (let key in branches) {
       tableParts.add(branches[key]);
     }
-
   }
 
   doClickSave() {
     let state = this.state;
-
+    debugger;
     if (!state.formEdit.validate()) return;
 
     let record = state.formEdit.getValues();
@@ -366,12 +368,17 @@ export default class FormTransactionEditView extends JetView {
     if (record['action-delete']!= 'undefined') delete record['action-delete'];
 
 
+    if (record.contragent_id == "") {
+      record.contragent = null;
+    }
+    if (record.category_id == "") {
+      record.category = null;
+    }
+    //record.account = { name: this.$$("account").getText() };
 
-    record.account = { name: this.$$("account").getText() };
-
-    //record.contragent = { name: this.$$("account").getText() };
-    //record.category = { name: this.$$("account").getText() };
-    //record.project = { name: this.$$("account").getText() };
+    //record.contragent = { name: this.$$("contragent").getText() };
+    //record.category = { name: this.$$("category").getText() };
+    //record.project = { name: this.$$("project").getText() };
     let parts = this.getParts();
     if (parts.length == 0 ) {
       //this.doSave(record);
@@ -407,7 +414,7 @@ export default class FormTransactionEditView extends JetView {
     ).then(function(obj){
 
       webix.dp(state.table).ignore(function(){
-        debugger;
+
         (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
         //state.table.group("transaction_id");
         debugger;

@@ -241,6 +241,15 @@ function columnGroupTemplate(obj, common, item){
   return  common.icon(obj)+common.folder(obj, common)+' '+item;
 }
 
+function groupData (obj, common) {
+  let result = '';
+  if (obj.$level==1 && obj.$count > 1) result = common.icon(obj, common) + webix.i18n.longDateFormatStr(obj.date_transaction);
+  if (obj.$level!=1)  result = "<div class='subrowimage'><div></div></div>";
+  if (obj.$level==1 && obj.$count < 2) result = "<div style='margin-left:20px;'>"+webix.i18n.longDateFormatStr(obj.date_transaction)+"</div>";
+  if (obj.$level==1 && obj.is_committed == 2) result = '<div style="color:blue">'+result+'</div>';
+  return result;
+}
+
 webix.editors.buttonEditor = {
   focus:function(){
     this.getInputNode(this.node).focus();
@@ -999,6 +1008,8 @@ webix.protoUI({
       dragColumn:true,
       math: true,
       save: "api->accounting/"+this.getModelName(this.state.params.mode),
+      datafetch: 100,
+      loadahead: 200,
       //save: "firebase->accounting/"+this.mode,//this.getModelName(this.mode),
       //owCss:"#css#",
       //url: "firebase->transaction",
@@ -1201,7 +1212,16 @@ webix.protoUI({
       scope.eventSetColumnUserSort(sourceId, targetId, event);
     });
 
+
+    // this.table.attachEvent("onScrollY", function(){
+    //   var state = scope.table.getScrollState();
+    //   scope.getDataTable(state);
+    //
+    // });
+
     this.setColorSettingForTable();
+    scope.scrollCountSave = 0;
+    scope.eventScroll = true;
 
   },
 
@@ -1278,7 +1298,7 @@ webix.protoUI({
     return mode+'s';
   },
 
-  getDataTable() {
+  getDataTable(state = {x:-1,y:-1}) {
     let scope = this;
 
     this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
@@ -1301,6 +1321,9 @@ webix.protoUI({
     if (this.state.params.mode == 'order') {
       params['expand'] = 'comment,images,orderWork';
     }
+    if (this.state.params.mode == 'transaction-schema') {
+      params['expand'] = 'data,account,contragent';
+    }
 
 
     let url = new URL(location.href.replace('/#!',''));
@@ -1320,6 +1343,33 @@ webix.protoUI({
         params[key] = this.urlParams[key];
       }
     }
+    if (state.y != -1) {
+      scope.scrollY = state.y+200;
+      scope.scrollCount = Math.floor(scope.scrollY/window.screen.height/2);
+      if (scope.eventScroll == true) {
+        scope.eventScroll = false;
+        scope.scrollYSave = scope.scrollY;
+        return 0;
+      } else {
+        if (scope.scrollY > scope.scrollYSave) {
+          scope.eventScroll = true;
+          return 0;
+        } else {
+          if (scope.scrollCount > scope.scrollCountSave) {
+            webix.message(scope.scrollY);
+            scope.scrollCountSave = scope.scrollCount;
+            params['count'] =  100; //scope.tableUrl+'?count=100&start='+scope.scrollCountSave*100;
+            params['start'] =  scope.scrollCountSave*100;
+
+          } else {
+            return 0;
+          }
+        }
+      }
+    } else {
+      scope.table.clearAll();
+    }
+
     scope.tableUrl = this.state.scope.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.state.params.mode), params);
 
     webix.extend(this.table, webix.ProgressBar);
@@ -1332,7 +1382,7 @@ webix.protoUI({
 
 
     webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
-      scope.table.clearAll();
+      //scope.table.clearAll();
       let items = data.json();
 
       let dataItem = (items.data)?items.data:items.items;
@@ -1392,7 +1442,7 @@ webix.protoUI({
         });
       }
 
-      scope.table.openAll();
+      //scope.table.openAll();
 
       if (scope.state.type == 'directory') {
         scope.table.select(scope.state.scope.state.editor.value);
@@ -1559,6 +1609,10 @@ webix.protoUI({
       }
       //debugger;
       if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('columnGroupTemplate') ==0) {
+        eval(" myObj.func = " + item.template);
+        configColumns[key].template = myObj.func;
+      }
+      if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('groupData') ==0) {
         eval(" myObj.func = " + item.template);
         configColumns[key].template = myObj.func;
       }
@@ -2681,7 +2735,7 @@ webix.protoUI({
         condition[index].push(item);
       }
     }
-    let conditionFunction = 'function(item, view, prop) { item.index = (this.count())+1; ';
+    let conditionFunction = 'function(item, view, prop) { item.index =   (this.count())+1; ';
 
     condition.forEach((items) => {
 

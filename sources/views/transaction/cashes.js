@@ -278,7 +278,7 @@ export default class CashesView extends JetView {
                       return "";
                     }
                   }, {
-                    "id": "date_operation",
+                    "id": "date_transaction",
                     "header": "Дата",
                     "sort": "string",
                     "editor": "date",
@@ -287,9 +287,9 @@ export default class CashesView extends JetView {
                     template:function(obj, common) {
                       let result = '';
 
-                      if (obj.$level==1 && obj.$count > 1) result = common.icon(obj, common) + webix.i18n.longDateFormatStr(obj.date_operation);
+                      if (obj.$level==1 && obj.$count > 1) result = common.icon(obj, common) + webix.i18n.longDateFormatStr(obj.date_transaction);
                       if (obj.$level!=1)  result = "<div class='subrowimage'><div></div></div>";
-                      if (obj.$level==1 && obj.$count < 2) result = "<div style='margin-left:20px;'>"+webix.i18n.longDateFormatStr(obj.date_operation)+"</div>";
+                      if (obj.$level==1 && obj.$count < 2) result = "<div style='margin-left:20px;'>"+webix.i18n.longDateFormatStr(obj.date_transaction)+"</div>";
                       if (obj.$level==1 && obj.is_committed == 2) result = '<div style="color:blue">'+result+'</div>';
                       return result;
                     }
@@ -301,26 +301,26 @@ export default class CashesView extends JetView {
                       template:function(obj, common) {
                         let result = obj.account.name;
 
-                        if (obj.type_operation == 3) result = '<span style="line-height: 20px; display: block;">'+obj.account.name+'</span>';
+                        if (obj.type_transaction == 3) result = '<span style="line-height: 20px; display: block;">'+obj.account.name+'</span>';
 
                         return result;
                       }
                     },
                     {
-                      "id": "type_operation",
+                      "id": "type_transaction",
                       "width": 50,
                       "header": "Тип",
                       "sort": "server",
                       //"adjust": true,
                       template : function(obj) {
 
-                        if (obj.type_operation == 1) {
+                        if (obj.type_transaction == 1) {
                           return '<span class="webix_icon wxi-angle-double-left" style = "color: green"></span>';
                         }
-                        if (obj.type_operation == 2) {
+                        if (obj.type_transaction == 2) {
                           return '<span class="webix_icon wxi-angle-double-right" style = "color: red"></span>';
                         }
-                        if (obj.type_operation == 3 || obj.type_operation == 4) {
+                        if (obj.type_transaction == 3 || obj.type_transaction == 4) {
                           return '<span class="webix_icon wxi-sync" style = "color: grey"></span>';
                         }
                       }
@@ -335,7 +335,7 @@ export default class CashesView extends JetView {
                       "template" : function(obj) {
 
 
-                        if (obj.$level==1 && obj.type_operation == 3)  return '';
+                        if (obj.$level==1 && obj.type_transaction == 3)  return '';
                         if (obj.$level==1 && obj.$count>1 && obj.contragent.name=="") return '<span class="webix_snippet_tag">'+obj.$count+' контрагента</span>';
                         //if (obj.$level==1 && obj.$count>1 && obj.contragent.name=="") return '';
                         return  obj.contragent.name;
@@ -351,7 +351,7 @@ export default class CashesView extends JetView {
                       "template" : function(obj) {
                         //debugger;
                         let comment = (obj.comment) ?obj.comment : '';
-                        if (obj.$level==1 && obj.type_operation == 3)  return '<span class="webix_snippet_tag">Перемещение</span>';
+                        if (obj.$level==1 && obj.type_transaction == 3)  return '<span class="webix_snippet_tag">Перемещение</span>';
                         if (obj.$level==1 && obj.$count>1 && obj.category.name=="") return '<span class="webix_snippet_tag">'+obj.$count+' статьи</span>';
                         //if (obj.$level==1 && obj.$count>1 && obj.category.name=="") return '';
                         return  '<span style="display: block; line-height: 22px;">'+obj.category.name+'</span>'+'<span style="display: block; line-height: 15px; font-size: 11px;color: #666;">'+comment+'</span>';
@@ -370,7 +370,7 @@ export default class CashesView extends JetView {
                         //   debugger;
                         // }
 
-                        if (obj.$level==1 && obj.type_operation == 3)  return '';
+                        if (obj.$level==1 && obj.type_transaction == 3)  return '';
                         if (obj.$level==1 && obj.$count>1 && obj.type_part_id == 4) return '<span class="webix_snippet_tag">'+obj.$count+' проекта</span>';
                         //if (obj.$level==1 && obj.$count>1 && obj.project.name=="") return '';
                         return  obj.project.name;
@@ -383,26 +383,26 @@ export default class CashesView extends JetView {
                       "adjust": true,
                       "css": {"color": "red", "text-align": "right"},
                       template : function(obj){
-                        if (obj.type_operation == 1) {
+                        if (obj.type_transaction == 1) {
                           return '<span style = "color: green; text-align: right;">+ '+ webix.Number.format(obj.value, {
                             decimalSize: 0, groupSize: 3,
                             decimalDelimiter: ".", groupDelimiter: " "
                           })+'</span>';
                         }
-                        if (obj.type_operation == 2) {
+                        if (obj.type_transaction == 2) {
                           return '<span style = "color: red;  text-align: right;">- '+webix.Number.format(obj.value, {
                             decimalSize: 0, groupSize: 3,
                             decimalDelimiter: ".", groupDelimiter: " "
                           })+'</span>';
                         }
-                        if (obj.type_operation == 3) {
+                        if (obj.type_transaction == 3) {
 
                           return '<span style = "color: red;  text-align: right;">- '+webix.Number.format(obj.value, {
                             decimalSize: 0, groupSize: 3,
                             decimalDelimiter: ".", groupDelimiter: " "
                           })+'</span>';
                         }
-                        if (obj.type_operation == 4) {
+                        if (obj.type_transaction == 4) {
 
                           return '<span style = "color: green;  text-align: right;">+ '+webix.Number.format(obj.value, {
                             decimalSize: 0, groupSize: 3,
@@ -675,7 +675,7 @@ export default class CashesView extends JetView {
 
     let url = scope.app.config.apiRest.getUrl('get','accounting/transactions',{
       "expand":"contragent,category,project,account,data",
-      sort: '[{"property":"date_operation","direction":"DESC"}]',
+      sort: '[{"property":"date_transaction","direction":"DESC"}]',
       filter: JSON.stringify(filterNew),
       //sort: '-date_operation',
 
@@ -712,10 +712,10 @@ export default class CashesView extends JetView {
     let count = 0;
 
     for (let key in data.data) {
-      if (data.data[key]['type_operation']==1) { income = data.data[key].value; }
-      if (data.data[key]['type_operation']==2) { outcome = data.data[key].value; }
-      if (data.data[key]['type_operation']==3) { incomeMove = data.data[key].value; }
-      if (data.data[key]['type_operation']==4) { outcomeMove = data.data[key].value; }
+      if (data.data[key]['type_transaction']==1) { income = data.data[key].value; }
+      if (data.data[key]['type_transaction']==2) { outcome = data.data[key].value; }
+      if (data.data[key]['type_transaction']==3) { incomeMove = data.data[key].value; }
+      if (data.data[key]['type_transaction']==4) { outcomeMove = data.data[key].value; }
       (income) ? incomeLabel.setValue(webix.Number.format(income)) : incomeLabel.setValue(0);
       (outcome) ? outcomeLabel.setValue(webix.Number.format(outcome)) : outcomeLabel.setValue(0);
 
