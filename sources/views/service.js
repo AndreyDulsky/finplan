@@ -1,10 +1,15 @@
 import {JetView, plugins} from "webix-jet";
-import FormEditView from "core/service/FormTransactionSchemaEditView";
+import FormEditView from "core/service/FormDocumentEditView";
 import FormCommnetView from "views/comment/index";
 import FormViewView from "views/order/check-work";
 import UpdateFormOrderView from "core/updateFormOrderView";
 import WindowDirectoryView from "core/window/WindowDirectoryView";
+import FormDocumentTableWindow from "core/service/FormDocumentTableWindow";
+
 //import FormTransactionEditView from "core/service/formTransactionEditView";
+import FormTransactionSchemaEditView from "core/service/FormTransactionSchemaEditView";
+
+import FormDocumentEditView from "core/service/FormDocumentEditView";
 import TableDynamic from  "components/tableService";
 import formFilterView from "core/service/FormFilterView";
 
@@ -298,7 +303,7 @@ webix.editors.buttonEditor = {
   }
 }
 
-export default class InproduceView extends JetView{
+export default class ServiceView extends JetView{
   config(){
 
     let hash = document.location.hash.split('/');
@@ -348,8 +353,14 @@ export default class InproduceView extends JetView{
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
     //this.formTransactionEditView = this.ui(FormTransactionEditView);
+    this.formTransactionSchemaEditView = this.ui(FormTransactionSchemaEditView);
+
     this.formFilterView = this.ui(formFilterView);
     this.formUpdateOrderView = this.ui(UpdateFormOrderView);
+    this.formDocumentEditView = this.ui(FormDocumentEditView);
+    this.formDocumentTableWindow = this.ui(FormDocumentTableWindow);
+
+
 
     this.windowDirectory = this.ui(WindowDirectoryView);
     let type = 'table';
@@ -378,11 +389,14 @@ export default class InproduceView extends JetView{
         urlTableUsersSave: "api->accounting/schema-table-users",
         urlTableSettingUsersSave: "api->accounting/schema-table-setting-users",
         urlTableUserListsPut: "accounting/schema-table-user-lists",
-        formEdit: this.formEdit,
+        formEdit: this.formEditView,
         formFilter: this.formFilterView,
         formView: this.formView,
         formComment: this.formComment,
         formUpdateOrderView: this.formUpdateOrderView,
+        formDocumentEditView: this.formDocumentEditView,
+        formDocumentTableWindow: this.formDocumentTableWindow,
+        formTransactionSchemaEditView: this.formTransactionSchemaEditView,
         windowDirectory: this.windowDirectory,
         type: type,
 

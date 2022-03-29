@@ -10,13 +10,13 @@ const TYPE_TABLE_PART_DEFAULT = 1;
 const TYPE_TABLE_PART_CONTRAGENT = 2;
 const TYPE_TABLE_PART_CATEGORY = 3;
 const TYPE_TABLE_PART_PROJECT = 4;
+const TYPE_TABLE_PART_EMPLOYEE = 6;
 
 
-
-window.procent = function(row, id){
+window.procentPart = function(row, id){
   let item = $$("table_part").getItem(row);
-  let sum = $$(id).getValue();
-  return Math.round(item.value*100*100/sum) / 100
+  let sum = $$("table_part").getTopParentView().queryView({"localId":"form_edit_sum"});
+  return (sum == 0) ? 0 : Math.round(item.value*100*100/sum) / 100
 }
 
 export default class FormTransactionSchemaEditView extends JetView {
@@ -35,7 +35,7 @@ export default class FormTransactionSchemaEditView extends JetView {
       position: function (state) {
         state.left = 44;
         state.top = 34;
-        state.width = state.maxWidth / 3;
+        state.width = state.maxWidth / 2.5;
         state.height = state.maxHeight - 34;
       },
       head: "Редактирование операции",
@@ -66,13 +66,23 @@ export default class FormTransactionSchemaEditView extends JetView {
     let api = this.apiRest;
     let record = table.getSelectedItem();
     let isUpdate = (record);
+
     state.tableId = table.config.urlEdit;
     state.table = table;
     state.tableRecord = record;
     state.isUpdate = isUpdate;
     state.formEdit = this.$$('formEdit');
     state.formUrl = "accounting/"+state.tableId+"/form";
+
     state.win = this.$$("winEdit");
+    if (!isUpdate) {
+      state.win.getHead().getChildViews()[0].define("template","Создание операции");
+      state.win.getHead().getChildViews()[0].refresh();
+    } else {
+      state.win.getHead().getChildViews()[0].define("template","Редактирование операции #"+record.id);
+      state.win.getHead().getChildViews()[0].refresh();
+    }
+
 
     state.formEdit.clearValidation();
     //get config elements for form and urls collection;
@@ -142,7 +152,6 @@ export default class FormTransactionSchemaEditView extends JetView {
 
   renderForm(elementsCount) {
     let state  = this.state;
-
     //render first time
     //if (elementsCount === 0 ) {
     state.formConfig = state.formData.data.configForm;
@@ -163,10 +172,11 @@ export default class FormTransactionSchemaEditView extends JetView {
     let loadedCount = 0;
     let collections = result.data.dataCollections;
     let collectionsCount = Object.keys(collections).length;
-    let params = {"per-page": -1};
+    let params = {"per-page": -1, "sort":'[{"property":"name","direction":"ASC"}]'};
     for (let elementId in collections) {
       //find element by id and get his options
-      let list = $$(elementId).getPopup().getList();
+
+      let list = this.$$(elementId).getPopup().getList();
       //get data by url collection
       let dataCollection = api.getCollection(collections[elementId].url, params);
 
@@ -204,7 +214,7 @@ export default class FormTransactionSchemaEditView extends JetView {
     let comboValueBreak = this.$$("combo_value_break");
     let tablePartValue = this.$$("table_part_value");
     let btnSave = this.$$("btn_save");
-    let formEditSum = $$("form_edit_sum");
+    let formEditSum = this.$$("form_edit_sum");
 
 
     //change type_operation
@@ -252,7 +262,8 @@ export default class FormTransactionSchemaEditView extends JetView {
       {"element" : accountMoveId, "status" : showMove},
       {"element" : labelValueBreak, "status" : !showMove},
       {"element" : contragentId, "status" : !showMove},
-      {"element" : categoryId, "status" : !showMove}
+      {"element" : categoryId, "status" : !showMove},
+
     ];
     if (showMove) {
       //call comboValueBreakChange
@@ -273,15 +284,19 @@ export default class FormTransactionSchemaEditView extends JetView {
     let contragentId = state.formEdit.elements["contragent_id"];
     let categoryId = state.formEdit.elements["category_id"];
     let projectId = state.formEdit.elements["project_id"];
+    let employeeId = state.formEdit.elements["employee_id"];
     let show = (newValue > TYPE_TABLE_PART_DEFAULT);
     let partCategory =  (newValue == TYPE_TABLE_PART_CATEGORY);
     let partProject =  (newValue == TYPE_TABLE_PART_PROJECT);
+    let partEmployee =  (newValue == TYPE_TABLE_PART_EMPLOYEE);
     let logicShow = [
       {"element" : layoutPartValue, "status" : show},
       {"element" : comboValueBreak, "status" : show},
       {"element" : contragentId, "status" : !show},
       {"element" : categoryId, "status" : !partCategory},
       {"element" : projectId, "status" : !partProject},
+      {"element" : employeeId, "status" : !partEmployee},
+
     ];
     if (partCategory) {
       categoryId.setValue("");
@@ -300,7 +315,7 @@ export default class FormTransactionSchemaEditView extends JetView {
 
     if (tablePartValue.count() == 0) {
 
-      tablePartValue.add({"index":"1","contragent_id" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"0.00" });
+      tablePartValue.add({"index":"1","contragent_id" : "", "category_id" : "", "project_id" : "","employee_id" : "", "value" : "0.00", "part_procent":"0.00" });
     }
     if (!show) {
       tablePartValue.clearAll();
@@ -354,7 +369,6 @@ export default class FormTransactionSchemaEditView extends JetView {
 
   doClickSave() {
     let state = this.state;
-    debugger;
     if (!state.formEdit.validate()) return;
 
     let record = state.formEdit.getValues();

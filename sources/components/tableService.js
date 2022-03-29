@@ -243,11 +243,11 @@ function columnGroupTemplate(obj, common, item){
   return  common.icon(obj)+common.folder(obj, common)+' '+item;
 }
 
-function groupData (obj, common) {
+function groupData (obj, common, value) {
   let result = '';
-  if (obj.$level==1 && obj.$count > 1) result = common.icon(obj, common) + webix.i18n.longDateFormatStr(obj.date_transaction);
+  if (obj.$level==1 && obj.$count > 1) result = common.icon(obj, common) + webix.i18n.longDateFormatStr(value);
   if (obj.$level!=1)  result = "<div class='subrowimage'><div></div></div>";
-  if (obj.$level==1 && obj.$count < 2) result = "<div style='margin-left:20px;'>"+webix.i18n.longDateFormatStr(obj.date_transaction)+"</div>";
+  if (obj.$level==1 && obj.$count < 2) result = "<div style='margin-left:20px;'>"+webix.i18n.longDateFormatStr(value)+"</div>";
   if (obj.$level==1 && obj.is_committed == 2) result = '<div style="color:blue">'+result+'</div>';
   return result;
 }
@@ -276,7 +276,7 @@ webix.editors.buttonEditor = {
   render:function(){
     return webix.html.create("div", {
       "class":"webix_dt_editor"
-    }, "<input type='text' disabled='disabled' /><button class='editor-button' style='position: absolute;margin: 1px; right:0; height:25px;'>...</button>");
+    }, "<input type='text' disabled='disabled' /><button class='editor-button' style='position: absolute;margin: 8px; right:0; height:25px;'>...</button>");
   }
 }
 
@@ -304,6 +304,8 @@ webix.protoUI({
       {
         view: "toolbar",
         padding: 10,
+        localId: 'show-header',
+        hidden: true,
         cols:[
           {
             view: "icon",
@@ -438,7 +440,7 @@ webix.protoUI({
             labelWidth: 100,
             options:[],
             width: 250,
-            hidden: true,
+            hidden: false,
             on:{
               onChange:function(newv){
                 scope.selectColumnSettingForTable(newv);
@@ -472,9 +474,9 @@ webix.protoUI({
 
         ]
       },
-      {
+     /* {
         localId: "layoutDocument",
-        hidden: (this.state.type != 'document') ? true : false,
+        hidden: (this.state.type != 'documentData') ? true : false,
         rows:
           [{
 
@@ -502,7 +504,7 @@ webix.protoUI({
                   },
                   {
 
-                    "name": "date_document",
+                    "name": "dateDocument",
                     view: "datepicker",
                     localId: 'date_document',
                     //inputWidth:150,
@@ -559,7 +561,7 @@ webix.protoUI({
             ]
           }]
 
-      },
+      },*/
       {
         view: "toolbar",
         localId: "show-toolbar",
@@ -576,15 +578,15 @@ webix.protoUI({
             css : "webix_primary",
             click: () => this.doAddClick()
           },
-          // {
-          //   view: "icon",
-          //   icon: "mdi mdi-playlist-plus",
-          //   localId: "show-add-button",
-          //   tooltip: "Добавить строку",
-          //   hidden: false,
-          //   width: 30,
-          //   click: () => this.doAddRowClick()
-          // },
+          {
+            view: "icon",
+            icon: "mdi mdi-playlist-plus",
+            localId: "show-add-button",
+            tooltip: "Добавить строку",
+            hidden: false,
+            width: 30,
+            click: () => this.doAddRowClick()
+          },
 
 
           //{ view:"icon", icon: 'mdi mdi-printer', autowidth:true, click: () =>  this.doClickPrint()},
@@ -594,15 +596,7 @@ webix.protoUI({
             css : "webix_primary",
             click: () =>  this.showExportToExcelSetting()
           },
-          {
-            view: "icon",
-            icon: 'mdi mdi-refresh',
-            css : "webix_primary",
-            width: 30,
-            value: true,
-            click: function() { scope.doRefresh() }
 
-          },
           {
             view: "toggle",
             type: "icon",
@@ -611,6 +605,27 @@ webix.protoUI({
             value: true,
             hidden: false,
             click: function() { scope.doClickOpenAll() }
+
+          },
+          {
+            view: "icon",
+            icon: "mdi mdi-close-circle-multiple",
+            autowidth: true,
+            value: true,
+            hidden: false,
+            click: function() {
+              webix.storage.local.remove('config_filter_form_'+scope.state.params.mode);
+              webix.storage.local.remove('config_'+scope.state.params.mode);
+            }
+
+          },
+          {
+            view: "icon",
+            icon: 'mdi mdi-refresh',
+            css : "webix_primary",
+            width: 30,
+            value: true,
+            click: function() { scope.doRefresh() }
 
           },
           // {
@@ -631,9 +646,13 @@ webix.protoUI({
         view:"accordion",
         //type:"wide",
         multi:false,
+
+
         cols:[{
+            localId: "show-filter-panel",
+            hidden: true,
             header:"Фильтры",
-            localId: "filter-form-layout",
+            //localId: "filter-form-layout",
             width: 220,
             resize:true,
             body: {
@@ -652,8 +671,7 @@ webix.protoUI({
             }
           },
           {
-            view:"resizer",
-            id:"resizer"
+            view:"resizer"
           },
           {
             localId: "body-layout",
@@ -665,6 +683,8 @@ webix.protoUI({
                 padding:{
                   top:5, bottom:7, left:0, right:8
                 },
+                localId: 'show-status-panel',
+                hidden: true,
                 cols: [
                 {
                   view: "label",
@@ -924,6 +944,7 @@ webix.protoUI({
     this.selectType = this.getEl('select-type');
     let response = webix.ajax().sync().get(this.state.urlTableUserLists,{filter:{'model': this.model}, 'expand':'schemaTableUserFilter'});
     let dataSelectType = JSON.parse(response.responseText);
+
     if (dataSelectType['errors']) {
       for (var prop in dataSelectType.errors) {
         webix.message({
@@ -1102,7 +1123,8 @@ webix.protoUI({
   getTable() {
     let layout = this.getEl("body-layout");
     let scope = this;
-    let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
+    let dataJson;
+    dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
     let dataConfigObject = {};
     if (dataJson) {
       dataConfigObject = scope.dataDriverJsonToObject(dataJson.columns);
@@ -1115,18 +1137,19 @@ webix.protoUI({
       hover: "myhover",
       rowHeight:43,
       leftSplit: 0,
-      select:"multiselect",
+      //select:"multiselect",
+      select: "multiselect",
       resizeColumn: {headerOnly: true},
       multiselect: true,
       clipboard: "selection",
-      tooltip: true,
+      tooltip: false,
       editable:true,
       editaction: "dblclick",
       //sort:"multi",
       drag: false,
       dragColumn:true,
-      //math: true,
-      save: "api->accounting/"+this.getModelName(this.state.params.mode),
+      math: true,
+      save: (this.state.type != 'documentData') ? "api->accounting/"+this.getModelName(this.state.params.mode) : null,
       datafetch: 100,
       loadahead: 200,
       autoConfig: false,
@@ -1141,18 +1164,7 @@ webix.protoUI({
 
         //scope.attachToolBarEvents()
         //webix.storage.local.remove('config_'+scope.state.params.mode);
-        let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
-        if (dataJson) {
-          //scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
-          //scope.table.refreshColumns();
-        } else {
-          scope.state.scope.app.config.apiRest.get("accounting/" + scope.state.params.mode + "/get-config").then(function (data) {
-            let dataJson = data.json();
-            webix.storage.local.put('config_' + scope.state.params.mode, dataJson);
-            scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
-            scope.table.refreshColumns();
-          });
-        }
+
 
         // webix.ui({
         //   view:"contextmenu",
@@ -1193,9 +1205,10 @@ webix.protoUI({
           if (scope.state.type == 'directory') {
 
             //scope.getParentView().config.scope.selectRecord(item);
-            scope.config.$scope.selectRecord(item)
+            scope.config.$scope.selectRecord(item);
             //scope.getParentView().config.scope.hideWindow();
             scope.config.$scope.hideWindow();
+            return false;
           }
           if (item.account_id) {
             if (this.$scope.urlParams['account_id']) {
@@ -1210,11 +1223,15 @@ webix.protoUI({
         onItemClick:function(id, e, trg) {
 
           if (id.column == 'action-edit') {
-            if (scope.state.params.mode == 'order' || scope.state.params.mode == 'order-management') {
-              scope.state.formUpdateOrderView.showForm(this);
+            if (scope.state.params.mode == 'transaction-schema') {
+              scope.state.formTransactionSchemaEditView.showForm(this);
             } else {
-              if (scope.state.params.mode == 'transaction-mongo') {
-                scope.state.formTransactionEditView.showForm(this);
+              let document = scope.state.params.mode.split('-');
+
+              if (document[document.length-1] == 'document') {
+                //scope.state.formTransactionEditView.showForm(this);
+                scope.state.formDocumentEditView.showForm(this);
+
               } else {
                 scope.state.formEdit.showForm(this);
               }
@@ -1226,16 +1243,17 @@ webix.protoUI({
               'config':{
                 'options_url' : scope.getModelName(configColumn.goto),
                 'options_url_edit': configColumn.goto,
-                'header': [{'text':'Specification'}],
+                'header': [{'text':'Документ'}],
                 'filter': {"filterField":"list_id","filterInput":id.row}
               }
             };
             let gotoType = 'table';
 
-            if (configColumn.goto_type == 'document') {
-              gotoType = 'document';
+            if (configColumn.goto_type) {
+              gotoType = configColumn.goto_type;
             }
-            scope.state.windowDirectory.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+
+            scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
 
           }
           if (id.column == 'action-view') {
@@ -1244,7 +1262,7 @@ webix.protoUI({
             //this.$scope.formView.showWindow(configColumn['goto']);
             if (configColumn['goto']) {
 
-              scope.$scope.show('inproduce/'+configColumn['goto']+'/'+id.row);
+              scope.$scope.show('service/'+configColumn['goto']+'/'+id.row);
             } else {
               scope.state.formView.showWindow({},this);
             }
@@ -1253,6 +1271,11 @@ webix.protoUI({
           if (id.column == 'action-delete') {
             var table = this;
             webix.confirm("Удалить запись?").then(function(result) {
+
+              if (scope.state.type == 'documentData') {
+                table.remove(id.row);
+                return;
+              }
               webix.dp(table).save(
                 id.row,
                 "delete"
@@ -1317,7 +1340,12 @@ webix.protoUI({
       onClick:{
         "editor-button":function(ev, id,obj, obj1){
           let editor = this.getEditState();
-          scope.state.windowDirectory.showWindow({},scope.table, editor, scope.state.scope,'directory');
+
+          let parent = null;
+          if (scope.table.getSelectedId()) {
+            parent = scope.table;
+          }
+          scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.scope.getParentView(),'directory');
           return false; // blocks the default click behavior
         }
       }
@@ -1530,10 +1558,30 @@ webix.protoUI({
 
   getDataTable(state = {x:-1,y:-1}) {
     let scope = this;
+    let dataJson;
+    dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
+    if (dataJson) {
+      //scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
+      //scope.table.refreshColumns();
+    } else {
+      let urlGetConfig = this.state.scope.app.config.apiRest.getUrl('get',"accounting/" + scope.state.params.mode + "/get-config",{});
+      let responseList = webix.ajax().sync().get(urlGetConfig);
+      let dataJson = JSON.parse(responseList.responseText);
+      webix.storage.local.put('config_' + scope.state.params.mode, dataJson);
+      scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
+      scope.table.refreshColumns();
+      // scope.state.scope.app.config.apiRest.get("accounting/" + scope.state.params.mode + "/get-config").then(function (data) {
+      //   let dataJson = data.json();
+      //   webix.storage.local.put('config_' + scope.state.params.mode, dataJson);
+      //   scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
+      //   scope.table.refreshColumns();
+      // });
+    }
 
     this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
     this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value*1 : 0);
     this.table.define('drag', (!this.schemaTableSetting['access'] || (!this.schemaTableSetting['access']['can-drop'] || this.schemaTableSetting['access']['can-drop'].value == 0) ) ? false :  "order");
+
 
 
     scope.columns = [];
@@ -1542,6 +1590,9 @@ webix.protoUI({
       'schema-table-user-id': scope.selectTypeValue,
       //'sort': '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]'
     };
+    if (scope.state.type == "directory") {
+      params['per-page'] = -1;
+    }
 
     let paramsSort = this.getSortParams();
     if (paramsSort.length > 0) {
@@ -1553,6 +1604,9 @@ webix.protoUI({
     }
     if (this.state.params.mode == 'transaction-schema') {
       params['expand'] = 'data,contragent,category,project,account';
+    }
+    if (this.state.params.mode == 'list-salary-accrual-schema') {
+      params['expand'] = 'data';
     }
 
 
@@ -1578,7 +1632,7 @@ webix.protoUI({
 
     if (state.y != -1) {
       scope.scrollY = state.y+200;
-      scope.scrollCount = Math.floor(scope.scrollY/window.screen.height/2);
+      scope.scrollCount = Math.floor(scope.scrollY/window.screen.height/3);
       if (scope.eventScroll == true) {
         scope.eventScroll = false;
         scope.scrollYSave = scope.scrollY;
@@ -1605,6 +1659,9 @@ webix.protoUI({
     }
     scope.tableUrl = this.state.scope.app.config.apiRest.getUrl('get',"accounting/"+this.getModelName(this.state.params.mode), params);
 
+
+
+
     webix.extend(this.getEl('loading-table'), webix.ProgressBar);
     webix.extend(this.table, webix.ProgressBar);
     if (scope.scrollCountSave == 0) {
@@ -1625,7 +1682,20 @@ webix.protoUI({
     // table.config.url = url;
     //scope.table.clearAll();
     //scope.table.load(scope.tableUrl);
+    if (this.state.type == "documentData") {
+      scope.setColumnSettingForTable();
+      scope.table.clearAll();
 
+      if (this.state.parent) {
+        scope.table.parse(this.state.parent.data.getBranch(this.state.parent.getSelectedId()));
+      }
+
+      scope.table.enable();
+      scope.table.hideProgress();
+      scope.getEl('loading-table').enable();
+      scope.getEl('loading-table').hideProgress();
+      return;
+    }
     webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
       //scope.table.clearAll();
 
@@ -1640,7 +1710,8 @@ webix.protoUI({
 
       scope.columns = scope.table.config.columns;
       //scope.table.refreshColumns();
-      //scope.setColumnSettingForTable();
+
+      scope.setColumnSettingForTable();
 
 
       scope.table.parse(dataItem);
@@ -1650,49 +1721,61 @@ webix.protoUI({
       scope.getEl('loading-table').hideProgress();
 
       let resultType= '';
-      // if (scope.schemaTableSetting.group['group-by'].type) {
-      //   resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
-      // } else {
-      //   let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
-      //
-      //   resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
-      // }
-      //
-      // if (scope.schemaTableSetting.group['group-by'].value) {
-      //   scope.table.group({
-      //     by: function (obj) {
-      //       return eval(resultType);
-      //     },
-      //     map: {
-      //       'property_value': [function (obj) {
-      //
-      //         let per = eval(resultType);
-      //         let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
-      //         if (configColumn.collection) {
-      //           //id collection json or colellection "api->url"
-      //           return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
-      //         } else {
-      //           return eval(resultType);
-      //         }
-      //       }],
-      //       'property_title': ['A'],
-      //       'index': ['', 'string'],
-      //       'I': ['', 'string'],
-      //       // //'G': ['G', 'sum'],
-      //       // 'value_sum': ['value_sum', 'median'],
-      //        'L': ['', 'string'],
-      //        'N': ['', 'string'],
-      //        'O': ['', 'string'],
-      //        'P': ['', 'string']
-      //     },
-      //   });
-      // }
+      if (scope.schemaTableSetting.group['group-by'].type) {
+        resultType = scope.schemaTableSetting.group['group-by'].type+'(obj.'+scope.schemaTableSetting.group['group-by'].value+')';
+      } else {
+        let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
 
-      //scope.table.openAll();
+        resultType = 'obj.'+scope.schemaTableSetting.group['group-by'].value;
+      }
+
+      if (scope.schemaTableSetting.group['group-by'].value) {
+        scope.table.group({
+          by: function (obj) {
+            return eval(resultType);
+          },
+          map: {
+            'property_value': [function (obj) {
+
+              let per = eval(resultType);
+              let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
+              if (configColumn.collection) {
+                //id collection json or colellection "api->url"
+                return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
+              } else {
+                return eval(resultType);
+              }
+            }],
+            'property_title': ['A'],
+            'index': ['', 'string'],
+            'I': ['', 'string'],
+            // //'G': ['G', 'sum'],
+            // 'value_sum': ['value_sum', 'median'],
+             'L': ['', 'string'],
+             'N': ['', 'string'],
+             'O': ['', 'string'],
+             'P': ['', 'string']
+          },
+        });
+      }
+
+      if (scope.schemaTableSetting.group['group-open-all'].value) {
+        scope.table.openAll();
+      }
 
       if (scope.state.type == 'directory') {
-        scope.table.select(scope.state.scope.state.editor.value);
-        scope.table.showItem(scope.state.scope.state.editor.value*1);
+        let value = scope.state.scope.state.editor.value;
+        if (value != '') {
+
+          if (typeof value == 'object') {
+            value = value.id;
+          }
+          scope.table.closeAll();
+          let parentId = scope.table.getParentId(value);
+          scope.table.open(parentId);
+          scope.table.select(value);
+          scope.table.showItem(value * 1);
+        }
       }
 
       if (webix.storage.local.get("finplan_version") != items.config.version_frontend) {
@@ -1702,7 +1785,7 @@ webix.protoUI({
 
 
     });
-    let urlSummary = this.state.scope.app.config.apiRest.getUrl('get','accounting/transaction-schema/summary',{'expand':'contragent,account'});
+    let urlSummary = this.state.scope.app.config.apiRest.getUrl('get','accounting/transaction-schema/summary');
     webix.ajax().get( urlSummary, scope.filter).then(function(data) {
       scope.setTotal(data.json());
 
@@ -1790,20 +1873,23 @@ webix.protoUI({
 
     let type = {};
     let date = {};
-    let filterNew = this.getParams();
+    //let filterNew = this.getParams();
 
     if (this.showFilterDateRange.isVisible() && this.filterDateRangeField) {
       date[this.filterDateRangeField] =  {">=": this.dateFromValue, '<=': this.dateToValue};
       //filterNew[this.filterDateRangeField] =  {">=": this.dateFromValue, '<=': this.dateToValue};
-      for (let key in filterNew) {
-        date[key] = filterNew[key];
-      }
-      filterParams["filter"]["or"] = [date];
+      // for (let key in filterNew) {
+      //   date[key] = filterNew[key];
+      // }
+      // filterParams["filter"]["or"] = [date];
       //filterParams["filter"]["or"] = [filterNew];
       //filterParams["filter"]["or"] = [filterNew];
     }
-
-
+    let filterNew = this.getParams();
+    for (let key in date) {
+      filterNew[key] = date[key];
+    }
+    filterParams["filter"]["or"] = [filterNew];
 
 
     if (this.schemaFilterUserList && this.schemaFilterUserList.length > 2) {
@@ -3640,25 +3726,57 @@ webix.protoUI({
   },
 
   doAddClick() {
+    let scope = this;
     this.table.unselect();
     this.table.listId = this.state.params.id;
-    if (this.state.params.mode == 'order' || this.state.params.mode == 'order-management') {
-      this.table.unselectAll();
-      this.state.formUpdateOrderView.showForm(this.table);
+
+    let column = scope.table.getColumnIndex('action-view-window');
+
+    if (column != -1) {
+      let configColumn = scope.table.getColumnConfig('action-view-window');
+      let objConfig = {
+        'config': {
+          'options_url': scope.getModelName(configColumn.goto),
+          'options_url_edit': configColumn.goto,
+          'header': [{'text': 'Документ'}],
+          //'filter': {"filterField":"list_id","filterInput":id.row}
+        }
+      };
+      let gotoType = 'table';
+
+      if (configColumn.goto_type) {
+        gotoType = configColumn.goto_type;
+      }
+
+      scope.state.formDocumentTableWindow.showWindow({}, scope.table, objConfig, scope.state.scope, gotoType);
     } else {
-      this.state.formEdit.showForm(this.table);
+      if (this.state.params.mode == 'transaction-schema') {
+        this.table.unselectAll();
+        this.state.formTransactionSchemaEditView.showForm(this.table);
+      } else {
+
+        this.state.formEdit.showForm(this.table);
+      }
     }
   },
 
   doAddRowClick() {
-    this.table.add({
-      some:"some string",
-      other:123,
-      complex:{
-        contain:"any",
-        content:"inside"
+    let columns = this.table.config.columns;
+    let record = {};
+    for (let key in columns) {
+      record[columns[key]['id']] = '';
+      if (columns[key]['id'] == 'index') {
+        record[columns[key]['id']] = this.table.count()+1;
       }
-    }, 0);
+      // if (columns[key]['id'] == 'id') {
+      //   record[columns[key]['id']] = 1;
+      // }
+    }
+    let recordNew = this.table.add(record);
+    this.table.unselectAll();
+    this.table.select(recordNew,this.table.config.columns[1].id);
+    this.table.editCell(recordNew, this.table.config.columns[1].id);
+    return false;
   },
 
   doClickOpenAll() {

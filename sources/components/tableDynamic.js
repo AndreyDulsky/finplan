@@ -274,7 +274,7 @@ webix.editors.buttonEditor = {
   render:function(){
     return webix.html.create("div", {
       "class":"webix_dt_editor"
-    }, "<input type='text' disabled='disabled' /><button class='editor-button' style='position: absolute;margin: 1px; right:0; height:25px;'>...</button>");
+    }, "<input type='text' disabled='disabled' /><button class='editor-button' style='position: absolute;margin: 8px; right:0; height:25px;'>...</button>");
   }
 }
 
@@ -1442,7 +1442,9 @@ webix.protoUI({
         });
       }
 
-      //scope.table.openAll();
+      if (scope.schemaTableSetting.group['group-open-all'].value) {
+        scope.table.openAll();
+      }
 
       if (scope.state.type == 'directory') {
         scope.table.select(scope.state.scope.state.editor.value);
