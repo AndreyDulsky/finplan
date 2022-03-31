@@ -581,7 +581,7 @@ webix.protoUI({
           {
             view: "icon",
             icon: "mdi mdi-playlist-plus",
-            localId: "show-add-button",
+            localId: "show-add-button-row",
             tooltip: "Добавить строку",
             hidden: false,
             width: 30,
@@ -1222,6 +1222,44 @@ webix.protoUI({
         },
         onItemClick:function(id, e, trg) {
 
+
+          if (scope.state.selectedRow == id.row) {
+            if (id.column == 'action-edit') {
+              if (scope.state.params.mode == 'transaction-schema') {
+                scope.state.formTransactionSchemaEditView.showForm(this);
+              } else {
+                let document = scope.state.params.mode.split('-');
+
+                if (document[document.length-1] == 'document') {
+                  //scope.state.formTransactionEditView.showForm(this);
+                  scope.state.formDocumentEditView.showForm(this);
+
+                } else {
+                  scope.state.formEdit.showForm(this);
+                }
+              }
+            }
+
+            let configColumn = scope.table.getColumnConfig('action-view-window');
+            let objConfig = {
+              'config':{
+                'options_url' : scope.getModelName(configColumn.goto),
+                'options_url_edit': configColumn.goto,
+                'header': [{'text':'Документ'}],
+                'filter': {"filterField":"list_id","filterInput":id.row}
+              }
+            };
+            let gotoType = 'table';
+
+            if (configColumn.goto_type) {
+              gotoType = configColumn.goto_type;
+            }
+
+            scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+
+          }
+
+          scope.state.selectedRow = this.getSelectedId();
           if (id.column == 'action-edit') {
             if (scope.state.params.mode == 'transaction-schema') {
               scope.state.formTransactionSchemaEditView.showForm(this);
@@ -1237,6 +1275,7 @@ webix.protoUI({
               }
             }
           }
+
           if (id.column == 'action-view-window') {
             let configColumn = scope.table.getColumnConfig(id.column);
             let objConfig = {

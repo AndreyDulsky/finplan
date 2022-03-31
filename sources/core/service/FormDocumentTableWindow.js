@@ -153,6 +153,25 @@ export default class FormDocumentTableWindow extends JetView {
           elementName.setValue(this.data.text);
         });
       }
+      let currencyIs = state.wins[state.wins.length-1].getBody().queryView({'name': 'currencyIs'});
+      currencyIs.attachEvent("onChange", function(value) {
+
+        let currencies = state.wins[state.wins.length-1].getBody().queryView({'batch': 'currency'}, 'all');
+
+        for (let key in currencies) {
+          if (value) {
+            currencies[key].show();
+          } else {
+            currencies[key].hide();
+          }
+        }
+
+      });
+      state.formEditDocument = state.wins[state.wins.length-1].queryView({'localId': 'formEditDocument'});
+
+      if (state.formEditDocument) {
+        state.formEditDocument.setValues(scope.getRecord());
+      }
 
     });
   }
@@ -296,10 +315,7 @@ export default class FormDocumentTableWindow extends JetView {
         state.formConfig = state.formData.data.configForm;
       }
       scope.renderWindow(configTable, state.formConfig, type);
-      state.formEditDocument = state.wins[state.wins.length-1].queryView({'localId': 'formEditDocument'});
-      if (state.formEditDocument) {
-        state.formEditDocument.setValues(scope.getRecord());
-      }
+
       //scope.bindCollection();
     });
 
@@ -311,6 +327,7 @@ export default class FormDocumentTableWindow extends JetView {
       return state.tableRecords[state.tableRecords.length-1];
     }
     return {
+      'dateDocument' :  new Date()
       //date_operation: new Date(),
       //is_committed : 1,
       //type_operation: 2
@@ -377,10 +394,12 @@ export default class FormDocumentTableWindow extends JetView {
     let item = state.table.getSelectedItem();
     item[state.editor.column] = {'id' :record.id, 'name' : record.value};
 
-    if (item['unit'] == '') {
-      item['unit'] =  {'id' :record.unit_id, 'name' :'шт'};
+    if (item.hasOwnProperty("unit")) {
+
+      let itemDirectory =  state.table.getColumnConfig('unit').collection.getItem(record.unit_id);
+      item['unit'] =  {'id' :record.unit_id, 'name' : itemDirectory.name};
     }
-    if (item['price'] == '') {
+    if (item.hasOwnProperty("price") && item['price'] == '') {
       item['price'] =  record.price;
     }
     webix.dp(state.table).ignore(function(){
@@ -391,9 +410,16 @@ export default class FormDocumentTableWindow extends JetView {
     //state.table.editNext(true, now);
     //state.table.unselectAll();
     //state.table.editStop();
-    state.table.select(item.id,state.table.config.columns[index+1].id);
+
     if(item.id && state.table.config.columns[index+1].id && state.table.editStop()) {
-     return state.table.edit({row: item.id, column: state.table.config.columns[index + 1].id});
+      for (let i=index+1;i< state.table.config.columns.length-1; i++) {
+        if (state.table.config.columns[i].hasOwnProperty('editor')) {
+          index = i;
+          break;
+        }
+      }
+      state.table.select(item.id,state.table.config.columns[index].id);
+      state.table.edit({row: item.id, column: state.table.config.columns[index].id});
     } else {
       return state.table.editStop();
     }
@@ -469,8 +495,18 @@ export default class FormDocumentTableWindow extends JetView {
     ).then(function(obj){
 
       webix.dp(state.tables[state.tables.length-1]).ignore(function(){
-        debugger;
+
         (state.isUpdates[state.isUpdates.length-1]) ? state.tables[state.tables.length-1].updateItem(record.id, obj) : state.tables[state.tables.length-1].add(obj,0);
+        let branches = state.tables[state.tables.length-1].data.getBranch(state.tables[state.tables.length-1].getSelectedId());
+
+        if (state.isUpdates[state.isUpdates.length-1]) {
+          state.tables[state.tables.length - 1].remove(state.tables[state.tables.length - 1].data.branch[record.id]);
+          state.tables[state.tables.length - 1].data.branch[record.id] = [];
+        }
+        state.tables[state.tables.length-1].parse({
+          parent: obj.id,
+          data: obj.data
+        });
 
         state.tables[state.tables.length-1].select(obj.id);
 
@@ -480,6 +516,9 @@ export default class FormDocumentTableWindow extends JetView {
         //state.table.markSorting("name", "asc");
 
       });
+      // debugger;
+      // //state.table.getBranch(item).bind(data);
+      //state.tables[state.tables.length-1].getItem(state.tables[state.tables.length-1].getSelectedId()).data = data;
 
       state.tables[state.tables.length-1].refresh();
       state.wins[state.wins.length-1].hide();
