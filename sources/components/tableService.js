@@ -1223,22 +1223,8 @@ webix.protoUI({
         onItemClick:function(id, e, trg) {
 
 
-          if (scope.state.selectedRow == id.row) {
-            if (id.column == 'action-edit') {
-              if (scope.state.params.mode == 'transaction-schema') {
-                scope.state.formTransactionSchemaEditView.showForm(this);
-              } else {
-                let document = scope.state.params.mode.split('-');
-
-                if (document[document.length-1] == 'document') {
-                  //scope.state.formTransactionEditView.showForm(this);
-                  scope.state.formDocumentEditView.showForm(this);
-
-                } else {
-                  scope.state.formEdit.showForm(this);
-                }
-              }
-            }
+          if (scope.state.selectedRow == id.row && id.column != 'action-edit'
+            && id.column != 'action-delete' && id.column != 'action-view' && id.column != 'action-comment') {
 
             let configColumn = scope.table.getColumnConfig('action-view-window');
             let objConfig = {
@@ -1489,8 +1475,15 @@ webix.protoUI({
             } else {
               values[split[0]].push(filter[key]);
             }
-            filter[split[0]] = {"in": values[split[0]]};
-            filterNew[split[0]] = filter[split[0]];
+            if  (values[split[0]].length == 1) {
+
+              filter[key] = values[split[0]][0];
+              filterNew[key] = filter[key];
+            } else {
+              filter[split[0]] = {"in": values[split[0]]};
+              filterNew[split[0]] = filter[split[0]];
+            }
+
           }
         } else {
           if (key == 'date_operation') {
