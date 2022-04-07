@@ -329,6 +329,7 @@ export default class ServiceView extends JetView{
       this.urlParams = url[1].params;
     }
     if (this.initParam) {
+
       this.setPage();
     }
     this.initParam = true;
@@ -337,6 +338,7 @@ export default class ServiceView extends JetView{
   init(view) {
 
     let scope = this;
+
     this.initParam =false;
     this.use(plugins.UrlParam, ["mode", "id", "account_id"]);
     //
@@ -442,11 +444,14 @@ export default class ServiceView extends JetView{
   }
 
   setPage() {
-    this.table.state.params = {
-      mode: this.mode,
-      id: this.getParam('id'),
-      account_id : this.getParam('account_id')
-    };
+    // this.table.state.params = {
+    //   mode: this.mode,
+    //   id: this.getParam('id'),
+    //   account_id : this.getParam('account_id')
+    // };
+    this.table.state.params = this.urlParams;
+    this.table.state.params['mode'] = this.mode;
+    this.table.state.params['id'] = this.getParam('id');
     this.table.stateCache  = webix.storage.local.get(this.mode+"_table_filter_state");
     this.table.setPage();
 

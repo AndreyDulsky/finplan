@@ -642,6 +642,7 @@ webix.protoUI({
     this.showGoToBack();
     this.model = this.capitalizeFirstLetter(this.state.params.mode);
     this.setSelectType();
+
     this.schemaTableSetting = this.getSchemaTableSetting();
     this.setTableSetting();
     this.setFilterSetting();
@@ -733,7 +734,7 @@ webix.protoUI({
     });
 
     scope.filterInput.attachEvent("onChange", function(id) {
-
+      debugger;
       scope.getDataTable();
       scope.putFilterState();
     });
@@ -1061,12 +1062,14 @@ webix.protoUI({
             //scope.getParentView().config.scope.hideWindow();
             scope.config.$scope.hideWindow();
           }
+
           if (item.account_id) {
-            if (this.$scope.urlParams['account_id']) {
+            if (scope.state.scope && scope.state.scope.urlParams['account_id']) {
               this.$scope.show('inproduce/register-account-subconto?account_id='+item.account_id+'&subconto1_value=' + item.subconto1_value);
             }
-            if (Object.keys(this.$scope.urlParams).length == 0) {
-              this.$scope.show('inproduce/register-account?account_id=' + item.account_id+'&schema-table-user-id=196');
+            if (!scope.state.scope.urlParams || !scope.state.scope.urlParams['account_id']) {
+              this.$scope.show('inproduce/register-account?account_id=' + item.account_id+'&schema-table-user-id=196',
+                {'account_id': item.account_id,'schema-table-user-id':196});
             }
 
           }
@@ -1303,6 +1306,7 @@ webix.protoUI({
 
     this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
     this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value*1 : 0);
+    //this.table.define('css', (this.schemaTableSetting.datatable['css'].value) ? this.schemaTableSetting.datatable['css'].value : 0);
     this.table.define('drag', (!this.schemaTableSetting['access'] || (!this.schemaTableSetting['access']['can-drop'] || this.schemaTableSetting['access']['can-drop'].value == 0) ) ? false :  "order");
 
 
@@ -1329,18 +1333,17 @@ webix.protoUI({
     let url = new URL(location.href.replace('/#!',''));
 
     let searchParams = new URLSearchParams(url.search);
-    if (!this.urlParams && (searchParams.get('account_id') || searchParams.get('subconto1_value'))) {
+    if (!scope.state.scope.urlParams && (searchParams.get('account_id') || searchParams.get('subconto1_value'))) {
 
-      this.urlParams = [];
-      if (searchParams.get('account_id')) this.urlParams['account_id'] = searchParams.get('account_id');
-      if (searchParams.get('subconto1_value'))  this.urlParams['subconto1_value'] = searchParams.get('subconto1_value');
-      if (searchParams.get('schema-table-user-id')) this.urlParams['schema-table-user-id'] = searchParams.get('schema-table-user-id');
-
+      scope.state.scope.urlParams = [];
+      if (searchParams.get('account_id')) scope.state.scope.urlParams['account_id'] = searchParams.get('account_id');
+      if (searchParams.get('subconto1_value'))  scope.state.scope.urlParams['subconto1_value'] = searchParams.get('subconto1_value');
+      if (searchParams.get('schema-table-user-id')) scope.state.scope.urlParams['schema-table-user-id'] = searchParams.get('schema-table-user-id');
     }
 
-    if (this.urlParams) {
-      for (let key in this.urlParams) {
-        params[key] = this.urlParams[key];
+    if (scope.state.scope.urlParams) {
+      for (let key in scope.state.scope.urlParams) {
+        params[key] = scope.state.scope.urlParams[key];
       }
     }
     if (state.y != -1) {
@@ -1681,7 +1684,6 @@ webix.protoUI({
     for (let key in columnSetting) {
       categories = columnSetting[key].category;
       for (let keyCategory in categories) {
-        console.log(keyCategory);
         let item = categories[keyCategory];
         let cssFormat = '';
         if (key == id) {

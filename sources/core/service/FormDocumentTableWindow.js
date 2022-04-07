@@ -395,9 +395,12 @@ export default class FormDocumentTableWindow extends JetView {
     item[state.editor.column] = {'id' :record.id, 'name' : record.value};
 
     if (item.hasOwnProperty("unit")) {
-
-      let itemDirectory =  state.table.getColumnConfig('unit').collection.getItem(record.unit_id);
-      item['unit'] =  {'id' :record.unit_id, 'name' : itemDirectory.name};
+      let unitId = 1;
+      if (record.unit_id) {
+        unitId = 1;
+      }
+      let itemDirectory =  state.table.getColumnConfig('unit').collection.getItem(unitId);
+      item['unit'] =  {'id' :unitId, 'name' : itemDirectory.name};
     }
     if (item.hasOwnProperty("price") && item['price'] == '') {
       item['price'] =  record.price;

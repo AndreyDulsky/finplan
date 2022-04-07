@@ -302,7 +302,6 @@ export default class InproduceView extends JetView{
     let hash = document.location.hash.split('/');
     let hashMode = hash[hash.length-1];
     let state = webix.storage.local.get(hashMode+"_filter_state");
-
     let scope = this;
     this.api = this.app.config.apiRest;
 
@@ -314,6 +313,7 @@ export default class InproduceView extends JetView{
   }
 
   urlChange(view,url){
+
     var id = this.getParam("mode", true);
     var mode = this.getParam("mode", true);
 
@@ -328,10 +328,10 @@ export default class InproduceView extends JetView{
   }
 
   init(view) {
-
+    this.use(plugins.UrlParam, ["mode", "id","account_id"]);
     let scope = this;
     this.initParam =false;
-    this.use(plugins.UrlParam, ["mode", "id", "account_id"]);
+
     //
     let mode = this.getParam('mode');
     //
@@ -424,11 +424,14 @@ export default class InproduceView extends JetView{
   }
 
   setPage() {
-    this.table.state.params = {
-      mode: this.mode,
-      id: this.getParam('id'),
-      account_id : this.getParam('account_id')
-    };
+    // this.table.state.params = {
+    //   mode: this.mode,
+    //   id: this.getParam('id'),
+    //   account_id : this.getParam('account_id')
+    // };
+    this.table.state.params = this.urlParams;
+    this.table.state.params['mode'] = this.mode;
+    this.table.state.params['id'] = this.getParam('id');
     this.table.stateCache  = webix.storage.local.get(this.mode+"_table_filter_state");
     this.table.setPage();
 

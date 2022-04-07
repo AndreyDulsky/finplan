@@ -85,18 +85,18 @@
     //color: red;
 }
 
-.webix_column div[aria-expanded] {
-    background: #F4F5F9;
-}
+/*.webix_column div[aria-expanded] {*/
+    /*background: #F4F5F9;*/
+/*}*/
 
 
-.table-transaction .webix_column div[aria-level="2"] {
-    background: #F4F5F9;
-}
+/*.table-transaction .webix_column div[aria-level="2"] {*/
+    /*background: #F4F5F9;*/
+/*}*/
 
-.table-transaction .webix_column div[aria-level="1"] {
-    background: #fff;
-}
+/*.table-transaction .webix_column div[aria-level="1"] {*/
+    /*background: #fff;*/
+/*}*/
 /*.table-transaction .webix_column div[aria-colindex="1"] {*/
     /*background: #F4F5F9;*/
 /*}*/

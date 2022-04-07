@@ -245,6 +245,7 @@ function columnGroupTemplate(obj, common, item){
 
 function groupData (obj, common, value) {
   let result = '';
+
   if (obj.$level==1 && obj.$count > 1) result = common.icon(obj, common) + webix.i18n.longDateFormatStr(value);
   if (obj.$level!=1)  result = "<div class='subrowimage'><div></div></div>";
   if (obj.$level==1 && obj.$count < 2) result = "<div style='margin-left:20px;'>"+webix.i18n.longDateFormatStr(value)+"</div>";
@@ -583,7 +584,7 @@ webix.protoUI({
             icon: "mdi mdi-playlist-plus",
             localId: "show-add-button-row",
             tooltip: "Добавить строку",
-            hidden: false,
+            hidden: true,
             width: 30,
             click: () => this.doAddRowClick()
           },
@@ -615,7 +616,7 @@ webix.protoUI({
             hidden: false,
             click: function() {
               webix.storage.local.remove('config_filter_form_'+scope.state.params.mode);
-              webix.storage.local.remove('config_'+scope.state.params.mode);
+              webix.storage.local.remove('config_'+scope.state.params.mode+'_'+scope.state.params['schema-table-user-id']);
             }
 
           },
@@ -761,6 +762,21 @@ webix.protoUI({
 
   },
 
+  groupData (obj, common, value, config) {
+    let result = '';
+    let countGroupRecord = 1;
+
+    if (config.scope.schemaTableSetting && config.scope.schemaTableSetting.group['group-count-record'].value) {
+      countGroupRecord = config.scope.schemaTableSetting.group['group-count-record'].value;
+    }
+
+    if (obj.$level==1 && obj.$count > (countGroupRecord-1)) result = common.icon(obj, common) + webix.i18n.longDateFormatStr(value);
+    if (obj.$level!=1)  result = "<div class='subrowimage'><div></div></div>";
+    if (obj.$level==1 && obj.$count < countGroupRecord) result = "<div style='margin-left:20px;'>"+webix.i18n.longDateFormatStr(value)+"</div>";
+    if (obj.$level==1 && obj.is_committed == 2) result = '<div style="color:blue">'+result+'</div>';
+    return result;
+  },
+
   getFilterForm() {
     let scope = this;
     let dataJson;
@@ -852,29 +868,35 @@ webix.protoUI({
   attachToolBarEvents() {
 
     let scope = this;
-    scope.dateFrom.attachEvent("onChange", function(id) {
+    if (!scope.dateFrom.hasEvent("onChange")) {
+      scope.dateFrom.attachEvent("onChange", function (id) {
 
+        scope.getDataTable();
+        scope.putFilterState();
+      });
+    }
+
+    if (!scope.dateTo.hasEvent("onChange")) {
+      scope.dateTo.attachEvent("onChange", function (id) {
+
+        scope.getDataTable();
+        scope.putFilterState();
+      });
+    }
+
+    if (!scope.filterField.hasEvent("onChange")) {
+      scope.filterField.attachEvent("onChange", function (id) {
+
+        scope.getDataTable();
+        scope.putFilterState();
+      });
+    }
+
+    scope.filterInput.attachEvent("onChange", function (id) {
       scope.getDataTable();
       scope.putFilterState();
     });
 
-    scope.dateTo.attachEvent("onChange", function(id) {
-
-      scope.getDataTable();
-      scope.putFilterState();
-    });
-
-    scope.filterField.attachEvent("onChange", function(id) {
-
-      scope.getDataTable();
-      scope.putFilterState();
-    });
-
-    scope.filterInput.attachEvent("onChange", function(id) {
-
-      scope.getDataTable();
-      scope.putFilterState();
-    });
 
 
 
@@ -1124,7 +1146,7 @@ webix.protoUI({
     let layout = this.getEl("body-layout");
     let scope = this;
     let dataJson;
-    dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
+    dataJson = webix.storage.local.get('config_'+scope.state.params.mode+'_'+scope.state.params['schema-table-user-id']);
     let dataConfigObject = {};
     if (dataJson) {
       dataConfigObject = scope.dataDriverJsonToObject(dataJson.columns);
@@ -1133,9 +1155,9 @@ webix.protoUI({
       view: "treetable",
       localId: 'table-layout',
       urlEdit: this.state.params.mode,
-      css: "table-transaction",
+      css: "table-transaction", //table-transaction
       hover: "myhover",
-      rowHeight:43,
+      rowHeight:(scope.schemaTableSetting.datatable['rowHeight'].value !='0') ? scope.schemaTableSetting.datatable['rowHeight'].value*1 : 32,
       leftSplit: 0,
       //select:"multiselect",
       select: "multiselect",
@@ -1156,9 +1178,7 @@ webix.protoUI({
       //url: scope.state.scope.app.config.apiRest.getUrl('get',"accounting/"+scope.getModelName(scope.state.params.mode)),
       xCount:0,
       scroll: 'xy',
-      scheme:{
-
-      },
+      scheme:{},
       columns: dataConfigObject,
       ready: function() {
 
@@ -1210,23 +1230,31 @@ webix.protoUI({
             scope.config.$scope.hideWindow();
             return false;
           }
-          if (item.account_id) {
-            if (this.$scope.urlParams['account_id']) {
-              this.$scope.show('inproduce/register-account-subconto?account_id='+item.account_id+'&subconto1_value=' + item.subconto1_value);
+          let companyId = '';
+          if (scope.state.params.mode == 'register-account-subconto') {
+            if (scope.state.params['company_id']) {
+              companyId = '&company_id='+scope.state.params['company_id'];
             }
-            if (Object.keys(this.$scope.urlParams).length == 0) {
-              this.$scope.show('inproduce/register-account?account_id=' + item.account_id+'&schema-table-user-id=196');
-            }
-
+            this.$scope.show('service/register-account-document?account_id='+item.account_id+'&subconto1_value=' + item.subconto1_value+companyId);
           }
+          if (scope.state.params.mode == 'register-account') {
+
+            if (scope.state.params['company_id']) {
+              companyId = '&company_id='+scope.state.params['company_id'];
+            }
+            this.$scope.show('service/register-account-subconto?account_id=' + item.account_id+companyId);
+          }
+
+
         },
         onItemClick:function(id, e, trg) {
 
+          let configColumn = scope.table.getColumnConfig('action-view-window');
 
-          if (scope.state.selectedRow == id.row && id.column != 'action-edit'
+          if (configColumn.goto && scope.state.selectedRow == id.row && id.column != 'action-edit'
             && id.column != 'action-delete' && id.column != 'action-view' && id.column != 'action-comment') {
 
-            let configColumn = scope.table.getColumnConfig('action-view-window');
+
             let objConfig = {
               'config':{
                 'options_url' : scope.getModelName(configColumn.goto),
@@ -1235,6 +1263,7 @@ webix.protoUI({
                 'filter': {"filterField":"list_id","filterInput":id.row}
               }
             };
+
             let gotoType = 'table';
 
             if (configColumn.goto_type) {
@@ -1365,7 +1394,6 @@ webix.protoUI({
       onClick:{
         "editor-button":function(ev, id,obj, obj1){
           let editor = this.getEditState();
-
           let parent = null;
           if (scope.table.getSelectedId()) {
             parent = scope.table;
@@ -1421,15 +1449,31 @@ webix.protoUI({
     });
 
     this.table.attachEvent("onScrollY", function(){
-      var state = scope.table.getScrollState();
-      scope.getDataTable(state);
+      if (scope.schemaTableSetting['access']['can-scroll-fetch'].value != '0') {
+        var state = scope.table.getScrollState();
+        scope.getDataTable(state);
+      }
 
     });
 
     let formFilter = this.getEl("filter-form");
-    formFilter.attachEvent("onChange", function(obj){
-      scope.getDataTable();
-    });
+    if (!formFilter.hasEvent('onChange')) {
+      formFilter.attachEvent("onChange", function (obj, col, con, config) {
+
+        let values = this.getValues();
+        if (values['company_id']) {
+          scope.state.params['company_id'] = values['company_id'];
+          if (scope.state.params.mode == 'register-account') {
+
+            let companyId = 'company_id='+scope.state.params['company_id'];
+
+            scope.$scope.show('service/register-account?'+companyId);
+            return false;
+          }
+        }
+        scope.getDataTable();
+      });
+    }
 
     this.setColorSettingForTable();
     scope.scrollCountSave = 0;
@@ -1452,6 +1496,7 @@ webix.protoUI({
       if (filter[key]) {
         //debugger;
         split = key.split('.');
+
         if (split.length > 1) {
 
           if (split[1] == 'range') {
@@ -1468,6 +1513,7 @@ webix.protoUI({
 
             if (!values[split[0]]) values[split[0]] = [];
             let splitFilter = filter[key].split(',');
+
             if (splitFilter.length > 1) {
               for (let key1 in splitFilter) {
                 values[split[0]].push(splitFilter[key1]);
@@ -1475,13 +1521,29 @@ webix.protoUI({
             } else {
               values[split[0]].push(filter[key]);
             }
-            if  (values[split[0]].length == 1) {
 
-              filter[key] = values[split[0]][0];
-              filterNew[key] = filter[key];
+            if (split[0] == 'data' || split[0] == 'complex') {
+              if (split[0] == 'data') {
+                filter[key] = values[split[0]][0];
+                filterNew[key] = filter[key];
+              }
+              if (split[0] == 'complex') {
+
+                filter[split[1]+'.'+split[2]] = values[split[0]][0];
+                filterNew[split[1]+'.'+split[2]] = filter[key];
+              }
+
             } else {
               filter[split[0]] = {"in": values[split[0]]};
               filterNew[split[0]] = filter[split[0]];
+              if  (values[split[0]].length == 1) {
+
+                filter[split[0]] = {"in": values[split[0]]};
+                filterNew[split[0]] = filter[split[0]];
+              } else {
+                filter[split[0]] = {"in": values[split[0]]};
+                filterNew[split[0]] = filter[split[0]];
+              }
             }
 
           }
@@ -1591,15 +1653,20 @@ webix.protoUI({
   getDataTable(state = {x:-1,y:-1}) {
     let scope = this;
     let dataJson;
-    dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
+    dataJson = webix.storage.local.get('config_'+scope.state.params.mode+'_'+scope.state.params['schema-table-user-id']);
     if (dataJson) {
       //scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
       //scope.table.refreshColumns();
     } else {
-      let urlGetConfig = this.state.scope.app.config.apiRest.getUrl('get',"accounting/" + scope.state.params.mode + "/get-config",{});
+      let paramsConfig = {};
+      if (scope.state.scope.urlParams) {
+        paramsConfig = {'schema-table-user-id':scope.state.scope.urlParams['schema-table-user-id']}
+      }
+      let urlGetConfig = this.state.scope.app.config.apiRest.getUrl('get',"accounting/" + scope.state.params.mode + "/get-config",
+        paramsConfig);
       let responseList = webix.ajax().sync().get(urlGetConfig);
       let dataJson = JSON.parse(responseList.responseText);
-      webix.storage.local.put('config_' + scope.state.params.mode, dataJson);
+      webix.storage.local.put('config_' + scope.state.params.mode+'_'+scope.state.params['schema-table-user-id'], dataJson);
       scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
       scope.table.refreshColumns();
       // scope.state.scope.app.config.apiRest.get("accounting/" + scope.state.params.mode + "/get-config").then(function (data) {
@@ -1612,13 +1679,20 @@ webix.protoUI({
 
     this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
     this.table.define('rightSplit', (this.schemaTableSetting.datatable['rightSplit'].value) ? this.schemaTableSetting.datatable['rightSplit'].value*1 : 0);
+    this.table.define('css', (this.schemaTableSetting.datatable['css'].value !='') ? this.schemaTableSetting.datatable['css'].value : 0);
+    //this.table.define('rowHeight', (this.schemaTableSetting.datatable['rowHeight'].value !='0') ? this.schemaTableSetting.datatable['rowHeight'].value*1 : 32);
     this.table.define('drag', (!this.schemaTableSetting['access'] || (!this.schemaTableSetting['access']['can-drop'] || this.schemaTableSetting['access']['can-drop'].value == 0) ) ? false :  "order");
+
+    if (this.schemaTableSetting['access']['can-scroll-fetch'].value == '0') {
+      state = {x:-1,y:-1};
+    }
+
 
 
 
     scope.columns = [];
     let params = {
-      //'per-page' : 2000,
+      'per-page' : 2000,
       'schema-table-user-id': scope.selectTypeValue,
       //'sort': '[{"property":"'+this.filterDateRangeField+'","direction":"ASC"}]'
     };
@@ -1645,18 +1719,18 @@ webix.protoUI({
     let url = new URL(location.href.replace('/#!',''));
 
     let searchParams = new URLSearchParams(url.search);
-    if (!this.urlParams && (searchParams.get('account_id') || searchParams.get('subconto1_value'))) {
+    if (!scope.state.scope.urlParams && (searchParams.get('account_id') || searchParams.get('subconto1_value') || searchParams.get('company_id'))) {
 
-      this.urlParams = [];
-      if (searchParams.get('account_id')) this.urlParams['account_id'] = searchParams.get('account_id');
-      if (searchParams.get('subconto1_value'))  this.urlParams['subconto1_value'] = searchParams.get('subconto1_value');
-      if (searchParams.get('schema-table-user-id')) this.urlParams['schema-table-user-id'] = searchParams.get('schema-table-user-id');
-
+      scope.state.scope.urlParams = [];
+      if (searchParams.get('account_id')) scope.state.scope.urlParams['account_id'] = searchParams.get('account_id');
+      if (searchParams.get('subconto1_value'))  scope.state.scope.urlParams['subconto1_value'] = searchParams.get('subconto1_value');
+      if (searchParams.get('company_id'))  scope.state.scope.urlParams['company_id'] = searchParams.get('company_id');
+      if (searchParams.get('schema-table-user-id')) scope.state.scope.urlParams['schema-table-user-id'] = searchParams.get('schema-table-user-id');
     }
 
-    if (this.urlParams) {
-      for (let key in this.urlParams) {
-        params[key] = this.urlParams[key];
+    if (scope.state.scope.urlParams) {
+      for (let key in scope.state.scope.urlParams) {
+        params[key] = scope.state.scope.urlParams[key];
       }
     }
 
@@ -1791,7 +1865,7 @@ webix.protoUI({
         });
       }
 
-      if (scope.schemaTableSetting.group['group-open-all'].value) {
+      if (scope.schemaTableSetting.group['group-open-all'].value == '1') {
         scope.table.openAll();
       }
 
@@ -1988,6 +2062,7 @@ webix.protoUI({
   },
 
   dataDriverJsonToObject(configColumns) {
+    let scope = this;
     configColumns.forEach(function(item,key) {
       let myObj = {
         func: {}
@@ -2046,6 +2121,11 @@ webix.protoUI({
       if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('groupData') ==0) {
         eval(" myObj.func = " + item.template);
         configColumns[key].template = myObj.func;
+      }
+      if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('scope.groupData') ==0) {
+        eval(" scope.func = " + item.template);
+        configColumns[key]['scope'] = scope;
+        configColumns[key].template = scope.func;
       }
 
     });
@@ -3187,7 +3267,16 @@ webix.protoUI({
 
       if (items.length == 1) {
         let item = items[0];
-        let css = '{"background-color":"'+item['color']+'"}';
+        let cssObject = {
+          "background-color" : item['color']
+        };
+        if (item['color_text']) cssObject["color"] =  item['color_text'];
+        if (item['font-weight']) cssObject["font-weight"] =  item['font-weight'];
+
+        let css = JSON.stringify(cssObject);
+        //'{"background-color":"'+item['color']+'"}';
+
+
         let comparison = (item['comparison'] == '=') ? '==' : item['comparison'];
         let value = (item['value'].indexOf('{')!=-1) ? item['value'].replace('{','').replace('}','') : '\''+item['value']+'\'';
         conditionFunction += 'if (item.'+item['field']+' '+comparison+' '+value+') { item.$css = '+css+'; } ';
@@ -3197,7 +3286,11 @@ webix.protoUI({
     conditionFunction += '}';
     console.log(conditionFunction);
 
+    //conditionFunction += '';
     eval(" obj.func = " + conditionFunction);
+    // let schema = this.table.data._scheme_init;
+    // debugger;
+    //schema["$init"] = obj.func;
     this.table.define('scheme', {
       $init: obj.func
     });
@@ -3303,8 +3396,25 @@ webix.protoUI({
             name: id+'.color',
             labelWidth: 150,
             labelPosition: 'top',
-            label:'Цвет',
+            label:'Цвет фона',
             value: ''
+          },
+          {
+            view:'colorpicker',
+            name: id+'.color_text',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Цвет текста',
+            value: ''
+          },
+          {
+            view:'combo',
+            name: id+'.font-weight',
+            labelWidth: 150,
+            labelPosition: 'top',
+            label:'Стиль текста',
+            value: 'normal',
+            options: [{'id':'normal','value':'нормальный'},{'id':'500','value':'полужирный'},{'id':'700','value':'жирный'}]
           },
           {
             view:'icon',
