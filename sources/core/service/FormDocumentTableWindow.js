@@ -169,7 +169,7 @@ export default class FormDocumentTableWindow extends JetView {
       });
       state.formEditDocument = state.wins[state.wins.length-1].queryView({'localId': 'formEditDocument'});
 
-      if (state.formEditDocument) {
+      if (state.formEditDocument && state.isUpdate) {
         state.formEditDocument.setValues(scope.getRecord());
       }
 
@@ -558,6 +558,7 @@ export default class FormDocumentTableWindow extends JetView {
     let form = state.wins[state.wins.length-1].getBody().queryView({'localId':'formEditDocument'});
 
     //webix.message(JSON.stringify(state.table.getSelectedItem()),"info",-1,"Message" );
+
     form.setValues({"sum" :sum }, true);
 
 

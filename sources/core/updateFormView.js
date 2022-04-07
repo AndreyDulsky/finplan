@@ -78,9 +78,7 @@ export default class UpdateFormView extends JetView {
 
     state.formEdit.clearValidation();
     //get config elements for form and urls collection;
-    debugger;
     api.get(state.formUrl).then(function(data) {
-      debugger;
       scope.showWindow(data, scope);
     });
   }
@@ -133,7 +131,6 @@ export default class UpdateFormView extends JetView {
 
 
   renderForm(elementsCount) {
-    debugger;
     let state  = this.state;
     //render first time
     //if (elementsCount === 0 ) {
