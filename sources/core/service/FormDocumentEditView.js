@@ -140,7 +140,6 @@ export default class FormDocumentEditView extends JetView {
 
   renderForm(elementsCount) {
     let state  = this.state;
-    debugger;
     //render first time
     //if (elementsCount === 0 ) {
     if (state.formData.data.configForm != false) {

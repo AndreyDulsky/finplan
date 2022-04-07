@@ -1251,7 +1251,7 @@ webix.protoUI({
 
           let configColumn = scope.table.getColumnConfig('action-view-window');
 
-          if (configColumn.goto && scope.state.selectedRow == id.row && id.column != 'action-edit'
+          if (configColumn && configColumn.goto && scope.state.selectedRow == id.row && id.column != 'action-edit'
             && id.column != 'action-delete' && id.column != 'action-view' && id.column != 'action-comment') {
 
 
