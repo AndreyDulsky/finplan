@@ -58,10 +58,10 @@ export default class FormDocumentTableWindow extends JetView {
       localId: "windowDirectory",
       view: "window",
       position: function (state) {
-        state.top = 38*2+countTop;
+        state.top = 38*2;
         state.width = state.maxWidth / 1.5;
         state.height = state.maxHeight/1.2;
-        state.left = 44*2+countLeft;
+        state.left = 44*2;
       },
       head:{
         cols:[
@@ -171,6 +171,19 @@ export default class FormDocumentTableWindow extends JetView {
 
       if (state.formEditDocument && state.isUpdate) {
         state.formEditDocument.setValues(scope.getRecord());
+      } else {
+        //if depend
+        if (state.editor.config['operation_type'] == 'depend' || state.editor.config['operation_type'] == 'copy') {
+          let selectItem = Object.assign({}, state.table.getSelectedItem());
+          delete selectItem['id'];
+          delete selectItem['_id'];
+          delete selectItem['idDocument'];
+          delete selectItem['name'];
+          //delete selectItem['dateDocument'];
+          delete selectItem['isCommitted'];
+          state.formEditDocument.setValues(selectItem);
+        }
+
       }
 
     });
@@ -181,6 +194,7 @@ export default class FormDocumentTableWindow extends JetView {
 
     let scope = this;
     let state = this.state;
+
     let configTable = {
       view: "table-service",
       localId: "windowBody",
@@ -192,8 +206,10 @@ export default class FormDocumentTableWindow extends JetView {
           mode: state.editor.config.options_url_edit,
           id: this.getParam('id'),
           account_id : this.getParam('account_id'),
-          window: true
+          window: true,
+          operation_type: state.editor.config['operation_type']
         },
+        depend: state.editor.config.depend,
         apiRest: this.app.config.apiRest,
         urlTableUserLists: this.app.config.apiRest.getUrl('get',"accounting/schema-table-user-lists",
           {
@@ -283,11 +299,13 @@ export default class FormDocumentTableWindow extends JetView {
   }
 
   showWindow(obj, table, editor, view, type) {
-
     let scope = this;
     let state  = this.state;
     let record = (table) ? table.getSelectedItem() : null;
     let isUpdate = (record);
+    if (editor.config  && editor.config['is_update'] == false) {
+      isUpdate = false;
+    }
     let fieldSet;
     state.tableRecord = record;
 
@@ -304,10 +322,27 @@ export default class FormDocumentTableWindow extends JetView {
     let configTable = scope.getTableConfig(obj, table, editor, view, type);
 
     //let configForm = scope.getFormConfig(table, type);
-
-    state.tableId = table.config.urlEdit;
+    //depend
     let prefix = 'accounting/';
-    state.formUrl = prefix+state.tableId+"/form-document";
+    if (editor.config  && editor.config['operation_type'] == 'depend') {
+
+      //table.config.urlEdit = editor.config['options_depend_url'];
+      state.changeUrl = true;
+      state.changeUrlSource = prefix+editor.config['options_url'];
+      state.tableId = prefix+editor.config['options_depend_url'];
+      //table.refresh();
+    } else {
+
+      //table.config.urlEdit = editor.config['options_url'];
+      state.changeUrl = false;
+      //state.changeUrlSource = prefix+table.config.urlEdit;
+      state.tableId = prefix+table.config.urlEdit;
+    }
+
+    //state.tableId = table.config.urlEdit;
+
+
+    state.formUrl = state.tableId+"/form-document";
     api.get(state.formUrl).then(function(data) {
       state.formData = data.json();
       state.formConfig = {};
@@ -392,7 +427,12 @@ export default class FormDocumentTableWindow extends JetView {
     let state  = this.state;
 
     let item = state.table.getSelectedItem();
-    item[state.editor.column] = {'id' :record.id, 'name' : record.value};
+    let id = record.id;
+
+    if (record.hasOwnProperty("idDocument")) {
+      id = record.idDocument;
+    }
+    item[state.editor.column] = {'id' :id, '_id':record.id,'name' : record.value};
 
     if (item.hasOwnProperty("unit")) {
       let unitId = 1;
@@ -491,40 +531,67 @@ export default class FormDocumentTableWindow extends JetView {
       record.id = '';
     }
 
-    webix.dp(state.tables[state.tables.length-1]).save(
+    let dp = webix.dp(state.tables[state.tables.length-1]);
+
+
+    if (state.changeUrl == true) {
+      state.baseUrlEdit = dp.config.url.source;
+      dp.config.url.source = state.changeUrlSource;
+    }
+
+    dp.save(
       (state.isUpdates[state.isUpdates.length-1]) ? record.id : webix.uid(),
       (state.isUpdates[state.isUpdates.length-1]) ? "update" : "insert",
       record
     ).then(function(obj){
 
-      webix.dp(state.tables[state.tables.length-1]).ignore(function(){
+      if (state.changeUrl == true) {
+        state.changeUrl = false;
+        dp.config.url.source = state.baseUrlEdit;
+        //state.tables[state.tables.length-1].refresh();
+        state.wins[state.wins.length-1].hide();
 
-        (state.isUpdates[state.isUpdates.length-1]) ? state.tables[state.tables.length-1].updateItem(record.id, obj) : state.tables[state.tables.length-1].add(obj,0);
-        let branches = state.tables[state.tables.length-1].data.getBranch(state.tables[state.tables.length-1].getSelectedId());
+      } else {
+        dp.ignore(function () {
+          (state.isUpdates[state.isUpdates.length - 1]) ? state.tables[state.tables.length - 1].updateItem(record.id, obj) : state.tables[state.tables.length - 1].add(obj, 0);
+          let branches = state.tables[state.tables.length - 1].data.getBranch(state.tables[state.tables.length - 1].getSelectedId());
 
-        if (state.isUpdates[state.isUpdates.length-1]) {
-          state.tables[state.tables.length - 1].remove(state.tables[state.tables.length - 1].data.branch[record.id]);
-          state.tables[state.tables.length - 1].data.branch[record.id] = [];
-        }
-        state.tables[state.tables.length-1].parse({
-          parent: obj.id,
-          data: obj.data
+          if (branches.length > 0 && state.isUpdates[state.isUpdates.length - 1]) {
+            state.tables[state.tables.length - 1].remove(state.tables[state.tables.length - 1].data.branch[record.id]);
+            state.tables[state.tables.length - 1].data.branch[record.id] = [];
+            state.tables[state.tables.length - 1].parse({
+              parent: obj.id,
+              data: obj.data
+            });
+
+          } else {
+            obj.data.forEach(function(item, key) {
+              state.tables[state.tables.length - 1].data.add(item, key, obj.id);
+            });
+
+          }
+
+
+
+
+          state.tables[state.tables.length - 1].select(obj.id);
+
+          if (!state.isUpdates[state.isUpdates.length - 1]) {
+            state.tables[state.tables.length - 1].scrollTo(0, 0)
+          }
+          ;
+
+          //state.table.sort("name", "asc", "string");
+          //state.table.markSorting("name", "asc");
+
         });
+        // debugger;
+        // //state.table.getBranch(item).bind(data);
+        //state.tables[state.tables.length-1].getItem(state.tables[state.tables.length-1].getSelectedId()).data = data;
 
-        state.tables[state.tables.length-1].select(obj.id);
-
-        if (!state.isUpdates[state.isUpdates.length-1])  { state.tables[state.tables.length-1].scrollTo(0, 0) };
-
-        //state.table.sort("name", "asc", "string");
-        //state.table.markSorting("name", "asc");
-
-      });
-      // debugger;
-      // //state.table.getBranch(item).bind(data);
-      //state.tables[state.tables.length-1].getItem(state.tables[state.tables.length-1].getSelectedId()).data = data;
-
-      state.tables[state.tables.length-1].refresh();
-      state.wins[state.wins.length-1].hide();
+        state.tables[state.tables.length - 1].refresh();
+        state.wins[state.wins.length - 1].hide();
+      }
     }, function(){
       webix.message("Ошибка! Данные не сохранены!");
     });

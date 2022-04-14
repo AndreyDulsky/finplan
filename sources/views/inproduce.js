@@ -29,62 +29,62 @@ webix.GroupMethods.median = function(prop, data){
   });
 };
 
-webix.ui.datafilter.totalColumn = webix.extend({
-  refresh: function (master, node, value) {
-    var result = 0, _val;
-    let sumParent = {};
-    master.data.each(function (obj) {
-      if (obj.$group ) return;
-
-      if (sumParent[obj.$parent] && sumParent[obj.$parent][value.columnId]) {
-        sumParent[obj.$parent][value.columnId] += obj[value.columnId] * 1;
-      } else {
-        sumParent[obj.$parent] = {};
-        sumParent[obj.$parent][value.columnId] = obj[value.columnId] * 1;
-      }
-
-      _val = obj[value.columnId];
-      if (value.columnId == 'coefMoney') {
-        _val = obj.G/7860;
-      }
-      if (_val !== null) {
-        if (_val!= 0) {
-          _val = _val.toString().replace(".",",");
-        }
-        _val = webix.Number.parse(_val, {
-          decimalSize: 2, groupSize: 3,
-          decimalDelimiter: ",", groupDelimiter: ""
-        });
-      }
-      _val =  parseFloat(_val);
-      if (!isNaN(_val)) result = result+_val;
-    });
-    for (let key in sumParent) {
-      if (key == 0) continue;
-      //debugger;
-      let item =  master.getItem(key);
-
-      if (item && item.$group) {
-        master.getItem(key)[value.columnId] = sumParent[key][value.columnId];
-        //master.updateItem(key)
-      }
-    }
-
-    result = webix.i18n.numberFormat(result,{
-      groupDelimiter:"`",
-      groupSize:3,
-      decimalDelimiter:".",
-      decimalSize:2
-    })
-    //if (value.format)
-    //result = value.format(result);
-    if (value.template)
-      result = value.template({ value: result });
-    node.style.textAlign = "right";
-    node.innerHTML = result;
-  }
-}, webix.ui.datafilter.summColumn);
-
+// webix.ui.datafilter.totalColumn = webix.extend({
+//   refresh: function (master, node, value) {
+//     var result = 0, _val;
+//     let sumParent = {};
+//     master.data.each(function (obj) {
+//       if (obj.$group ) return;
+//
+//       if (sumParent[obj.$parent] && sumParent[obj.$parent][value.columnId]) {
+//         sumParent[obj.$parent][value.columnId] += obj[value.columnId] * 1;
+//       } else {
+//         sumParent[obj.$parent] = {};
+//         sumParent[obj.$parent][value.columnId] = obj[value.columnId] * 1;
+//       }
+//
+//       _val = obj[value.columnId];
+//       if (value.columnId == 'coefMoney') {
+//         _val = obj.G/7860;
+//       }
+//       if (_val !== null) {
+//         if (_val!= 0) {
+//           _val = _val.toString().replace(".",",");
+//         }
+//         _val = webix.Number.parse(_val, {
+//           decimalSize: 2, groupSize: 3,
+//           decimalDelimiter: ",", groupDelimiter: ""
+//         });
+//       }
+//       _val =  parseFloat(_val);
+//       if (!isNaN(_val)) result = result+_val;
+//     });
+//     for (let key in sumParent) {
+//       if (key == 0) continue;
+//       //debugger;
+//       let item =  master.getItem(key);
+//
+//       if (item && item.$group) {
+//         master.getItem(key)[value.columnId] = sumParent[key][value.columnId];
+//         //master.updateItem(key)
+//       }
+//     }
+//
+//     result = webix.i18n.numberFormat(result,{
+//       groupDelimiter:"`",
+//       groupSize:3,
+//       decimalDelimiter:".",
+//       decimalSize:2
+//     })
+//     //if (value.format)
+//     //result = value.format(result);
+//     if (value.template)
+//       result = value.template({ value: result });
+//     node.style.textAlign = "right";
+//     node.innerHTML = result;
+//   }
+// }, webix.ui.datafilter.summColumn);
+//
 
 webix.ui.datafilter.totalColumnCountEmpty = webix.extend({
   refresh: function (master, node, value) {

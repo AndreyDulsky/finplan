@@ -32,10 +32,11 @@ webix.protoUI({
   onItemClick(e, node) {
     //debugger;
     var name = node.target.className.substr(node.target.className.indexOf("wxi-")+4);
-    if(name == "close"){
+    if(name == "close") {
       this.setValue("");
       this.getPopup().hide(this.getInputNode());
     }
+
 
   },
   toggleDeleteIcon(){
@@ -43,6 +44,7 @@ webix.protoUI({
       webix.html.addCss(this.$view, "no-delete", true);
     else
       webix.html.removeCss(this.$view, "no-delete");
+
   },
   on_click:{
     "webix_input_icon":function(e, id, node){

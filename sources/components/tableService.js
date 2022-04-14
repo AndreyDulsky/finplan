@@ -25,8 +25,10 @@ webix.ui.datafilter.totalColumn = webix.extend({
   refresh: function (master, node, value) {
     var result = 0, _val;
     master.data.each(function (obj) {
+      if (!obj) return;
       if (obj.$group) return;
 
+      if (!obj[value.columnId]) return;
       _val = obj[value.columnId];
       if (value.columnId == 'coefMoney') {
         _val = obj.G/7860;
@@ -241,6 +243,18 @@ function columnGroupTemplate(obj, common, item){
   if (obj.$group) return common.treetable(obj, common) + obj.property_value;
 
   return  common.icon(obj)+common.folder(obj, common)+' '+item;
+}
+
+function groupTree(obj, common, item){
+
+  if (obj.$level == 1) {
+    return common.treetable(obj, common) + ((obj.property_value) ? obj.property_value : item);
+  }
+  if (obj.$level == 2) {
+      return '      '+common.treetable(obj, common) + ' '+item;
+  }
+
+  return  '<div style="width:20px;"></div>'+item;
 }
 
 function groupData (obj, common, value) {
@@ -653,6 +667,7 @@ webix.protoUI({
             localId: "show-filter-panel",
             hidden: true,
             header:"Фильтры",
+            collapsed:true,
             //localId: "filter-form-layout",
             width: 220,
             resize:true,
@@ -661,7 +676,7 @@ webix.protoUI({
               rows: [
                 {
                   view: "form",
-                  localId: "filter-form",
+                  localId: "filter-form-panel",
                   scroll : "auto",
                   autoheight: true,
                   margin: 20,
@@ -780,17 +795,19 @@ webix.protoUI({
   getFilterForm() {
     let scope = this;
     let dataJson;
-    dataJson = webix.storage.local.get('config_filter_form_'+scope.state.params.mode);
+
+    //dataJson = webix.storage.local.get('config_filter_form_'+scope.state.params.mode);
+
     let dataJsonObject = {};
+
     if (dataJson) {
       dataJsonObject = dataJson;
       scope.setFilterForm(dataJsonObject);
     } else {
       this.state.apiRest.get('accounting/'+this.state.params.mode+'/form-filter').then(function(data) {
-
-        let dataJson = data.json();
+        dataJson = data.json();
         dataJsonObject = dataJson.data.configForm;
-        webix.storage.local.put('config_filter_form_'+scope.state.params.mode, dataJsonObject);
+        //webix.storage.local.put('config_filter_form_'+scope.state.params.mode, dataJsonObject);
         scope.setFilterForm(dataJsonObject);
       });
     }
@@ -800,7 +817,7 @@ webix.protoUI({
     let scope = this;
     webix.ui(
       dataJsonObject,
-      scope.getEl('filter-form')
+      scope.getEl('filter-form-panel')
     );
   },
 
@@ -1251,28 +1268,28 @@ webix.protoUI({
 
           let configColumn = scope.table.getColumnConfig('action-view-window');
 
-          if (configColumn && configColumn.goto && scope.state.selectedRow == id.row && id.column != 'action-edit'
-            && id.column != 'action-delete' && id.column != 'action-view' && id.column != 'action-comment') {
-
-
-            let objConfig = {
-              'config':{
-                'options_url' : scope.getModelName(configColumn.goto),
-                'options_url_edit': configColumn.goto,
-                'header': [{'text':'Документ'}],
-                'filter': {"filterField":"list_id","filterInput":id.row}
-              }
-            };
-
-            let gotoType = 'table';
-
-            if (configColumn.goto_type) {
-              gotoType = configColumn.goto_type;
-            }
-
-            scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
-
-          }
+          // if (configColumn && configColumn.goto && scope.state.selectedRow == id.row && id.column != 'action-edit'
+          //   && id.column != 'action-delete' && id.column != 'action-view' && id.column != 'action-comment') {
+          //
+          //
+          //   let objConfig = {
+          //     'config':{
+          //       'options_url' : scope.getModelName(configColumn.goto),
+          //       'options_url_edit': configColumn.goto,
+          //       'header': [{'text':'Документ'}],
+          //       'filter': {"filterField":"list_id","filterInput":id.row}
+          //     }
+          //   };
+          //
+          //   let gotoType = 'table';
+          //
+          //   if (configColumn.goto_type) {
+          //     gotoType = configColumn.goto_type;
+          //   }
+          //
+          //   scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+          //
+          // }
 
           scope.state.selectedRow = this.getSelectedId();
           if (id.column == 'action-edit') {
@@ -1290,11 +1307,58 @@ webix.protoUI({
               }
             }
           }
+          if (id.column == 'action-depend') {
+           //depend
+            let configColumn = scope.table.getColumnConfig(id.column);
+            let objConfig = {
+              'config':{
+                'is_update' : false,
+                'is_depend' : true,
+                'operation_type' : 'depend',
+                'depend' : {'_id' : scope.state.selectedRow.id, 'id': this.getSelectedItem().idDocument, 'name' :  this.getSelectedItem().name},
+                'options_depend_url' : configColumn.options_url,
+                'options_url' : scope.getModelName(configColumn.options_url),
+                'options_url_edit': configColumn.goto,
+                'header': [{'text':'Документ'}],
+                'filter': {}
+              }
+            };
+            let gotoType = 'documentData';
 
+            if (configColumn.goto_type) {
+              gotoType = configColumn.goto_type;
+            }
+
+            scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+          }
+          if (id.column == 'action-copy') {
+            //depend
+            let configColumn = scope.table.getColumnConfig(id.column);
+            let objConfig = {
+              'config':{
+                'is_update' : false,
+                'is_depend' : false,
+                'operation_type' : 'copy',
+                //'options_depend_url' : configColumn.options_url,
+                'options_url' : scope.getModelName(configColumn.options_url),
+                'options_url_edit': configColumn.goto,
+                'header': [{'text':'Копия Документа'}],
+                'filter': {}
+              }
+            };
+            let gotoType = 'documentData';
+
+            if (configColumn.goto_type) {
+              gotoType = configColumn.goto_type;
+            }
+
+            scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+          }
           if (id.column == 'action-view-window') {
             let configColumn = scope.table.getColumnConfig(id.column);
             let objConfig = {
               'config':{
+
                 'options_url' : scope.getModelName(configColumn.goto),
                 'options_url_edit': configColumn.goto,
                 'header': [{'text':'Документ'}],
@@ -1308,14 +1372,12 @@ webix.protoUI({
             }
 
             scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
-
           }
           if (id.column == 'action-view') {
             //this.$scope.formView =  this.$scope.ui(FormView);
             let configColumn = scope.table.getColumnConfig(id.column);
             //this.$scope.formView.showWindow(configColumn['goto']);
             if (configColumn['goto']) {
-
               scope.$scope.show('service/'+configColumn['goto']+'/'+id.row);
             } else {
               scope.state.formView.showWindow({},this);
@@ -1456,10 +1518,11 @@ webix.protoUI({
 
     });
 
-    let formFilter = this.getEl("filter-form");
+    let formFilter = this.getEl("filter-form-panel");
     if (!formFilter.hasEvent('onChange')) {
-      formFilter.attachEvent("onChange", function (obj, col, con, config) {
 
+      formFilter.attachEvent("onChange", function (obj, col, con, config) {
+        webix.message("Value changed from: "+obj+" to: "+col);
         let values = this.getValues();
         if (values['company_id']) {
           scope.state.params['company_id'] = values['company_id'];
@@ -1483,10 +1546,13 @@ webix.protoUI({
 
   getParams() {
 
-    let form = this.getEl("filter-form");
+    //let form = this.getEl("filter-form");
+    let form = this.getEl("filter-form-panel");
+
     //let formSearch = this.getEl("search-form");
 
     let filter = form.getValues();
+
     let filterNew = {};
     let split = {};
     let values = {};
@@ -1793,7 +1859,21 @@ webix.protoUI({
       scope.table.clearAll();
 
       if (this.state.parent) {
-        scope.table.parse(this.state.parent.data.getBranch(this.state.parent.getSelectedId()));
+        let branches = this.state.parent.data.getBranch(this.state.parent.getSelectedId());
+        //depend
+
+        if (scope.state.params['operation_type'] == 'depend') {
+          branches.forEach(function (item, key) {
+            branches[key].depend = scope.state.depend;
+          });
+        }
+        if (scope.state.params['operation_type'] == 'copy') {
+          branches.forEach(function (item, key) {
+            if ( branches[key].shipmentDocument)
+            branches[key].shipmentDocument = [];
+          });
+        }
+        scope.table.parse(branches);
       }
 
       scope.table.enable();
@@ -1874,7 +1954,12 @@ webix.protoUI({
         if (value != '') {
 
           if (typeof value == 'object') {
-            value = value.id;
+
+            if (value.hasOwnProperty("_id")) {
+              value = value._id;
+            } else {
+              value = value.id;
+            }
           }
           scope.table.closeAll();
           let parentId = scope.table.getParentId(value);
@@ -2051,7 +2136,7 @@ webix.protoUI({
     // }
 
     if (this.state.params.id) {
-      filterParams["filter"]["and"] = [{'list_id': this.state.params.id}];
+      filterParams["filter"]["or"] = [{'list_id': this.state.params.id}];
     }
 
 
@@ -2114,6 +2199,11 @@ webix.protoUI({
       }
       //debugger;
       if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('columnGroupTemplate') ==0) {
+        eval(" myObj.func = " + item.template);
+        configColumns[key].template = myObj.func;
+      }
+
+      if (item.template && typeof configColumns[key].template != 'function' && item.template.indexOf('groupTree') ==0) {
         eval(" myObj.func = " + item.template);
         configColumns[key].template = myObj.func;
       }

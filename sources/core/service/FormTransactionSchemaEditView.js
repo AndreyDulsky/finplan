@@ -330,7 +330,7 @@ export default class FormTransactionSchemaEditView extends JetView {
         return;
       }
 
-      if (element.target.classList.value === "show-combo-value-break") {
+      if (element && element.target.classList.value === "show-combo-value-break") {
         scope.onClickShowComboValueBreak();
       }
       //debugger;
@@ -338,7 +338,7 @@ export default class FormTransactionSchemaEditView extends JetView {
       //  scope.onClickSave();
       //}
 
-      if (element.target.classList.value === "add-to-table") {
+      if (element && element.target.classList.value === "add-to-table") {
         let table = scope.$$("table_part_value");
         table.add({"index":"","contragent_id" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"" });
       }
