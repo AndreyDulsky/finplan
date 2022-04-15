@@ -2818,6 +2818,8 @@ webix.protoUI({
     let optionsEditorType = [];
     let optionsFormEdit = [];
     let filterData = [];
+    let optionsRequired = [];
+    let optionsValidate = [];
 
 
 
@@ -2847,6 +2849,12 @@ webix.protoUI({
       }
       if (item.id == 'form_edit') {
         optionsFormEdit = item.options;
+      }
+      if (item.id == 'validate_required') {
+        optionsRequired = item.options;
+      }
+      if (item.id == 'validate') {
+        optionsValidate = item.options;
       }
 
     });
@@ -2880,6 +2888,9 @@ webix.protoUI({
         {'id':'use_filter', 'header':'Исп. в фильтре', editor:'text', 'adjust':'all'},
         {'id':'math', 'header':'Math', editor:'popup', 'adjust':'all'},
         {'id':'form_edit', 'header':'Форма редакт.', editor:'select', 'options':optionsFormEdit,'adjust':'all'},
+        {'id':'validate_required', 'header':'Обязательное', editor:'select', 'options':optionsRequired},
+        {'id':'validate', 'header':'Тип валидации', editor:'select', 'options':optionsValidate},
+        {'id':'invalid_message', 'header':'Сообщение валидации', editor:'popup'},
         {'id':'goto', 'header':'url', editor:'popup','adjust':'all'},
         {'id':'goto_type', 'header':'url_type', editor:'popup','adjust':'all'},
         {'id':'', 'header':'', 'fillspace':true},
