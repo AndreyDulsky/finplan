@@ -1522,7 +1522,7 @@ webix.protoUI({
     if (!formFilter.hasEvent('onChange')) {
 
       formFilter.attachEvent("onChange", function (obj, col, con, config) {
-        webix.message("Value changed from: "+obj+" to: "+col);
+        //webix.message("Value changed from: "+obj+" to: "+col);
         let values = this.getValues();
         if (values['company_id']) {
           scope.state.params['company_id'] = values['company_id'];
