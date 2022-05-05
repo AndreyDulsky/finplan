@@ -295,6 +295,35 @@ webix.editors.buttonEditor = {
   }
 }
 
+webix.editors.documentEditor = {
+  focus:function(){
+    this.getInputNode(this.node).focus();
+    this.getInputNode(this.node).select();
+  },
+  getValue:function(){
+    return this.getInputNode(this.node).refValue;
+  },
+  setValue:function(value, obj){
+    let name = '';
+    debugger;
+    let item = this.config.collection.getItem(value);
+    if (item) {
+      name = item.value;
+    }
+    this.getInputNode(this.node).value =  name;//value;
+    this.getInputNode(this.node).refValue =  value;
+
+  },
+  getInputNode:function(){
+    return this.node.firstChild;
+  },
+  render:function() {
+    return webix.html.create("div", {
+      "class":"webix_dt_editor"
+    }, "<input type='text' disabled='disabled' /><button class='document-button' style='position: absolute;margin: 8px; right:0; height:25px;'>...</button>");
+  }
+}
+
 // webix.UIManager.addHotKey("Ctrl+V", function() {
 //   webix.message("Ctrl+V for any");
 // });
@@ -1462,6 +1491,15 @@ webix.protoUI({
           }
           scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.scope.getParentView(),'directory');
           return false; // blocks the default click behavior
+        },
+        "document-button":function(ev, id,obj, obj1){
+          let editor = this.getEditState();
+          let parent = null;
+          if (scope.table.getSelectedId()) {
+            parent = scope.table;
+          }
+          scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.scope.getParentView(),'document');
+          return false; // blocks the default click behavior
         }
       }
     };
@@ -1474,6 +1512,12 @@ webix.protoUI({
     //layout.addView(table);
 
     this.table = webix.ui(tableConfig,layout,this.getEl('table-layout') );
+
+    if (this.config.localId == 'windowBody') {
+      //this.$scope.app.currentView = this;
+    } else {
+      this.$scope.app.currentView = this;
+    }
 
     //webix.ui(this.state.formFilter, this.getEl('filter-form-layout').body);
 
@@ -2885,14 +2929,15 @@ webix.protoUI({
         {'id':'template', 'header':'Шаблон', editor:'popup', 'adjust':'header'},
         {'id':'options', 'header':'Список', editor:'popup', 'adjust':'header'},
         {'id':'options_url', 'header':'Url справочника', editor:'popup','adjust':'all'},
+        {'id':'options_url_directory', 'header':'options_url_directory', editor:'text','adjust':'all'},
         {'id':'use_filter', 'header':'Исп. в фильтре', editor:'text', 'adjust':'all'},
         {'id':'math', 'header':'Math', editor:'popup', 'adjust':'all'},
         {'id':'form_edit', 'header':'Форма редакт.', editor:'select', 'options':optionsFormEdit,'adjust':'all'},
         {'id':'validate_required', 'header':'Обязательное', editor:'select', 'options':optionsRequired},
         {'id':'validate', 'header':'Тип валидации', editor:'select', 'options':optionsValidate},
         {'id':'invalid_message', 'header':'Сообщение валидации', editor:'popup'},
-        {'id':'goto', 'header':'url', editor:'popup','adjust':'all'},
-        {'id':'goto_type', 'header':'url_type', editor:'popup','adjust':'all'},
+        {'id':'goto', 'header':'goto', editor:'popup','adjust':'all'},
+        {'id':'goto_type', 'header':'goto_type', editor:'popup','adjust':'all'},
         {'id':'', 'header':'', 'fillspace':true},
 
       ],

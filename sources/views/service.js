@@ -18,6 +18,7 @@ import FormView from "core/formView";
 import "components/comboClose";
 import "components/comboDateClose";
 import "components/searchClose";
+import "components/comboDirectory";
 
 webix.GroupMethods.median = function(prop, data){
   if (!data.length) return 0;
@@ -284,6 +285,7 @@ webix.editors.buttonEditor = {
     return this.getInputNode(this.node).refValue;
   },
   setValue:function(value, obj){
+    debugger;
     let name = '';
     let item = this.config.collection.getItem(value);
     if (item) {
@@ -351,7 +353,7 @@ export default class ServiceView extends JetView{
     this.mode = mode;
 
 
-    this.formEdit = this.ui(FormEditView);
+    this.formEditView = this.ui(FormEditView);
     this.formComment = this.ui(FormCommnetView);
     this.formView = this.ui(FormViewView);
     //this.formTransactionEditView = this.ui(FormTransactionEditView);

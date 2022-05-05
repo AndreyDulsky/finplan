@@ -1,7 +1,7 @@
 import {JetView} from "webix-jet";
 
 webix.protoUI({
-  name:"combo-close",
+  name:"combo-directory",
   $cssName:"search custom",
   $init:function(){
 
@@ -10,9 +10,10 @@ webix.protoUI({
     this.attachEvent("onItemClick", this.onItemClick);
     this.$ready.push(this.toggleDeleteIcon);
   },
+
   $renderIcon:function(){
     var config = this.config,
-      icons = [ "menu-down", 'dots', "close"],
+      icons = [ 'dots', "close"],
       height = config.aheight - 2*config.inputPadding,
       padding = (height - 18)/2 -1,
       html = "",
@@ -41,12 +42,12 @@ webix.protoUI({
       this.getPopup().hide(this.getInputNode());
       let app = this.$scope.app;
       let filter = {};
-      if (this.config.options_url_directory && this.config.options_url_directory.id) {
-        filter = {'filterInput' : this.config.options_url_directory.id};
+      if (this.config.options_url_directory) {
+        filter = {'list_id' : this.config.options_url_directory};
       }
       let objConfig = {
         'config':{
-          'return' : 'integer',
+          'return' : 'json',
           'returnObject' : this,
           'options_url' : scope.getModelName(this.config.options_url),
           'options_url_edit': this.config.options_url,
@@ -72,11 +73,21 @@ webix.protoUI({
 
 
   },
+
   toggleDeleteIcon(){
+
     if(!this.getValue())
       webix.html.addCss(this.$view, "no-delete", true);
-    else
+    else {
+      let list = this.getPopup().getList();
+      let value = this.getValue();
+      let data = JSON.parse(value);
+      let collection = new webix.DataCollection({
+        data:[{'id':value, '_id': data._id, 'value': data.name}]
+      });
+      list.sync(collection);
       webix.html.removeCss(this.$view, "no-delete");
+    }
 
   },
   on_click:{

@@ -54,7 +54,7 @@ export default class FormDocumentTableWindow extends JetView {
       ];
     }
     state.win = webix.ui({
-      scope: this,
+      $scope: this,
       localId: "windowDirectory",
       view: "window",
       position: function (state) {
@@ -150,7 +150,9 @@ export default class FormDocumentTableWindow extends JetView {
           }
           let localIdName = localIdArray.join('_');
           let elementName = state.wins[state.wins.length-1].getBody().queryView({'localId': localIdName});
-          elementName.setValue(this.data.text);
+          if (elementName) {
+            elementName.setValue(this.data.text);
+          }
         });
       }
       let currencyIs = state.wins[state.wins.length-1].getBody().queryView({'name': 'currencyIs'});
@@ -425,14 +427,42 @@ export default class FormDocumentTableWindow extends JetView {
   selectRecord(record) {
 
     let state  = this.state;
-
-    let item = state.table.getSelectedItem();
+    let item = {};
+    if (!state.editor.config.hasOwnProperty("returnObject")) {
+      item = state.table.getSelectedItem();
+    }
     let id = record.id;
 
     if (record.hasOwnProperty("idDocument")) {
       id = record.idDocument;
     }
-    item[state.editor.column] = {'id' :id, '_id':record.id,'name' : record.value};
+
+    if (state.editor.config.hasOwnProperty("return")) {
+      if (state.editor.config.return) {
+        if (state.editor.config.hasOwnProperty("returnObject")) {
+          let dataId = null;
+          if (state.editor.config.return == 'json') {
+            let objGetter = state.editor.config.returnObject;
+            let list = objGetter.getPopup().getList();
+            dataId = JSON.stringify({'id': id, '_id': record.id, 'name': record.name});
+            let collection = new webix.DataCollection({
+              data: [{'id': dataId, '_id': record.id, 'value': record.name}]
+            });
+            list.sync(collection);
+          }
+          if (state.editor.config.return == 'integer') {
+            dataId = id;
+          }
+
+          state.editor.config.returnObject.setValue(dataId);
+
+        }
+      } else
+        item[state.editor.column] = {'id': id, '_id': record.id, 'name': record.value};
+    } else {
+
+      item[state.editor.column] = {'id': id, '_id': record.id, 'name': record.value};
+    }
 
     if (item.hasOwnProperty("unit")) {
       let unitId = 1;
@@ -445,26 +475,28 @@ export default class FormDocumentTableWindow extends JetView {
     if (item.hasOwnProperty("price") && item['price'] == '') {
       item['price'] =  record.price;
     }
-    webix.dp(state.table).ignore(function(){
-      state.table.updateItem(item.id, item);
-    });
-    let index = state.table.getColumnIndex(state.editor.column);
-    // var now = state.table.getEditor();
-    //state.table.editNext(true, now);
-    //state.table.unselectAll();
-    //state.table.editStop();
+    if (!state.editor.config.hasOwnProperty("returnObject")) {
+      webix.dp(state.table).ignore(function () {
+        state.table.updateItem(item.id, item);
+      });
+      let index = state.table.getColumnIndex(state.editor.column);
+      // var now = state.table.getEditor();
+      //state.table.editNext(true, now);
+      //state.table.unselectAll();
+      //state.table.editStop();
 
-    if(item.id && state.table.config.columns[index+1].id && state.table.editStop()) {
-      for (let i=index+1;i< state.table.config.columns.length-1; i++) {
-        if (state.table.config.columns[i].hasOwnProperty('editor')) {
-          index = i;
-          break;
+      if (item.id && state.table.config.columns[index + 1].id && state.table.editStop()) {
+        for (let i = index + 1; i < state.table.config.columns.length - 1; i++) {
+          if (state.table.config.columns[i].hasOwnProperty('editor')) {
+            index = i;
+            break;
+          }
         }
+        state.table.select(item.id, state.table.config.columns[index].id);
+        state.table.edit({row: item.id, column: state.table.config.columns[index].id});
+      } else {
+        return state.table.editStop();
       }
-      state.table.select(item.id,state.table.config.columns[index].id);
-      state.table.edit({row: item.id, column: state.table.config.columns[index].id});
-    } else {
-      return state.table.editStop();
     }
     //webix.UIManager.setFocus(state.table.editCell(item.id, state.table.config.columns[index+1].id));
     //webix.UIManager.setFocus(item.id);

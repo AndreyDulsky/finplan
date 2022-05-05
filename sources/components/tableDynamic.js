@@ -1182,6 +1182,12 @@ webix.protoUI({
 
     this.table = webix.ui(tableConfig,layout,this.getEl('table-layout') );
 
+    if (this.config.localId == 'windowBody') {
+      //this.$scope.app.currentView = this;
+    } else {
+      this.$scope.app.currentView = this;
+    }
+
     this.table.attachEvent("onKeyPress", function(code, e){
       //debugger;
       if (this.contextMenuSearchKey)
@@ -2291,6 +2297,7 @@ webix.protoUI({
         {'id':'template', 'header':'Шаблон', editor:'popup', 'adjust':'header'},
         {'id':'options', 'header':'Список', editor:'popup', 'adjust':'header'},
         {'id':'options_url', 'header':'Url справочника', editor:'popup','adjust':'all'},
+        {'id':'options_url_directory', 'header':'options_url_directory', editor:'text','adjust':'all'},
         {'id':'use_filter', 'header':'Исп. в фильтре', editor:'text', 'adjust':'all'},
         {'id':'math', 'header':'Math', editor:'popup', 'adjust':'all'},
         {'id':'form_edit', 'header':'Форма редакт.', editor:'select', 'options':optionsFormEdit,'adjust':'all'},
