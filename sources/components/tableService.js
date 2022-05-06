@@ -2814,6 +2814,7 @@ webix.protoUI({
         //   top:10, bottom:10, left:10, right:10
         // },
         type: 'space',
+        hidden: (webix.storage.local.get("wjet_user").type == 0) ? false: true,
         borderless:true,
         cols: [
 
