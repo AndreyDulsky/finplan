@@ -305,7 +305,6 @@ webix.editors.documentEditor = {
   },
   setValue:function(value, obj){
     let name = '';
-    debugger;
     let item = this.config.collection.getItem(value);
     if (item) {
       name = item.value;
@@ -1337,70 +1336,99 @@ webix.protoUI({
             }
           }
           if (id.column == 'action-depend') {
-           //depend
             let configColumn = scope.table.getColumnConfig(id.column);
+             let gotoType = 'documentData';
+             if (configColumn.goto_type) {
+               gotoType = configColumn.goto_type;
+             }
             let objConfig = {
-              'config':{
-                'is_update' : false,
-                'is_depend' : true,
-                'operation_type' : 'depend',
-                'depend' : {'_id' : scope.state.selectedRow.id, 'id': this.getSelectedItem().idDocument, 'name' :  this.getSelectedItem().name},
-                'options_depend_url' : configColumn.options_url,
-                'options_url' : scope.getModelName(configColumn.options_url),
-                'options_url_edit': configColumn.goto,
-                'header': [{'text':'Документ'}],
-                'filter': {}
-              }
+              'operation_type' : 'depend',
+              'depend' : {'_id' : scope.state.selectedRow.id, 'id': this.getSelectedItem().idDocument, 'name' :  this.getSelectedItem().name},
+              'options_depend_url' : configColumn.options_url,
+              'view' : scope.state.scope,
+              'table' : scope.table,
+              'type' : gotoType,
+              'editor' : configColumn,
+              'options_url' : scope.getModelName(configColumn.options_url),
+              'options_url_edit': configColumn.goto,
+              'header': [{'text':'Документ на основании'}],
+              'filter': {}
             };
-            let gotoType = 'documentData';
-
-            if (configColumn.goto_type) {
-              gotoType = configColumn.goto_type;
-            }
-
-            scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+            scope.state.formCoreDocumentWindow.showWindow(objConfig);
           }
           if (id.column == 'action-copy') {
             //depend
-            let configColumn = scope.table.getColumnConfig(id.column);
-            let objConfig = {
-              'config':{
-                'is_update' : false,
-                'is_depend' : false,
-                'operation_type' : 'copy',
-                //'options_depend_url' : configColumn.options_url,
-                'options_url' : scope.getModelName(configColumn.options_url),
-                'options_url_edit': configColumn.goto,
-                'header': [{'text':'Копия Документа'}],
-                'filter': {}
-              }
-            };
-            let gotoType = 'documentData';
+            // let configColumn = scope.table.getColumnConfig(id.column);
+            // let objConfig = {
+            //   'config':{
+            //     'is_update' : false,
+            //     'is_depend' : false,
+            //     'operation_type' : 'copy',
+            //     //'options_depend_url' : configColumn.options_url,
+            //     'options_url' : scope.getModelName(configColumn.options_url),
+            //     'options_url_edit': configColumn.goto,
+            //     'header': [{'text':'Документ копия'}],
+            //     'filter': {}
+            //   }
+            // };
+            // let gotoType = 'documentData';
+            //
+            // if (configColumn.goto_type) {
+            //   gotoType = configColumn.goto_type;
+            // }
+            //
+            // scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
 
+            let configColumn = scope.table.getColumnConfig(id.column);
+            let gotoType = 'documentData';
             if (configColumn.goto_type) {
               gotoType = configColumn.goto_type;
             }
-
-            scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+            let objConfig = {
+              'operation_type' : 'copy',
+              'view' : scope.state.scope,
+              'table' : scope.table,
+              'type' : gotoType,
+              'editor' : configColumn,
+              'options_url' : scope.getModelName(configColumn.options_url),
+              'options_url_edit': configColumn.goto,
+              'header': [{'text':'Документ копия'}],
+              'filter': {}
+            };
+            scope.state.formCoreDocumentWindow.showWindow(objConfig);
           }
           if (id.column == 'action-view-window') {
             let configColumn = scope.table.getColumnConfig(id.column);
-            let objConfig = {
-              'config':{
-
-                'options_url' : scope.getModelName(configColumn.goto),
-                'options_url_edit': configColumn.goto,
-                'header': [{'text':'Документ'}],
-                'filter': {"filterField":"list_id","filterInput":id.row}
-              }
-            };
+            // let objConfig = {
+            //   'config':{
+            //
+            //     'options_url' : scope.getModelName(configColumn.goto),
+            //     'options_url_edit': configColumn.goto,
+            //     'operation_type' : 'update',
+            //     'header': [{'text':'Документ редактирование'}],
+            //     'filter': {"filterField":"list_id","filterInput":id.row}
+            //   }
+            // };
             let gotoType = 'table';
 
             if (configColumn.goto_type) {
               gotoType = configColumn.goto_type;
             }
+            //
+            // scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
 
-            scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+            let objConfig = {
+              'operation_type' : 'update',
+              'view' : scope.state.scope,
+              'table' : scope.table,
+              'type' : gotoType,
+              'editor' : configColumn,
+              'options_url' : scope.getModelName(configColumn.goto),
+              'options_url_edit': configColumn.goto,
+              'header': [{'text':'Документ редактирование'}],
+              'filter': {"filterField":"list_id","filterInput":id.row}
+            };
+            scope.state.formCoreDocumentWindow.showWindow(objConfig);
           }
           if (id.column == 'action-view') {
             //this.$scope.formView =  this.$scope.ui(FormView);
@@ -1899,6 +1927,7 @@ webix.protoUI({
     //scope.table.clearAll();
     //scope.table.load(scope.tableUrl);
     if (this.state.type == "documentData") {
+
       scope.setColumnSettingForTable();
       scope.table.clearAll();
 
@@ -2929,7 +2958,7 @@ webix.protoUI({
         {'id':'adjust', 'header':'Рег.ширины', editor:'text', 'adjust':'all'},
         {'id':'template', 'header':'Шаблон', editor:'popup', 'adjust':'header'},
         {'id':'options', 'header':'Список', editor:'popup', 'adjust':'header'},
-        {'id':'options_url', 'header':'Url справочника', editor:'popup','adjust':'all'},
+        {'id':'options_url', 'header':'options_url', editor:'popup','adjust':'all'},
         {'id':'options_url_directory', 'header':'options_url_directory', editor:'text','adjust':'all'},
         {'id':'use_filter', 'header':'Исп. в фильтре', editor:'text', 'adjust':'all'},
         {'id':'math', 'header':'Math', editor:'popup', 'adjust':'all'},
@@ -4022,22 +4051,40 @@ webix.protoUI({
     let column = scope.table.getColumnIndex('action-view-window');
 
     if (column != -1) {
+      // let configColumn = scope.table.getColumnConfig('action-view-window');
+      // let objConfig = {
+      //   'config': {
+      //     'options_url': scope.getModelName(configColumn.goto),
+      //     'options_url_edit': configColumn.goto,
+      //     'header': [{'text': 'Документ'}],
+      //     //'filter': {"filterField":"list_id","filterInput":id.row}
+      //   }
+      // };
+      // let gotoType = 'table';
+      //
+      // if (configColumn.goto_type) {
+      //   gotoType = configColumn.goto_type;
+      // }
+      //
+      // scope.state.formDocumentTableWindow.showWindow({}, scope.table, objConfig, scope.state.scope, gotoType);
+
       let configColumn = scope.table.getColumnConfig('action-view-window');
-      let objConfig = {
-        'config': {
-          'options_url': scope.getModelName(configColumn.goto),
-          'options_url_edit': configColumn.goto,
-          'header': [{'text': 'Документ'}],
-          //'filter': {"filterField":"list_id","filterInput":id.row}
-        }
-      };
       let gotoType = 'table';
 
       if (configColumn.goto_type) {
         gotoType = configColumn.goto_type;
       }
-
-      scope.state.formDocumentTableWindow.showWindow({}, scope.table, objConfig, scope.state.scope, gotoType);
+      let objConfig = {
+        'view' : scope.state.scope,
+        'table' : scope.table,
+        'type' : gotoType,
+        'editor' : configColumn,
+        'options_url' : scope.getModelName(configColumn.goto),
+        'options_url_edit': configColumn.goto,
+        'header': [{'text':'Документ новый'}],
+        'filter': {}
+      };
+      scope.state.formCoreDocumentWindow.showWindow(objConfig);
     } else {
       if (this.state.params.mode == 'transaction-schema') {
         this.table.unselectAll();

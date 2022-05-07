@@ -301,6 +301,22 @@ export default class FormDocumentTableWindow extends JetView {
   }
 
   showWindow(obj, table, editor, view, type) {
+    // this window can be call 1-new document 2-edit document 3-copy document 4-depend document 5-editbutton in table 6-editbutton in component
+    // 1.Define type window 1-this can be document,documentData, directory, table,
+    // If type = 'document'
+    // three type form enter, flag form objConfig.operation_type(editor.operation_type)
+    // 1-edit editor.operation_type = 'update'
+    // 2-edit editor.operation_type = 'insert'
+    // 3-copy editor.operation_type = 'copy'
+    // 4-depend editor.operation_type = 'depend'
+
+
+    // 2. Us Need know is this window depend from record table or other element to use selectItem()
+    // this define config option editor.returnObject : this, if isset this option this it means other element
+    // and must be option editor.return - type return value 'json', 'integer', 'object'
+    //
+    // type = 'document' operation_type = update || copy || depend isUpdate = 0-insert || 1-update
+    // type = 'directory' operation_type = null returnObject = object(configColumn) || object(component -for example combo) isUpdate = null
     let scope = this;
     let state  = this.state;
     let record = (table) ? table.getSelectedItem() : null;

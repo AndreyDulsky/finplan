@@ -2183,6 +2183,7 @@ webix.protoUI({
         // },
         type: 'space',
         borderless:true,
+        hidden: (webix.storage.local.get("wjet_user").type == 0) ? false: true,
         cols: [
 
           {
