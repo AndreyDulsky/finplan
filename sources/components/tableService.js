@@ -1598,7 +1598,7 @@ webix.protoUI({
           if (scope.table.getSelectedId()) {
             parent = scope.table;
           }
-          scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.parent.getParentView(),'directory');
+          scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state,'directory');
           return false; // blocks the default click behavior
         },
         "characteristic-button":function(ev, id,obj, obj1){
