@@ -118,13 +118,65 @@ export default class TopView extends JetView{
 
 			rows:[
 				header,
+
 				{
 					//type:"wide",
 					cols:[
             menu,
-            { $subview:true }
+            {
+              rows:[
+                { $subview:true },
+                {
+                  type:'space',
+                  rows:[
+                    {
+                      view:"tabbar", id:'tabbar', value:'dashboard',
+                      css: 'webix-header',
+                      //close:true,
+                      multiview:true,
+                      optionWidth:20,
+                      align:"left",
+                      padding: 5,
+                      //tabMinWidth: 200,
+                      tabMargin: 10,
+                      tabOffset: 10,
+                      options: [
+                        { value:'', id:'dashboard', icon:'mdi mdi-view-dashboard'}
+                      ],
+                      on:{
+                        onChange:function(){
+                          //debugger;
+                          //scope.show(this.getValue());
+                          if (scope.app.config.localViews[this.getValue()]) {
+                            scope.app.config.localViews[this.getValue()]['win'].show();
+                          }
+                          if (this.getValue() == 'dashboard' ) {
+                            for (let key in scope.app.config.localViews) {
+                              scope.app.config.localViews[key]['win'].hide();
+                            }
+                            //scope.show('dashboard');
+                          }
+                        },
+                        onOptionRemove: function(id, value) {
+                          if (id == 'dashboard') {
+                            return false;
+                          }
+                          if (scope.app.config.localViews[id]) {
+                            scope.app.config.localViews[id]['win'].config.$scope.hideWindow(scope.app.config.localViews[id]['win']);
+                          }
+
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+
 					]
-				}
+				},
+
+
 			],
 		};
 

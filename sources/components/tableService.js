@@ -24,11 +24,17 @@ webix.GroupMethods.median = function(prop, data){
 webix.ui.datafilter.totalColumn = webix.extend({
   refresh: function (master, node, value) {
     var result = 0, _val;
+    let sumParent = {};
     master.data.each(function (obj) {
-      if (!obj) return;
-      if (obj.$group) return;
+      if (!obj || !obj[value.columnId] || obj.$parent == 0 ) return;
+      //debugger;
+      if (sumParent[obj.$parent] && sumParent[obj.$parent][value.columnId]) {
+        sumParent[obj.$parent][value.columnId] += obj[value.columnId] * 1;
+      } else {
+        sumParent[obj.$parent] = {};
+        sumParent[obj.$parent][value.columnId] = obj[value.columnId] * 1;
+      }
 
-      if (!obj[value.columnId]) return;
       _val = obj[value.columnId];
       if (value.columnId == 'coefMoney') {
         _val = obj.G/7860;
@@ -45,6 +51,17 @@ webix.ui.datafilter.totalColumn = webix.extend({
       _val =  parseFloat(_val);
       if (!isNaN(_val)) result = result+_val;
     });
+    for (let key in sumParent) {
+      if (key == 0) continue;
+      //debugger;
+      let item =  master.getItem(key);
+
+      if (item && item.$group) {
+        master.getItem(key)[value.columnId] = sumParent[key][value.columnId];
+        //master.updateItem(key)
+      }
+    }
+
     result = webix.i18n.numberFormat(result,{
       groupDelimiter:"`",
       groupSize:3,
@@ -59,6 +76,45 @@ webix.ui.datafilter.totalColumn = webix.extend({
     node.innerHTML = result;
   }
 }, webix.ui.datafilter.summColumn);
+
+// webix.ui.datafilter.totalColumn = webix.extend({
+//   refresh: function (master, node, value) {
+//     var result = 0, _val;
+//     master.data.each(function (obj) {
+//       if (!obj) return;
+//       if (obj.$level==2) return;
+//
+//       if (!obj[value.columnId]) return;
+//       _val = obj[value.columnId];
+//       if (value.columnId == 'coefMoney') {
+//         _val = obj.G/7860;
+//       }
+//       if (_val !== null) {
+//         if (_val!= 0) {
+//           _val = _val.toString().replace(".",",");
+//         }
+//         _val = webix.Number.parse(_val, {
+//           decimalSize: 2, groupSize: 3,
+//           decimalDelimiter: ",", groupDelimiter: ""
+//         });
+//       }
+//       _val =  parseFloat(_val);
+//       if (!isNaN(_val)) result = result+_val;
+//     });
+//     result = webix.i18n.numberFormat(result,{
+//       groupDelimiter:"`",
+//       groupSize:3,
+//       decimalDelimiter:".",
+//       decimalSize:2
+//     })
+//     //if (value.format)
+//     //result = value.format(result);
+//     if (value.template)
+//       result = value.template({ value: result });
+//     node.style.textAlign = "right";
+//     node.innerHTML = result;
+//   }
+// }, webix.ui.datafilter.summColumn);
 
 
 webix.ui.datafilter.totalColumnCountEmpty = webix.extend({
@@ -248,7 +304,9 @@ function columnGroupTemplate(obj, common, item){
 function groupTree(obj, common, item){
 
   if (obj.$level == 1) {
-    return common.treetable(obj, common) + ((obj.property_value) ? obj.property_value : item);
+    let res = (obj.property_value) ? obj.property_value : item;
+
+    return common.treetable(obj, common) + res;
   }
   if (obj.$level == 2) {
       return '      '+common.treetable(obj, common) + ' '+item;
@@ -305,11 +363,11 @@ webix.editors.documentEditor = {
   },
   setValue:function(value, obj){
     let name = '';
-    let item = this.config.collection.getItem(value);
-    if (item) {
-      name = item.value;
-    }
-    this.getInputNode(this.node).value =  name;//value;
+    // let item = this.config.collection.getItem(value);
+    // if (item) {
+    //   name = item.value;
+    // }
+    //this.getInputNode(this.node).value =  value;
     this.getInputNode(this.node).refValue =  value;
 
   },
@@ -320,6 +378,29 @@ webix.editors.documentEditor = {
     return webix.html.create("div", {
       "class":"webix_dt_editor"
     }, "<input type='text' disabled='disabled' /><button class='document-button' style='position: absolute;margin: 8px; right:0; height:25px;'>...</button>");
+  }
+}
+
+webix.editors.characteristicEditor = {
+  focus:function(){
+    this.getInputNode(this.node).focus();
+    this.getInputNode(this.node).select();
+  },
+  getValue:function(){
+    return this.getInputNode(this.node).refValue;
+  },
+  setValue:function(value, obj){
+    //this.getInputNode(this.node).value =  value;
+    this.getInputNode(this.node).refValue =  value;
+
+  },
+  getInputNode:function(){
+    return this.node.firstChild;
+  },
+  render:function() {
+    return webix.html.create("div", {
+      "class":"webix_dt_editor"
+    }, "<input type='text' disabled='disabled' /><button class='characteristic-button' style='position: absolute;margin: 8px; right:0; height:25px;'>...</button>");
   }
 }
 
@@ -792,6 +873,7 @@ webix.protoUI({
 
   },
   setPage() {
+
     this.showGoToBack();
     this.model = this.capitalizeFirstLetter(this.state.params.mode);
     this.setSelectType();
@@ -1216,7 +1298,7 @@ webix.protoUI({
       drag: false,
       dragColumn:true,
       math: true,
-      save: (this.state.type != 'documentData') ? "api->accounting/"+this.getModelName(this.state.params.mode) : null,
+      save: (this.state.type != 'documentData' && this.state.type != 'characteristicData') ? "api->accounting/"+this.getModelName(this.state.params.mode) : null,
       datafetch: 100,
       loadahead: 200,
       autoConfig: false,
@@ -1268,7 +1350,6 @@ webix.protoUI({
           let item = this.getItem(id);
 
           if (scope.state.type == 'directory') {
-
             //scope.getParentView().config.scope.selectRecord(item);
             scope.config.$scope.selectRecord(item);
             //scope.getParentView().config.scope.hideWindow();
@@ -1419,7 +1500,7 @@ webix.protoUI({
 
             let objConfig = {
               'operation_type' : 'update',
-              'view' : scope.state.scope,
+              'view' : scope.state,
               'table' : scope.table,
               'type' : gotoType,
               'editor' : configColumn,
@@ -1517,16 +1598,72 @@ webix.protoUI({
           if (scope.table.getSelectedId()) {
             parent = scope.table;
           }
-          scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.scope.getParentView(),'directory');
+          scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.parent.getParentView(),'directory');
+          return false; // blocks the default click behavior
+        },
+        "characteristic-button":function(ev, id,obj, obj1){
+
+          let editor = this.getEditState();
+          let parent = null;
+          let selectedItem = scope.table.getSelectedItem();
+          if (selectedItem) {
+            parent = scope.table;
+          }
+          let filter = {};
+          if (selectedItem.material) {
+            filter = {'filterInput' : selectedItem.material.id};
+          }
+
+          let configWindow = {
+            'parent' : scope,
+            'type' : editor.config.goto_type,
+            'table' : parent,
+            'editor' : editor,
+            'options_url' : scope.getModelName(editor.config.options_url),
+            'options_url_edit': editor.config.options_url,
+            'header': [{'text':'Характеристики товара'}],
+            'view' : scope.state.scope.getParentView(),
+            'filter': filter
+
+          };
+
+          scope.state.formCoreCharacteristicWindow.showWindow(configWindow);
           return false; // blocks the default click behavior
         },
         "document-button":function(ev, id,obj, obj1){
+          debugger;
+          // let editor = this.getEditState();
+          // let parent = null;
+          // if (scope.table.getSelectedId()) {
+          //   parent = scope.table;
+          // }
+          // scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.scope.getParentView(),'directory');
+          // return false; // bloc
+
           let editor = this.getEditState();
           let parent = null;
-          if (scope.table.getSelectedId()) {
+          let selectedItem = scope.table.getSelectedItem();
+          if (selectedItem) {
             parent = scope.table;
           }
-          scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.scope.getParentView(),'document');
+          let filter = {};
+          if (selectedItem.material) {
+            filter = {'filterInput' : selectedItem.material.id};
+          }
+
+          let configWindow = {
+            'type' : editor.config.goto_type,
+            'table' : parent,
+            'editor' : editor,
+            'options_url' : scope.getModelName(editor.config.options_url),
+            'options_url_edit': editor.config.options_url,
+            'header': [{'text':'Выбор из справочника'}],
+            'view' : scope.state.scope.getParentView(),
+            'filter': filter
+
+          };
+
+          scope.state.formCoreDocumentWindow.showWindow(configWindow);
           return false; // blocks the default click behavior
         }
       }
@@ -1542,7 +1679,7 @@ webix.protoUI({
     this.table = webix.ui(tableConfig,layout,this.getEl('table-layout') );
 
     if (this.config.localId == 'windowBody') {
-      //this.$scope.app.currentView = this;
+      this.$scope.app.currentView = this;
     } else {
       this.$scope.app.currentView = this;
     }
@@ -1955,6 +2092,37 @@ webix.protoUI({
       scope.getEl('loading-table').hideProgress();
       return;
     }
+    if (this.state.type == "characteristicData") {
+      webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
+        let items = data.json();
+        let dataItem = [];
+
+        let len =  scope.$scope.state.configs.length-1;
+
+        let value = scope.$scope.state.configs[len].parent.getTopParentView().queryView({'localId':'table-layout'}).getSelectedItem();
+
+        if (value != '' && value['params']) {
+          value = value.params;
+
+          items.data.forEach(function(item) {
+            value.forEach(function(itemValue) {
+              if (item.id == itemValue.id) {
+                item['virtual_value'] = itemValue['virtual_value'];
+                dataItem.push(item);
+              }
+            });
+          });
+        }
+        //debugger;
+        scope.table.clearAll();
+        scope.table.parse(dataItem);
+        scope.table.enable();
+        scope.table.hideProgress();
+        scope.getEl('loading-table').enable();
+        scope.getEl('loading-table').hideProgress();
+      });
+      return;
+    }
     webix.ajax().get(scope.tableUrl, scope.filter ).then(function(data){
       //scope.table.clearAll();
 
@@ -1998,8 +2166,13 @@ webix.protoUI({
 
               let per = eval(resultType);
               let configColumn = scope.table.getColumnConfig(scope.schemaTableSetting.group['group-by'].value);
-              if (configColumn.collection) {
+
+              if (configColumn.collection && !Object.is(per)) {
                 //id collection json or colellection "api->url"
+                // if (per['id']) {
+                //   per = per['id'];
+                //   resultType = resultType+'.name';
+                // }
                 return (configColumn.collection.getItem(per)) ? configColumn.collection.getItem(per).value : scope.api.dataCollection['accounting/material-types'].getItem(per).value;//configColumn.collection.getItem(per).value;
               } else {
                 return eval(resultType);
@@ -4075,7 +4248,7 @@ webix.protoUI({
         gotoType = configColumn.goto_type;
       }
       let objConfig = {
-        'view' : scope.state.scope,
+        'view' : scope.state,
         'table' : scope.table,
         'type' : gotoType,
         'editor' : configColumn,

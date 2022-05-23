@@ -33,6 +33,7 @@ export default class FormDocumentTableWindow extends JetView {
     let countLeft = count;
     let countTop = count;
     let rows = [];
+
     if (type == 'documentData' || type=='document') {
       rows = [
         {
@@ -232,6 +233,8 @@ export default class FormDocumentTableWindow extends JetView {
         formComment:  view.formComment,
         windowDirectory:  view.windowDirectory,
         formDocumentTableWindow:  view.formDocumentTableWindow,
+        formCoreDocumentWindow: view.formCoreDocumentWindow,
+        formCoreCharacteristicWindow: view.formCoreCharacteristicWindow,
         type: type
 
       },
@@ -319,7 +322,12 @@ export default class FormDocumentTableWindow extends JetView {
     // type = 'directory' operation_type = null returnObject = object(configColumn) || object(component -for example combo) isUpdate = null
     let scope = this;
     let state  = this.state;
-    let record = (table) ? table.getSelectedItem() : null;
+    let record = null;
+    if (table && table.config.view == 'property') {
+       record = table.getItem(editor.config.id);
+    } else {
+      record = (table) ? table.getSelectedItem() : null;
+    }
     let isUpdate = (record);
     if (editor.config  && editor.config['is_update'] == false) {
       isUpdate = false;
@@ -354,23 +362,29 @@ export default class FormDocumentTableWindow extends JetView {
       //table.config.urlEdit = editor.config['options_url'];
       state.changeUrl = false;
       //state.changeUrlSource = prefix+table.config.urlEdit;
-      state.tableId = prefix+table.config.urlEdit;
+      state.tableId = '';
+      if (editor.table) {
+        state.tableId = prefix + table.config.urlEdit;
+      }
     }
 
     //state.tableId = table.config.urlEdit;
 
+    if (editor.table) {
+      state.formUrl = state.tableId + "/form-document";
+      api.get(state.formUrl).then(function (data) {
+        state.formData = data.json();
+        state.formConfig = {};
+        if (state.formData.data.configForm) {
+          state.formConfig = state.formData.data.configForm;
+        }
+        scope.renderWindow(configTable, state.formConfig, type);
 
-    state.formUrl = state.tableId+"/form-document";
-    api.get(state.formUrl).then(function(data) {
-      state.formData = data.json();
-      state.formConfig = {};
-      if (state.formData.data.configForm) {
-        state.formConfig = state.formData.data.configForm;
-      }
-      scope.renderWindow(configTable, state.formConfig, type);
-
-      //scope.bindCollection();
-    });
+        //scope.bindCollection();
+      });
+    } else {
+      scope.renderWindow(configTable, {}, type);
+    }
 
   }
 
@@ -441,7 +455,7 @@ export default class FormDocumentTableWindow extends JetView {
   }
 
   selectRecord(record) {
-
+    debugger;
     let state  = this.state;
     let item = {};
     if (!state.editor.config.hasOwnProperty("returnObject")) {
@@ -466,11 +480,23 @@ export default class FormDocumentTableWindow extends JetView {
             });
             list.sync(collection);
           }
+          if (state.editor.config.return == 'object') {
+            let objGetter = state.editor.config.returnObject;
+            dataId = {'id': id, '_id': record.id, 'name': record.name};
+          }
           if (state.editor.config.return == 'integer') {
             dataId = id;
           }
+          if (state.table.config.view == 'property') {
 
-          state.editor.config.returnObject.setValue(dataId);
+            let property = state.editor['config']['id'];
+            let objectProperty;
+            objectProperty = state.editor.config.returnObject.getValues();
+            objectProperty[property] = dataId;
+            state.editor.config.returnObject.setValues(objectProperty);
+          } else {
+            state.editor.config.returnObject.setValue(dataId);
+          }
 
         }
       } else
@@ -549,7 +575,6 @@ export default class FormDocumentTableWindow extends JetView {
 
 
   doClickSave(copy = false) {
-
     //this.doSaveDocument();
     let state = this.state;
     state.formEditDocument = state.wins[state.wins.length-1].queryView({'localId': 'formEditDocument'});

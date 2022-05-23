@@ -64,8 +64,8 @@ webix.protoUI({
       // }
       //scope.state.formDocumentTableWindow.showWindow({},parent, editor, scope.state.scope.getParentView(),'directory');
       //return false; // blocks the default click behavior
-
-      scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state.scope, gotoType);
+      debugger;
+      scope.state.formDocumentTableWindow.showWindow({},scope.table, objConfig, scope.state, gotoType);
       //this.getPopup().hide(this.getInputNode());
       //webix.message('Hello');
     }

@@ -419,6 +419,7 @@ export default class OrderResultView extends JetView{
             },
             { id:"E", header:[ "Тип", { content:"selectFilter" }, "" ], width:100, editor:"text", hidden: false  },
             { id:"I", header:[ "Изделие", { content:"textFilter" }, "" ], width:230, editor:"text", hidden: false },
+            { id:"G", header:[ "Сумма", { content:"textFilter" }, { content:"totalColumn" } ], width:100,  hidden: false },
             { id:"product_id", header:[ "Изделие", { content:"textFilter" }, "" ], width:200,
               editor: 'combo', options: productBed
             },

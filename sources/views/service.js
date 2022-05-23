@@ -1,5 +1,6 @@
 import {JetView, plugins} from "webix-jet";
 import FormCoreDocumentWindow from "core/service/CoreDocumentWindow";
+import FormCoreCharacteristicWindow from "core/service/CoreCharacteristicWindow";
 
 import FormEditView from "core/service/FormDocumentEditView";
 import FormCommnetView from "views/comment/index";
@@ -366,6 +367,8 @@ export default class ServiceView extends JetView{
     this.formDocumentEditView = this.ui(FormDocumentEditView);
     this.formDocumentTableWindow = this.ui(FormDocumentTableWindow);
     this.formCoreDocumentWindow = this.ui(FormCoreDocumentWindow);
+    this.formCoreCharacteristicWindow = this.ui(FormCoreCharacteristicWindow);
+
 
 
 
@@ -404,6 +407,7 @@ export default class ServiceView extends JetView{
         formDocumentEditView: this.formDocumentEditView,
         formDocumentTableWindow: this.formDocumentTableWindow,
         formCoreDocumentWindow: this.formCoreDocumentWindow,
+        formCoreCharacteristicWindow: this.formCoreCharacteristicWindow,
         formTransactionSchemaEditView: this.formTransactionSchemaEditView,
         windowDirectory: this.windowDirectory,
         type: type,
@@ -413,10 +417,13 @@ export default class ServiceView extends JetView{
 
     };
     this.table = webix.ui(config, this.$$('layout') );
+    //debugger;
+    //this.app.config.localViews['service/'+mode] = this.table;
 
 
 
     this.lastXHR = {};
+
     webix.attachEvent("onBeforeAjax", function(mode, url, params, xhr,
                                                headers, file, promise){
 
@@ -447,6 +454,8 @@ export default class ServiceView extends JetView{
       }
     });
 
+
+
   }
 
   setPage() {
@@ -459,6 +468,9 @@ export default class ServiceView extends JetView{
     this.table.state.params['mode'] = this.mode;
     this.table.state.params['id'] = this.getParam('id');
     this.table.stateCache  = webix.storage.local.get(this.mode+"_table_filter_state");
+    //debugger;
+    //debugger;
+    //this.app.config.localViews['service/'+this.mode] = this.table;
     this.table.setPage();
 
   }

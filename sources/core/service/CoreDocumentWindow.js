@@ -82,14 +82,19 @@ export default class CoreDocumentWindow extends JetView {
       //table.config.urlEdit = editor.config['options_url'];
       configWindow['changeUrl'] = false;
       //state.changeUrlSource = prefix+table.config.urlEdit;
-      configWindow['tableId'] = prefix+configWindow.table.config.urlEdit;
+      if (configWindow.table) {
+        configWindow['tableId'] = prefix + configWindow.table.config.urlEdit;
+      }
     }
     if (configWindow.operation_type  && configWindow.operation_type == 'copy') {
       configWindow['isUpdate'] = 0;
     }
 
     //state.tableId = table.config.urlEdit;
-
+    if (!configWindow.table) {
+      scope.renderWindow(configTable, configWindow.type);
+      return;
+    }
 
     configWindow['formUrl'] = configWindow.tableId+"/form-document";
     api.get(configWindow.formUrl).then(function(data) {
@@ -144,6 +149,10 @@ export default class CoreDocumentWindow extends JetView {
         formComment:  obj.view.formComment,
         windowDirectory:  obj.view.windowDirectory,
         formDocumentTableWindow:  obj.view.formDocumentTableWindow,
+        formCoreDocumentWindow: obj.view.formCoreDocumentWindow,
+        formCoreCharacteristicWindow: obj.view.formCoreCharacteristicWindow,
+        formTransactionSchemaEditView: obj.view.formTransactionSchemaEditView,
+        formDocumentEditView: obj.view.formDocumentEditView,
         type: obj.type
 
       },
@@ -192,7 +201,7 @@ export default class CoreDocumentWindow extends JetView {
             "align": "right",
             "width": 120,
             click: function(){
-              scope.doClickSave();
+              scope.doClickSaveDoc();
             }
 
           }
@@ -243,67 +252,108 @@ export default class CoreDocumentWindow extends JetView {
         }
       ];
     }
+    let head = {
+      cols:[
+        { template:"Title", type:"header", borderless:true},
+        {
+          view:"icon", icon:"mdi mdi-fullscreen", tooltip:"Развернуть окно", click:function() {
+
+          if (this.getParentView().getParentView().config.fullscreen){
+
+            this.getParentView().getParentView().define({
+              fullscreen: false, position: function (state) {
+                let width = state.maxWidth / 1.5;
+                let height = state.maxHeight / 1.2;
+                let left = 44*2;
+                let top = 34*2;
+                if (config['window_width'] && config['window_width'] == 'max') {
+                  left = left/2;
+                  top = top/2;
+                  width = state.maxWidth - left;
+                  height = state.maxHeight - (top*2+10);
+                }
+                state.top = top;
+                state.width = width;
+                state.height = height;
+                state.left = left;
+              } });
+            this.define({icon:"mdi mdi-fullscreen", tooltip:"Развернуть окно"});
+          }
+          else {
+
+            this.define({icon:"mdi mdi-fullscreen-exit", tooltip:"Сверуть окно"});
+            this.getParentView().getParentView().define({
+              fullscreen: true, top:0, left:0, position:false
+            });
+          }
+          this.refresh();
+          this.getParentView().getParentView().resize();
+        }
+        },
+        {view:"icon", icon:"wxi-close", tooltip:"Close window", click: function(){
+          scope.hideWindow(this);
+        }}
+      ]
+    };
+    if (config['window_head'] == false) {
+      head = false;
+    }
+
     state.win = webix.ui({
       $scope: this,
       localId: "windowDirectory",
       view: "window",
       position: function (state) {
-        state.top = 38*2;
-        state.width = state.maxWidth / 1.5;
-        state.height = state.maxHeight/1.2;
-        state.left = 44*2;
+        let width = state.maxWidth / 1.5;
+        let height = state.maxHeight / 1.2;
+        let left = 44*2;
+        let top = 34*2;
+        if (config['window_width'] && config['window_width'] == 'max') {
+          left = left/2;
+          top = top/2;
+          width = state.maxWidth - left;
+          height = state.maxHeight - (top*2+10);
+        }
+        state.top = top;
+        state.width = width;
+        state.height = height;
+        state.left = left;
       },
-      head:{
-        cols:[
-          { template:"Title", type:"header", borderless:true},
-          {
-            view:"icon", icon:"mdi mdi-fullscreen", tooltip:"Развернуть окно", click:function() {
-
-            if (this.getParentView().getParentView().config.fullscreen){
-
-              this.getParentView().getParentView().define({
-                fullscreen: false, position: function (state) {
-                  state.top = 38*2+countTop;
-                  state.width = state.maxWidth / 1.5;
-                  state.height = state.maxHeight/1.2;
-                  state.left = 44*2+countLeft;
-                } });
-              this.define({icon:"mdi mdi-fullscreen", tooltip:"Развернуть окно"});
-            }
-            else {
-
-              this.define({icon:"mdi mdi-fullscreen-exit", tooltip:"Сверуть окно"});
-              this.getParentView().getParentView().define({
-                fullscreen: true, top:0, left:0, position:false
-              });
-            }
-            this.refresh();
-            this.getParentView().getParentView().resize();
-          }
-          },
-          {view:"icon", icon:"wxi-close", tooltip:"Close window", click: function(){
-            scope.hideWindow();
-          }}
-        ]
-      },
+      //head: false,
+      head: head,
       //width: 500,
       fullscreen:false,
       resize: true,
       move: true,
+      toFront: true,
       scroll: true,
       //head: "Справочник",
       close: true,
-      modal: true,
+      modal: (config['window_modal'] == false) ? false: true,
       body: {
-        type: 'space',
+        type:  (config['window_layout_type']) ? config['window_layout_type'] : 'space',
         css: 'webix_primary',
         rows: rows
-      }
+      },
+      ref: config.options_url_edit
     });
     state.wins.push(state.win);
     config['win'] = state.win;
+    //set localViews
+    scope.app.config.localViews[config.options_url_edit] = {'index': state.wins.length-1,'win':state.win};
+    $$("tabbar").addOption({
+        id:config.options_url_edit,
+        value:config.header[0]['text'],
+        close:true,
+        icon:config.header[0]['icon'],
+        width: 'auto'
+      },
+      true
+    );
 
-    config.win.getHead().getChildViews()[0].setHTML(config.header[0].text);
+    if (head != false) {
+      config.win.getHead().getChildViews()[0].setHTML(config.header[0].text);
+    }
 
     state.win.show();
 
@@ -449,9 +499,11 @@ export default class CoreDocumentWindow extends JetView {
   selectRecord(record) {
 
     let state  = this.state;
+    let config;
+    config = state.configs[state.windowNumber];
     let item = {};
-    if (!state.editor.config.hasOwnProperty("returnObject")) {
-      item = state.table.getSelectedItem();
+    if (!config.hasOwnProperty("returnObject")) {
+      item = config.table.getSelectedItem();
     }
     let id = record.id;
 
@@ -459,12 +511,12 @@ export default class CoreDocumentWindow extends JetView {
       id = record.idDocument;
     }
 
-    if (state.editor.config.hasOwnProperty("return")) {
-      if (state.editor.config.return) {
-        if (state.editor.config.hasOwnProperty("returnObject")) {
+    if (config.hasOwnProperty("return")) {
+      if (config.return) {
+        if (config.hasOwnProperty("returnObject")) {
           let dataId = null;
-          if (state.editor.config.return == 'json') {
-            let objGetter = state.editor.config.returnObject;
+          if (config.return == 'json') {
+            let objGetter = config.returnObject;
             let list = objGetter.getPopup().getList();
             dataId = JSON.stringify({'id': id, '_id': record.id, 'name': record.name});
             let collection = new webix.DataCollection({
@@ -472,18 +524,18 @@ export default class CoreDocumentWindow extends JetView {
             });
             list.sync(collection);
           }
-          if (state.editor.config.return == 'integer') {
+          if (config.return == 'integer') {
             dataId = id;
           }
 
-          state.editor.config.returnObject.setValue(dataId);
+          config.returnObject.setValue(dataId);
 
         }
       } else
-        item[state.editor.column] = {'id': id, '_id': record.id, 'name': record.value};
+        item[config.editor.column] = {'id': id, '_id': record.id, 'name': record.value};
     } else {
 
-      item[state.editor.column] = {'id': id, '_id': record.id, 'name': record.value};
+      item[config.editor.column] = {'id': id, '_id': record.id, 'name': record.value};
     }
 
     if (item.hasOwnProperty("unit")) {
@@ -491,33 +543,33 @@ export default class CoreDocumentWindow extends JetView {
       if (record.unit_id) {
         unitId = 1;
       }
-      let itemDirectory =  state.table.getColumnConfig('unit').collection.getItem(unitId);
+      let itemDirectory =  config.table.getColumnConfig('unit').collection.getItem(unitId);
       item['unit'] =  {'id' :unitId, 'name' : itemDirectory.name};
     }
     if (item.hasOwnProperty("price") && item['price'] == '') {
       item['price'] =  record.price;
     }
-    if (!state.editor.config.hasOwnProperty("returnObject")) {
-      webix.dp(state.table).ignore(function () {
-        state.table.updateItem(item.id, item);
+    if (!config.hasOwnProperty("returnObject")) {
+      webix.dp(config.table).ignore(function () {
+        config.table.updateItem(item.id, item);
       });
-      let index = state.table.getColumnIndex(state.editor.column);
+      let index = config.table.getColumnIndex(config.editor.column);
       // var now = state.table.getEditor();
       //state.table.editNext(true, now);
       //state.table.unselectAll();
       //state.table.editStop();
 
-      if (item.id && state.table.config.columns[index + 1].id && state.table.editStop()) {
+      if (item.id && config.table.config.columns[index + 1] && config.table.editStop()) {
         for (let i = index + 1; i < state.table.config.columns.length - 1; i++) {
-          if (state.table.config.columns[i].hasOwnProperty('editor')) {
+          if (config.table.config.columns[i].hasOwnProperty('editor')) {
             index = i;
             break;
           }
         }
-        state.table.select(item.id, state.table.config.columns[index].id);
-        state.table.edit({row: item.id, column: state.table.config.columns[index].id});
+        config.table.select(item.id, config.table.config.columns[index].id);
+        config.table.edit({row: item.id, column: config.table.config.columns[index].id});
       } else {
-        return state.table.editStop();
+        return config.table.editStop();
       }
     }
     //webix.UIManager.setFocus(state.table.editCell(item.id, state.table.config.columns[index+1].id));
@@ -528,12 +580,30 @@ export default class CoreDocumentWindow extends JetView {
     //state.table.select(item.id);
   }
 
-  hideWindow() {
-    let state  = this.state;
-    let windowNumber = state.wins.pop();
-    state.configs.pop();
+  hideWindow(win) {
 
-    windowNumber.hide();
+    let state  = this.state;
+    let scope = this;
+    //let windowNumber = state.wins.pop();
+    let windowNumber = scope.app.config.localViews[win.getTopParentView().config.ref]['index'];
+    //state.configs.pop();
+
+    $$("tabbar").removeOption(win.getTopParentView().config.ref);
+
+    let modal = state.configs[windowNumber]['window_modal'];
+
+    state.configs.splice(windowNumber, 1);
+    state.wins.splice(windowNumber, 1);
+    delete scope.app.config.localViews[win.getTopParentView().config.ref];
+    state.windowNumber = state.configs.length-1;
+    if (modal == false) {
+      win.getTopParentView().close();
+    } else {
+      win.getTopParentView().hide()
+    }
+
+    //windowNumber.hide();
+    //win.getTopParentView().hide()
   }
 
   attachFormEvents() {
@@ -551,9 +621,10 @@ export default class CoreDocumentWindow extends JetView {
   }
 
 
-  doClickSave(copy = false) {
+  doClickSaveDoc(copy = false) {
 
     //this.doSaveDocument();
+    let scope = this;
     let state = this.state;
     let config;
     config = state.configs[state.windowNumber];
@@ -603,13 +674,15 @@ export default class CoreDocumentWindow extends JetView {
         config.changeUrl = false;
         dp.config.url.source = config.baseUrlEdit;
         //state.tables[state.tables.length-1].refresh();
-        config.win.hide();
+        //config.win.hide();
+        scope.hideWindow(config.win);
 
       } else {
         dp.ignore(function () {
+          debugger;
           (config.isUpdate) ? config.table.updateItem(record.id, obj) : config.table.add(obj, 0);
           let branches = config.table.data.getBranch(config.table.getSelectedId());
-
+          debugger;
           if (branches.length > 0 && config.isUpdate) {
             config.table.remove(config.table.data.branch[record.id]);
             config.table.data.branch[record.id] = [];
@@ -642,9 +715,11 @@ export default class CoreDocumentWindow extends JetView {
         // debugger;
         // //state.table.getBranch(item).bind(data);
         //state.tables[state.tables.length-1].getItem(state.tables[state.tables.length-1].getSelectedId()).data = data;
-
+        debugger;
         config.table.refresh();
-        config.win.hide();
+
+        //config.win.hide();
+        scope.hideWindow(config.win);
       }
     }, function(){
       webix.message("Ошибка! Данные не сохранены!");
