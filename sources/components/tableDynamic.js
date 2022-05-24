@@ -1083,7 +1083,7 @@ webix.protoUI({
               scope.state.formEdit.showForm(this);
             }
           }
-          if (id.column == 'action-view-window') {
+          if (id.column.includes('window')) {
             let configColumn = scope.table.getColumnConfig(id.column);
             let objConfig = {
               'config':{
