@@ -1928,28 +1928,24 @@ webix.protoUI({
   getDataTable(state = {x:-1,y:-1}) {
     let scope = this;
     let dataJson;
-    dataJson = webix.storage.local.get('config_'+scope.state.params.mode+'_'+scope.state.params['schema-table-user-id']);
+    //dataJson = webix.storage.local.get('config_'+scope.state.params.mode+'_'+scope.state.params['schema-table-user-id']);
     if (dataJson) {
-      //scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
-      //scope.table.refreshColumns();
+
     } else {
-      let paramsConfig = {};
-      if (scope.state.scope.urlParams) {
-        paramsConfig = {'schema-table-user-id':scope.state.scope.urlParams['schema-table-user-id']}
+      if (this.state.type == "documentData") {
+        let paramsConfig = {};
+        if (scope.state.scope.urlParams) {
+          paramsConfig = {'schema-table-user-id': scope.state.scope.urlParams['schema-table-user-id']}
+        }
+        let urlGetConfig = this.state.scope.app.config.apiRest.getUrl('get', "accounting/" + scope.state.params.mode + "/get-config",
+          paramsConfig);
+        let responseList = webix.ajax().sync().get(urlGetConfig);
+        let dataJson = JSON.parse(responseList.responseText);
+        webix.storage.local.put('config_' + scope.state.params.mode + '_' + scope.state.params['schema-table-user-id'], dataJson);
+        scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
+        scope.table.refreshColumns();
       }
-      let urlGetConfig = this.state.scope.app.config.apiRest.getUrl('get',"accounting/" + scope.state.params.mode + "/get-config",
-        paramsConfig);
-      let responseList = webix.ajax().sync().get(urlGetConfig);
-      let dataJson = JSON.parse(responseList.responseText);
-      webix.storage.local.put('config_' + scope.state.params.mode+'_'+scope.state.params['schema-table-user-id'], dataJson);
-      scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
-      scope.table.refreshColumns();
-      // scope.state.scope.app.config.apiRest.get("accounting/" + scope.state.params.mode + "/get-config").then(function (data) {
-      //   let dataJson = data.json();
-      //   webix.storage.local.put('config_' + scope.state.params.mode, dataJson);
-      //   scope.table.config.columns = scope.dataDriverJsonToObject(dataJson.columns);
-      //   scope.table.refreshColumns();
-      // });
+
     }
 
     this.table.define('leftSplit', (this.schemaTableSetting.datatable['leftSplit'].value) ? this.schemaTableSetting.datatable['leftSplit'].value*1 : 0);
@@ -2133,10 +2129,12 @@ webix.protoUI({
 
 
       //let dataJson = webix.storage.local.get('config_'+scope.state.params.mode);
-      //scope.columns = dataJson.columns;
+      //debugger;
+      scope.table.config.columns = scope.dataDriverJsonToObject(items.config.columns);
+      //scope.columns = items.config.columns;//dataJson.columns;
 
       scope.columns = scope.table.config.columns;
-      //scope.table.refreshColumns();
+      scope.table.refreshColumns();
 
       scope.setColumnSettingForTable();
 

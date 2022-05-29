@@ -455,7 +455,7 @@ export default class FormDocumentTableWindow extends JetView {
   }
 
   selectRecord(record) {
-    debugger;
+
     let state  = this.state;
     let item = {};
     if (!state.editor.config.hasOwnProperty("returnObject")) {

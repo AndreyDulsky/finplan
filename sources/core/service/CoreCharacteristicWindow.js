@@ -88,18 +88,27 @@ export default class CoreCharacteristicWindow extends JetView {
 
       let value = config.parent.getTopParentView().queryView({'localId':'table-layout'}).getSelectedItem();
 
-      if (value != '' && value['params']) {
-        value = value.params;
+      if (value != '') {
+        let valueParams = value.params;
 
         items.data.forEach(function(item) {
-          value.forEach(function(itemValue) {
-            if (item.id == itemValue.id) {
-              item['virtual_value'] = itemValue['virtual_value'];
-            } else {
-              item['virtual_value'] = {};
-            }
+
+          item['virtual_value'] = {};
+          if (value['params']) {
+            valueParams.forEach(function(itemValue) {
+
+              if (item.id == itemValue.id) {
+                item['virtual_value'] = itemValue['virtual_value'];
+              } else {
+                item['virtual_value'] = {};
+              }
+              dataItem.push(item);
+            });
+          } else {
             dataItem.push(item);
-          });
+          }
+
+
         });
       }
       let configTable = scope.getTableConfig(config, dataItem);
@@ -145,7 +154,7 @@ export default class CoreCharacteristicWindow extends JetView {
         type:"directoryEditor",
         id:item.id,
         value: item.virtual_value,
-        options_url: 'directory-cloth',
+        options_url: 'material',
         template:function(value, config){
           return "<input type='button' class='webix_toggle_button_custom' value='"+value+"' style='margin:0px; 	width:95%; height:20px; font-size:12px; '>";
         },
@@ -402,6 +411,7 @@ export default class CoreCharacteristicWindow extends JetView {
       },
       click:{
         "directory-button":function(e, id){
+
           var data = this.getItem(id);
           //var keys = Object.keys(data.collection.data.pull); // keys equal to values
           // if (keys[0] == data.value)
@@ -420,15 +430,15 @@ export default class CoreCharacteristicWindow extends JetView {
               'return' : 'object',
               'returnObject' : state.win.getBody().queryView({'localId':'sets'}),
               'id' : id,
-              'urlEdit' : 'directory-cloth',
+              'urlEdit' : 'material',
               'editor' : data,
-              'options_url' : 'directory-cloth',
-              'options_url_edit': 'directory-cloth',
+              'options_url' : 'material',
+              'options_url_edit': 'material',
               'header': [{'text':'Справочник'}],
               'filter': filter
             }
           };
-          this.config['urlEdit'] = 'directory-cloth';
+          this.config['urlEdit'] = 'material';
 
           config.parent.state.formDocumentTableWindow.showWindow({},this, objConfig, config.parent, 'directory');
         }
@@ -437,7 +447,7 @@ export default class CoreCharacteristicWindow extends JetView {
     });
 
     state.win.getBody().attachEvent("onClick",function(id, e, node){
-      debugger;
+
       if (e.target = 'document-button') {
 
       }
@@ -499,7 +509,7 @@ export default class CoreCharacteristicWindow extends JetView {
     // values.forEach(function(item) {
     //   dataItems.push(item);
     // });
-    debugger;
+
     let dp = webix.dp(config.table);
     itemSelect[config.editor.column] =  dataItems;
     dp.ignore(function () {

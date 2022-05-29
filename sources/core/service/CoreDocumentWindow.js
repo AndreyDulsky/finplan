@@ -340,7 +340,9 @@ export default class CoreDocumentWindow extends JetView {
     state.wins.push(state.win);
     config['win'] = state.win;
     //set localViews
+    debugger;
     scope.app.config.localViews[config.options_url_edit] = {'index': state.wins.length-1,'win':state.win};
+    state.currentTab = $$("tabbar").getValue();
     $$("tabbar").addOption({
         id:config.options_url_edit,
         value:config.header[0]['text'],
@@ -588,9 +590,16 @@ export default class CoreDocumentWindow extends JetView {
     let windowNumber = scope.app.config.localViews[win.getTopParentView().config.ref]['index'];
     //state.configs.pop();
 
-    $$("tabbar").removeOption(win.getTopParentView().config.ref);
 
-    let modal = state.configs[windowNumber]['window_modal'];
+
+    let modal = true;
+    if (state.configs[windowNumber] && state.configs[windowNumber]['window_modal'] && state.configs[windowNumber]['window_modal'] == false) {
+      modal = false;
+    }
+    if (modal == true) {
+      $$("tabbar").removeOption(win.getTopParentView().config.ref);
+    }
+    $$("tabbar").setValue(state.currentTab);
 
     state.configs.splice(windowNumber, 1);
     state.wins.splice(windowNumber, 1);
@@ -679,10 +688,10 @@ export default class CoreDocumentWindow extends JetView {
 
       } else {
         dp.ignore(function () {
-          debugger;
+
           (config.isUpdate) ? config.table.updateItem(record.id, obj) : config.table.add(obj, 0);
           let branches = config.table.data.getBranch(config.table.getSelectedId());
-          debugger;
+
           if (branches.length > 0 && config.isUpdate) {
             config.table.remove(config.table.data.branch[record.id]);
             config.table.data.branch[record.id] = [];
@@ -715,7 +724,7 @@ export default class CoreDocumentWindow extends JetView {
         // debugger;
         // //state.table.getBranch(item).bind(data);
         //state.tables[state.tables.length-1].getItem(state.tables[state.tables.length-1].getSelectedId()).data = data;
-        debugger;
+
         config.table.refresh();
 
         //config.win.hide();

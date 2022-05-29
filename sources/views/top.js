@@ -144,6 +144,12 @@ export default class TopView extends JetView{
                         { value:'', id:'dashboard', icon:'mdi mdi-view-dashboard'}
                       ],
                       on:{
+                        onItemClick:function(id, e){
+                          debugger;
+                          if (e.target.className == "webix_icon mdi mdi-view-dashboard") {
+                            scope.app.show('/top/dashboard');
+                          }
+                        },
                         onChange:function(){
                           //debugger;
                           //scope.show(this.getValue());
