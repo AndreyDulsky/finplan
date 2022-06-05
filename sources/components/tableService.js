@@ -312,7 +312,7 @@ function groupTree(obj, common, item){
       return '      '+common.treetable(obj, common) + ' '+item;
   }
 
-  return  '<div style="width:20px;"></div>'+item;
+  return  '<div style="margin-left:70px;">'+item+'</div>';
 }
 
 function groupData (obj, common, value) {
@@ -2207,7 +2207,8 @@ webix.protoUI({
           }
           scope.table.closeAll();
           let parentId = scope.table.getParentId(value);
-          scope.table.open(parentId);
+
+          scope.table.open(parentId, true);
           scope.table.select(value);
           scope.table.showItem(value * 1);
         }
@@ -4219,9 +4220,10 @@ webix.protoUI({
     this.table.unselect();
     this.table.listId = this.state.params.id;
 
-    let column = scope.table.getColumnIndex('action-view-window');
+    //let column = scope.table.getColumnIndex('action-view-window');
+    let configColumn = scope.table.getColumnConfig('action-view-window');
 
-    if (column != -1) {
+    if (configColumn && configColumn != -1 && configColumn['goto_type']) {
       // let configColumn = scope.table.getColumnConfig('action-view-window');
       // let objConfig = {
       //   'config': {
@@ -4239,7 +4241,7 @@ webix.protoUI({
       //
       // scope.state.formDocumentTableWindow.showWindow({}, scope.table, objConfig, scope.state.scope, gotoType);
 
-      let configColumn = scope.table.getColumnConfig('action-view-window');
+      //let configColumn = scope.table.getColumnConfig('action-view-window');
       let gotoType = 'table';
 
       if (configColumn.goto_type) {

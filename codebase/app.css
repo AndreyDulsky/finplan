@@ -330,6 +330,10 @@ i.mdi:hover{
     margin-left: -12px;
 }
 
+.webix_tree_folder, .webix_tree_folder_open {
+    color: #1CA1C1;
+}
+
 /*.webix_primary button {*/
     /*background-color: #F4F5F9;*/
     /*!*border-radius: 15px;*!*/

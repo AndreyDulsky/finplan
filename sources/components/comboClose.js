@@ -44,6 +44,7 @@ webix.protoUI({
       if (this.config.options_url_directory && this.config.options_url_directory.id) {
         filter = {'filterInput' : this.config.options_url_directory.id};
       }
+      debugger;
       let objConfig = {
         'config':{
           'return' : 'integer',
