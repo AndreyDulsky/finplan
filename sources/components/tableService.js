@@ -1627,7 +1627,7 @@ webix.protoUI({
 
           };
 
-          scope.state.formCoreCharacteristicWindow.showWindow(configWindow);
+          scope.state.formCoreCharacteristicWindow.showWindowCharacteristic(configWindow);
           return false; // blocks the default click behavior
         },
         "document-button":function(ev, id,obj, obj1){
@@ -1658,7 +1658,7 @@ webix.protoUI({
             'options_url' : scope.getModelName(editor.config.options_url),
             'options_url_edit': editor.config.options_url,
             'header': [{'text':'Выбор из справочника'}],
-            'view' : scope.state.scope.getParentView(),
+            'view' : scope.state.app.state.getParentView(),
             'filter': filter
 
           };

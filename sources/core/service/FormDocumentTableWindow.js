@@ -136,9 +136,9 @@ export default class FormDocumentTableWindow extends JetView {
       res2.data.attachEvent("onAfterDelete", function(id){
         scope.setSumByTableRows()
       });
-      res2.data.attachEvent("onItemClick", function(id){
-
-      });
+      // res2.data.attachEvent("onItemClick", function(id){
+      //
+      // });
       let complexes = state.wins[state.wins.length-1].getBody().queryView({'complex': true}, 'all');
       for (let key in complexes) {
         complexes[key].attachEvent("onChange", function(id){

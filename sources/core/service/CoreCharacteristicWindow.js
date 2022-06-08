@@ -20,7 +20,7 @@ export default class CoreCharacteristicWindow extends JetView {
     this.state.wins = [];
     this.state.configs= [];
   }
-  showWindow(configWindow) {
+  showWindowCharacteristic(configWindow) {
     // this window can be call 1-new document 2-edit document 3-copy document 4-depend document 5-editbutton in table 6-editbutton in component
     // 1.Define type window 1-this can be document,documentData, directory, table,
     // If type = 'document'
@@ -74,7 +74,8 @@ export default class CoreCharacteristicWindow extends JetView {
 
     if (config.filter) {
       //webix.storage.local.put(state.editor.config.options_url_edit + '_' + type + "_filter_state", state.editor.config.filter);
-      filter = {'list_id':config.filter['filterInput']};
+      filter = {filter:{"or":[{"list_id":config.filter['filterInput']}]}};//{'list_id':config.filter['filterInput']};
+
     }
 
     let tableUrl = state.$scope.app.config.apiRest.getUrl('get',"accounting/"+config['options_url']);
@@ -92,21 +93,19 @@ export default class CoreCharacteristicWindow extends JetView {
         let valueParams = value.params;
 
         items.data.forEach(function(item) {
-
           item['virtual_value'] = {};
-          if (value['params']) {
-            valueParams.forEach(function(itemValue) {
 
-              if (item.id == itemValue.id) {
+          if (Array.isArray(value['params'])) {
+            valueParams.forEach(function(itemValue) {
+              if (item.directory_id == itemValue.directory_id ) {
                 item['virtual_value'] = itemValue['virtual_value'];
-              } else {
-                item['virtual_value'] = {};
+                //dataItem.push(item);
               }
-              dataItem.push(item);
+
             });
-          } else {
-            dataItem.push(item);
           }
+          dataItem.push(item);
+
 
 
         });
@@ -148,15 +147,25 @@ export default class CoreCharacteristicWindow extends JetView {
       ],
     };
     data.forEach(function(item) {
+
+      let directory = 'nomenclature';
+
+      if (item.directory_id == 1) {
+        directory = 'directory-cloth';
+      }
+      if (item.directory_id == 2) {
+        directory = 'product-bed-size';
+      }
       configTable.elements.push({
         label: item.name,
         height: 30,
-        type:"directoryEditor",
-        id:item.id,
+        type:"directoryEditorCharacteristic",
+        id: item.id,
+        directory_id: item.directory_id,
         value: item.virtual_value,
-        options_url: 'material',
+        options_url: directory,
         template:function(value, config){
-          return "<input type='button' class='webix_toggle_button_custom' value='"+value+"' style='margin:0px; 	width:95%; height:20px; font-size:12px; '>";
+          return "<input type='button' class='webix_toggle_button_custom'  value='"+value+"' style='margin:0px; 	width:95%; height:20px; font-size:12px; '/>";
         },
       });
     });
@@ -347,52 +356,27 @@ export default class CoreCharacteristicWindow extends JetView {
     ];
     state.win = webix.ui({
       $scope: this,
-      localId: "windowDirectory",
+      localId: "windowDirectoryCharacteristic",
       view: "window",
       position: function (state) {
-        state.top = 38*2;
-        state.width = state.maxWidth / 1.5;
-        state.height = state.maxHeight/1.2;
-        state.left = 44*2;
+        // state.top = 0;//38*2;
+        // state.width = state.maxWidth / 3;
+        // state.height = state.maxHeight/3;
+        // state.left = 0;//44*2;
       },
       head:{
         cols:[
           { template:"Title", type:"header", borderless:true},
-          {
-            view:"icon", icon:"mdi mdi-fullscreen", tooltip:"Развернуть окно", click:function() {
-
-            if (this.getParentView().getParentView().config.fullscreen){
-
-              this.getParentView().getParentView().define({
-                fullscreen: false, position: function (state) {
-                  state.top = 38*2+countTop;
-                  state.width = state.maxWidth / 1.5;
-                  state.height = state.maxHeight/1.2;
-                  state.left = 44*2+countLeft;
-                } });
-              this.define({icon:"mdi mdi-fullscreen", tooltip:"Развернуть окно"});
-            }
-            else {
-
-              this.define({icon:"mdi mdi-fullscreen-exit", tooltip:"Сверуть окно"});
-              this.getParentView().getParentView().define({
-                fullscreen: true, top:0, left:0, position:false
-              });
-            }
-            this.refresh();
-            this.getParentView().getParentView().resize();
-          }
-          },
           {view:"icon", icon:"wxi-close", tooltip:"Close window", click: function(){
             scope.hideWindow();
           }}
         ]
       },
       //width: 500,
-      fullscreen:false,
-      resize: true,
-      move: true,
-      scroll: true,
+      //fullscreen:false,
+      //resize: false,
+      //move: true,
+      //scroll: true,
       //head: "Справочник",
       close: true,
       modal: true,
@@ -403,7 +387,7 @@ export default class CoreCharacteristicWindow extends JetView {
       }
     });
 
-    state.win.getBody().queryView({'localId':'sets'}).registerType("directoryEditor",{
+    state.win.getBody().queryView({'localId':'sets'}).registerType("directoryEditorCharacteristic",{
       template:function(value, config){
         let result = '';
         if (value['name']) result = value.name;
@@ -421,24 +405,25 @@ export default class CoreCharacteristicWindow extends JetView {
           // this.editStop();
           //this.refresh(id);
           //this.callEvent("onCheck",[id, data.value]);
-          let filter = {}
+          let filter = {};
           // if (this.config.options_url_directory && this.config.options_url_directory.id) {
           //   filter = {'filterInput' : this.config.options_url_directory.id};
           // }
+          debugger;
           let objConfig = {
             'config':{
               'return' : 'object',
               'returnObject' : state.win.getBody().queryView({'localId':'sets'}),
               'id' : id,
-              'urlEdit' : 'material',
+              'urlEdit' : data.options_url,
               'editor' : data,
-              'options_url' : 'material',
-              'options_url_edit': 'material',
+              'options_url' : data.options_url,
+              'options_url_edit': data.options_url,
               'header': [{'text':'Справочник'}],
               'filter': filter
             }
           };
-          this.config['urlEdit'] = 'material';
+          this.config['urlEdit'] = data.options_url;
 
           config.parent.state.formDocumentTableWindow.showWindow({},this, objConfig, config.parent, 'directory');
         }
@@ -446,23 +431,23 @@ export default class CoreCharacteristicWindow extends JetView {
       editor:"inline-text"
     });
 
-    state.win.getBody().attachEvent("onClick",function(id, e, node){
-
-      if (e.target = 'document-button') {
-
-      }
-    });
+    // state.win.getBody().attachEvent("onClick",function(id, e, node){
+    //
+    //   if (e.target = 'document-button') {
+    //
+    //   }
+    // });
     state.wins.push(state.win);
     config['win'] = state.win;
 
-    //config.win.getHead().getChildViews()[0].setHTML(config.header[0].text);
+    config.win.getHead().getChildViews()[0].setHTML(config.header[0].text);
 
     state.win.show();
 
-    var res = webix.promise.defer();
-    res.resolve(config.win.getBody()).then(function(result, res1) {
-      let res2 = config.win.getBody().queryView({'localId':'table-layout'});
-    });
+    // var res = webix.promise.defer();
+    // res.resolve(config.win.getBody()).then(function(result, res1) {
+    //   let res2 = config.win.getBody().queryView({'localId':'table-layout'});
+    // });
   }
 
   getRecord() {
@@ -503,7 +488,7 @@ export default class CoreCharacteristicWindow extends JetView {
     let result = {};
     for (let key in values) {
       item = table.getItem(key);
-      result = {"name": item.label,"directory_id" : 1, "id": 1, "list_id" : 283, "virtual_value" : values[key]};
+      result = {"name": item.label, "directory_id" : item.directory_id, "id": item.id, "list_id" : 283, "virtual_value" : values[key]};
       dataItems.push(result);
     }
     // values.forEach(function(item) {

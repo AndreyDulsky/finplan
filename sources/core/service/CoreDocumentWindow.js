@@ -340,7 +340,7 @@ export default class CoreDocumentWindow extends JetView {
     state.wins.push(state.win);
     config['win'] = state.win;
     //set localViews
-    debugger;
+
     scope.app.config.localViews[config.options_url_edit] = {'index': state.wins.length-1,'win':state.win};
     state.currentTab = $$("tabbar").getValue();
     $$("tabbar").addOption({
