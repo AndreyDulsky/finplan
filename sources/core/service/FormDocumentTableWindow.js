@@ -482,7 +482,12 @@ export default class FormDocumentTableWindow extends JetView {
           }
           if (state.editor.config.return == 'object') {
             let objGetter = state.editor.config.returnObject;
-            dataId = {'id': id, '_id': record.id, 'name': record.name};
+            let name = record.name;
+
+            if (record['full_name']) {
+              name = record.full_name;
+            }
+            dataId = {'id': id, '_id': record.id, 'name': name};
           }
           if (state.editor.config.return == 'integer') {
             dataId = id;

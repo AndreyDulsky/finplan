@@ -488,8 +488,13 @@ export default class CoreCharacteristicWindow extends JetView {
     let result = {};
     for (let key in values) {
       item = table.getItem(key);
-      result = {"name": item.label, "directory_id" : item.directory_id, "id": item.id, "list_id" : 283, "virtual_value" : values[key]};
-      dataItems.push(result);
+      debugger;
+      if (values[key].length != 0 && values[key] != {}) {
+        //values[key] = {'id':null,'name':''};
+        result = {"name": item.label, "directory_id" : item.directory_id, "id": item.id, "list_id" : 283, "virtual_value" : values[key]};
+        dataItems.push(result);
+      }
+
     }
     // values.forEach(function(item) {
     //   dataItems.push(item);
