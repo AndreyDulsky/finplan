@@ -69,6 +69,7 @@ export default class CoreCharacteristicWindow extends JetView {
     let scope = this;
     let state = this.state;
     let config;
+    let params = {};
     let filter = {};
     config = state.configs[state.windowNumber];
 
@@ -77,8 +78,9 @@ export default class CoreCharacteristicWindow extends JetView {
       filter = {filter:{"or":[{"list_id":config.filter['filterInput']}]}};//{'list_id':config.filter['filterInput']};
 
     }
+    params['sort'] = 'sort_order';
 
-    let tableUrl = state.$scope.app.config.apiRest.getUrl('get',"accounting/"+config['options_url']);
+    let tableUrl = state.$scope.app.config.apiRest.getUrl('get',"accounting/"+config['options_url'],params);
 
     webix.ajax().get(tableUrl, filter ).then(function(data) {
 
@@ -94,7 +96,7 @@ export default class CoreCharacteristicWindow extends JetView {
 
         items.data.forEach(function(item) {
           item['virtual_value'] = {};
-
+          item['id'] = item.sort_order;
           if (Array.isArray(value['params'])) {
             valueParams.forEach(function(itemValue) {
               if (item.directory_id == itemValue.directory_id ) {
@@ -130,7 +132,7 @@ export default class CoreCharacteristicWindow extends JetView {
     let configTable = {
       view:"property",
       localId:"sets",
-      width:300,
+      width:350,
 
       elements:[
         { label:"Основные", type:"label" },
@@ -147,7 +149,7 @@ export default class CoreCharacteristicWindow extends JetView {
       ],
     };
     data.forEach(function(item) {
-
+      let optionsUrlDirectory = '';
       let directory = 'nomenclature';
 
       if (item.directory_id == 1) {
@@ -156,12 +158,17 @@ export default class CoreCharacteristicWindow extends JetView {
       if (item.directory_id == 2) {
         directory = 'product-bed-size';
       }
+      if (item.directory_id == 4) {
+        directory = 'directory';
+        optionsUrlDirectory = 1;
+      }
       configTable.elements.push({
         label: item.name,
         height: 30,
         type:"directoryEditorCharacteristic",
         id: item.id,
         directory_id: item.directory_id,
+        options_url_directory: optionsUrlDirectory,
         value: item.virtual_value,
         options_url: directory,
         template:function(value, config){
@@ -406,10 +413,11 @@ export default class CoreCharacteristicWindow extends JetView {
           //this.refresh(id);
           //this.callEvent("onCheck",[id, data.value]);
           let filter = {};
-          // if (this.config.options_url_directory && this.config.options_url_directory.id) {
-          //   filter = {'filterInput' : this.config.options_url_directory.id};
-          // }
-          debugger;
+          //debugger;
+          if (data.options_url_directory) {
+            filter = {'filterInput' :data.options_url_directory};
+          }
+          //debugger;
           let objConfig = {
             'config':{
               'return' : 'object',
@@ -483,17 +491,21 @@ export default class CoreCharacteristicWindow extends JetView {
     config = state.configs[state.windowNumber];
     itemSelect = config.table.getSelectedItem();
     let table = config.win.getBody().queryView({'localId':'sets'});
+    debugger;
     let values = table.getValues();
     let item = {};
     let result = {};
     for (let key in values) {
       item = table.getItem(key);
       debugger;
-      if (values[key].length != 0 && values[key] != {}) {
+      if (Object.keys(values[key]).length == 0 ) {
+        continue;
+      }
+
         //values[key] = {'id':null,'name':''};
         result = {"name": item.label, "directory_id" : item.directory_id, "id": item.id, "list_id" : 283, "virtual_value" : values[key]};
         dataItems.push(result);
-      }
+
 
     }
     // values.forEach(function(item) {
