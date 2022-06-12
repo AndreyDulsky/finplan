@@ -1426,7 +1426,7 @@ webix.protoUI({
               'operation_type' : 'depend',
               'depend' : {'_id' : scope.state.selectedRow.id, 'id': this.getSelectedItem().idDocument, 'name' :  this.getSelectedItem().name},
               'options_depend_url' : configColumn.options_url,
-              'view' : scope.state.scope,
+              'view' :  (scope.state.scope.formCoreDocumentWindow) ? scope.state.scope  : scope.state,
               'table' : scope.table,
               'type' : gotoType,
               'editor' : configColumn,
@@ -1465,9 +1465,10 @@ webix.protoUI({
             if (configColumn.goto_type) {
               gotoType = configColumn.goto_type;
             }
+            debugger;
             let objConfig = {
               'operation_type' : 'copy',
-              'view' : scope.state.scope,
+              'view' : (scope.state.scope.formCoreDocumentWindow) ? scope.state.scope  : scope.state,
               'table' : scope.table,
               'type' : gotoType,
               'editor' : configColumn,
