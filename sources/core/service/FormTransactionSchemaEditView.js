@@ -16,7 +16,9 @@ const TYPE_TABLE_PART_EMPLOYEE = 6;
 window.procentPart = function(row, id){
   let item = $$("table_part").getItem(row);
   let sum = $$("table_part").getTopParentView().queryView({"localId":"form_edit_sum"});
-  return (sum == 0) ? 0 : Math.round(item.value*100*100/sum) / 100
+  let sumValue = sum.getValue();
+  return (sumValue == 0) ? 0 : Math.round(item.value*100*100/sumValue) / 100
+
 }
 
 export default class FormTransactionSchemaEditView extends JetView {
@@ -340,7 +342,7 @@ export default class FormTransactionSchemaEditView extends JetView {
 
       if (element && element.target.classList.value === "add-to-table") {
         let table = scope.$$("table_part_value");
-        table.add({"index":"","contragent_id" : "", "category_id" : "", "project_id" : "", "value" : "0.00", "part_procent":"" });
+        table.add({"index":"","contragent_id" : "", "category_id" : "", "project_id" : "", "employee_id" :"", "value" : "0.00", "part_procent":"" });
       }
     });
   }
@@ -372,7 +374,7 @@ export default class FormTransactionSchemaEditView extends JetView {
     if (!state.formEdit.validate()) return;
 
     let record = state.formEdit.getValues();
-
+    debugger;
 
     if (record['$count']!= 'undefined') delete record['$count'];
     if (record['$level']!= 'undefined') delete record['$level'];
@@ -403,6 +405,11 @@ export default class FormTransactionSchemaEditView extends JetView {
     }
     if (record.type_part_id == 3) {
       changes = ["category_id", "project_id"];
+      changes = ["project_id"];
+    }
+
+    if (record.type_part_id == 6) {
+      changes = ["contragent_id", "category_id", "employee_id"];
       changes = ["project_id"];
     }
 
@@ -488,8 +495,12 @@ export default class FormTransactionSchemaEditView extends JetView {
   getParts() {
     let tableParts = this.$$("table_part_value");
     let records = tableParts.serialize();
+    debugger;
     let parts = [];
     for (let key in records) {
+      records[key]['category']['id'] =  records[key]['category_id'];
+      if (!records[key]['employee']) records[key]['employee'] = {};
+      records[key]['employee']['id'] =  records[key]['employee_id'];
       parts.push(records[key]);
     }
     return parts;
