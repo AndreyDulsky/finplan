@@ -402,6 +402,7 @@ export default class FormTransactionSchemaEditView extends JetView {
       changes = ["category_id", "project_id"];
     }
     if (record.type_part_id == 3) {
+      changes = ["category_id", "project_id"];
       changes = ["project_id"];
     }
 
@@ -429,25 +430,53 @@ export default class FormTransactionSchemaEditView extends JetView {
 
       webix.dp(state.table).ignore(function(){
 
-        (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.add(obj,0);
+        let data = obj.data;
+
+        (state.isUpdate) ? state.table.updateItem(record.id, obj) : state.table.data.add(obj,0);
+
+
         //state.table.group("transaction_id");
-        debugger;
+
         if (obj && obj.id) state.table.select(obj.id);
         let parentId =  state.table.getSelectedId();
+        let item = state.table.getSelectedItem();
+        item.data = data;
 
-        if (obj.data && obj.data.length > 1 ) {
-          for (let key in obj.data) {
-            (state.isUpdate) ? state.table.updateItem(record.data[key].id, obj.data[key]) : state.table.add(obj.data[key],0, parentId);
-          }
+        // if (obj.data && obj.data.length > 1 ) {
+        //   for (let key in obj.data) {
+        //     (state.isUpdate) ? state.table.updateItem(record.data[key].id, obj.data[key]) : state.table.add(obj.data[key],0, parentId);
+        //   }
+        // }
+        let branches = state.table.data.getBranch(parentId);
+
+        if (branches.length > 0 && state.isUpdate) {
+          state.table.remove(state.table.data.branch[record.id]);
+          state.table.data.branch[record.id] = [];
+          state.table.parse({
+            parent: obj.id,
+            data: data
+          });
+
+        } else {
+
+          data.forEach(function(item, key) {
+            state.table.data.add(item, key, obj.id);
+          });
+
         }
+        //state.table.refresh();
+
         if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
 
         //state.table.sort("date_operation", "desc", "string");
         //state.table.markSorting("date_operation", "desc");
 
       });
-
+      debugger;
+      state.table.refreshColumns();
       state.table.refresh();
+
+
       state.win.hide();
     }, function(){
       webix.message("Ошибка! Данные не сохранены!");
