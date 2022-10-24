@@ -498,6 +498,7 @@ export default class FormTransactionSchemaEditView extends JetView {
     debugger;
     let parts = [];
     for (let key in records) {
+      if (!records[key]['category']) records[key]['category'] = {};
       records[key]['category']['id'] =  records[key]['category_id'];
       if (!records[key]['employee']) records[key]['employee'] = {};
       records[key]['employee']['id'] =  records[key]['employee_id'];
