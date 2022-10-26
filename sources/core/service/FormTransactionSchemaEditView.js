@@ -374,7 +374,6 @@ export default class FormTransactionSchemaEditView extends JetView {
     if (!state.formEdit.validate()) return;
 
     let record = state.formEdit.getValues();
-    debugger;
 
     if (record['$count']!= 'undefined') delete record['$count'];
     if (record['$level']!= 'undefined') delete record['$level'];
@@ -479,8 +478,7 @@ export default class FormTransactionSchemaEditView extends JetView {
         //state.table.markSorting("date_operation", "desc");
 
       });
-      debugger;
-      state.table.refreshColumns();
+
       state.table.refresh();
 
 
@@ -495,7 +493,6 @@ export default class FormTransactionSchemaEditView extends JetView {
   getParts() {
     let tableParts = this.$$("table_part_value");
     let records = tableParts.serialize();
-    debugger;
     let parts = [];
     for (let key in records) {
       if (!records[key]['category']) records[key]['category'] = {};
