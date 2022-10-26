@@ -471,6 +471,7 @@ export default class FormTransactionSchemaEditView extends JetView {
 
         }
         //state.table.refresh();
+        state.table.refresh();
 
         if (!state.isUpdate)  { state.table.scrollTo(0, 0) };
 
@@ -479,7 +480,7 @@ export default class FormTransactionSchemaEditView extends JetView {
 
       });
 
-      state.table.refresh();
+
 
 
       state.win.hide();
