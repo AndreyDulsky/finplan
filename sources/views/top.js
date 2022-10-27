@@ -208,8 +208,11 @@ export default class TopView extends JetView{
       //(result.user['permissions_finplan']) ? menu['data'] = result.user['permissions_finplan'] :  menu['data'] = {};
       //scope.setTotalAccounts(data.json());
     });
+
     let user = webix.storage.local.get("wjet_user");
     let userId = user.user_id;
+
+
 
     let winComment = {};
 
@@ -376,9 +379,11 @@ export default class TopView extends JetView{
       // webix.ajax().get(urlMessage).then(function (data) {
       //   scope.setComments(data.json());
       // });
-
+		webix.ajax().get( urlSummaryAccount).then(function(data) {
+			scope.setTotalAccounts(data.json());
+		});
       this.$$('totalAccountsLabel').attachEvent("onItemClick", function (id, e) {
-        ///scope.doClickBalance();
+        scope.doClickBalance();
         // code
       });
     }
@@ -420,14 +425,14 @@ export default class TopView extends JetView{
 
   setTotalAccounts(data) {
     let totalAccountsLabel = this.$$('totalAccountsLabel');
-    totalAccountsLabel.setValue(data.total);
+    totalAccountsLabel.setValue('Остатки на счетах: '+data.total+' грн.');
     (data.total >= 0) ? totalAccountsLabel.define("color","white") : totalAccountsLabel.define("color","red");
     totalAccountsLabel.refresh();
   }
 
-	doClickBalance(id, view) {
+  doClickBalance(id, view) {
 		//debugger;
-		let scope = this;
+	let scope = this;
     if (!this.win) {
       this.win = webix.ui({
         view: "window",
@@ -454,28 +459,33 @@ export default class TopView extends JetView{
         localId: "win2",
         height: 550,
         width: 500,
-        position:"center",
+        position:"top",
         body: {
           rows: [
-						{
-							view: "datatable",
-              scrollX: false,
-              hover: "myhover",
-              scheme: {
-                $sort:{ by:"name", dir:"asc" },
+			{
+				view: "datatable",
+				scrollX: false,
+				localId: 'table-balance',
+				hover: "myhover",
 
-              },
-							columns: [
-								{'id' : 'name', 'header' : 'Счета', "fillspace": true},
-								{'id' : 'balance', 'header': {content: "summColumn", css: {"text-align": "right"}}, css: {"text-align": "right"}, format: webix.Number.format, "adjust": false},
+				scheme: {
+					$sort:{ by:"name", dir:"asc" },
+				},
+				columns: [
+					{'id' : 'name', 'header' : 'Счета', "fillspace": true},
+					{'id' : 'balance', 'header': {content: "summColumn", css: {"text-align": "right"}}, css: {"text-align": "right"}, format: webix.Number.format, "adjust": false},
 
-							],
-              url: "api->accounting/transaction/summaryaccount",
-							//url: scope.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount')
-						}
-					]
+				],
+				//url: "api->accounting/transaction/summaryaccount",
+					//url: scope.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount')
+			}]
         }
       });
+		let urlSummaryAccount = this.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount');
+		webix.ajax().get( urlSummaryAccount).then(function(data) {
+			scope.setTotalAccounts(data.json());
+			scope.win.queryView({'localId':'table-balance'}).parse(data.json());
+		});
     }
 
 		if (!this.win.isVisible()) {

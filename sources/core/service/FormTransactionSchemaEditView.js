@@ -370,6 +370,7 @@ export default class FormTransactionSchemaEditView extends JetView {
   }
 
   doClickSave() {
+
     let state = this.state;
     if (!state.formEdit.validate()) return;
 
@@ -414,7 +415,7 @@ export default class FormTransactionSchemaEditView extends JetView {
 
     for (let key in parts) {
       for (let keyPart in parts[key]) {
-
+        debugger;
         if (changes.indexOf(keyPart) != -1) {
           parts[key][keyPart] = record[keyPart];
         }
