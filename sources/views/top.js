@@ -481,12 +481,13 @@ export default class TopView extends JetView{
 			}]
         }
       });
-		let urlSummaryAccount = this.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount');
-		webix.ajax().get( urlSummaryAccount).then(function(data) {
-			scope.setTotalAccounts(data.json());
-			scope.win.queryView({'localId':'table-balance'}).parse(data.json());
-		});
+
     }
+	  let urlSummaryAccount = this.app.config.apiRest.getUrl('get','accounting/transaction/summaryaccount');
+	  webix.ajax().get( urlSummaryAccount).then(function(data) {
+		  scope.setTotalAccounts(data.json());
+		  scope.win.queryView({'localId':'table-balance'}).parse(data.json());
+	  });
 
 		if (!this.win.isVisible()) {
 			this.win.show();
